@@ -19,15 +19,15 @@ public record BookUpdateRequest (
 	String title,
 
 	@NotBlank(message = "저자는 반드시 입력되어야 합니다.")
-	@Size(max = 255, message = "저자는 255자 이내로 입력해야 합니다.")
+	@Size(max = 100, message = "저자는 100자 이내로 입력해야 합니다.")
 	String author,
 
 	@NotBlank(message = "설명은 반드시 입력되어야 합니다.")
-	@Size(max = 1000, message = "설명은 1000자 이내로 입력해야 합니다.")
+	@Size(max = 500, message = "설명은 500자 이내로 입력해야 합니다.")
 	String description,
 
 	@NotBlank(message = "출판사는 반드시 입력되어야 합니다.")
-	@Size(max = 255, message = "출판사는 255자 이내로 입력해야 합니다.")
+	@Size(max = 100, message = "출판사는 100자 이내로 입력해야 합니다.")
 	String publisher,
 
 	@NotBlank(message = "ISBN은 반드시 입력되어야 합니다.")
