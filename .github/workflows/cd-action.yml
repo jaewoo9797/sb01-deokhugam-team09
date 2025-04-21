@@ -75,3 +75,11 @@ jobs:
           echo "-----------------------------------------------"
           docker push $IMAGE_URI
           echo "✅ [PUSH] Docker Image pushed successfully! : $IMAGE_URI"
+
+      - name: Update ECS Task Definition
+        id: task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition:
+          container-name: ${{ secrets.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
