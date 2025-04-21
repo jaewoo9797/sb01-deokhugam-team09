@@ -43,10 +43,10 @@ public class Book extends BaseUpdatableEntity {
 	private BigDecimal rating;
 
 	@Column(name="is_deleted", nullable = false)
-	private boolean isDeleted;
+	private boolean deleted;
 
 
-	public Book(String title, String author, String isbn, String publisher, LocalDate publishedDate, String thumbnailUrl, Integer reviewCount, BigDecimal rating, boolean isDeleted ) {
+	public Book(String title, String author, String isbn, String publisher, LocalDate publishedDate, String thumbnailUrl, Integer reviewCount, BigDecimal rating, boolean deleted ) {
 		this.title = title;
 		this.author = author;
 		this.isbn = isbn;
@@ -55,7 +55,7 @@ public class Book extends BaseUpdatableEntity {
 		this.thumbnailUrl = thumbnailUrl;
 		this.reviewCount = reviewCount;
 		this.rating = rating;
-		this.isDeleted = isDeleted;
+		this.deleted = deleted;
 	}
 
 
