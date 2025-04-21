@@ -1,24 +1,5 @@
 package com.codeit.sb01_deokhugam.book;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Base64;
-import java.util.UUID;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
@@ -27,116 +8,153 @@ import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.book.service.BookService;
 import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
+import com.codeit.sb01_deokhugam.global.infra.S3StorageService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
-	@Mock
-	private BookRepository bookRepository;
+    @Mock
+    private BookRepository bookRepository;
 
-	@Mock
-	private BookMapper bookMapper;
+    @Mock
+    private S3StorageService s3StorageService;
 
-	@Mock
-	private NaverBookClient naverBookClient;
+    @Mock
+    private BookMapper bookMapper;
 
-	@InjectMocks
-	private BookService bookService;
+    @Mock
+    private NaverBookClient naverBookClient;
 
-	@Nested
-	@DisplayName("도서 등록 테스트")
-	class testAddBook {
+    @InjectMocks
+    private BookService bookService;
 
-		BookCreateRequest bookCreateRequest = new BookCreateRequest(
-			"저자",
-			"책입니다.",
-			"12345678",
-			LocalDate.parse("2025-01-01"),
-			"출판사",
-			"https://test.com",
-			"제목"
-		);
+    @Nested
+    @DisplayName("도서 등록 테스트")
+    class testAddBook {
+        Instant created = Instant.now();
+        Instant updated = Instant.now();
+        UUID bookId = UUID.randomUUID();
 
-		Book createdBook = new Book(
-			"제목", "저자", "책입니다.", "12345678",
-			"출판사", LocalDate.parse("2025-01-01"),
-			"https://test.com",
-			0, new BigDecimal("5.0"), false
-		);
+        BookCreateRequest bookCreateRequest = new BookCreateRequest(
+                "저자",
+                "책입니다.",
+                "12345678",
+                LocalDate.parse("2025-01-01"),
+                "출판사",
+                "제목"
+        );
 
-		String imageByte = "testByte";
+        Book createdBook = new Book(
+                "제목", "저자", "책입니다.", "12345678",
+                "출판사", LocalDate.parse("2025-01-01"),
+                "https://test.com",
+                0, new BigDecimal("5.0"), false
+        );
 
-		@Test
-		@DisplayName("도서 등록 성공")
-		void testAddBook() {
+        BookDto bookDto = new BookDto(
+                "저자", created,
+                "책입니다.", bookId,
+                "12345678", LocalDate.parse("2025-01-01"), "출판사",
+                new BigDecimal("5.0"), 0, "https://test.com", "제목", updated
+        );
 
-			//request와 byte만 받아온다 byte-> S3에 저장 -> 링크 return
+        MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
 
-			//given
-			byte[] decodedImage = Base64.getDecoder().decode(imageByte);
 
-			given(bookRepository.existsByIsbn(eq(createdBook.getIsbn()))).willReturn(false);
+        @Test
+        @DisplayName("도서 등록 성공")
+        void testAddBook() throws IOException {
 
-			//when
-			when(bookService.create(bookCreateRequest, imageByte));
+            //given
+            given(bookRepository.existsByIsbn(eq(createdBook.getIsbn()))).willReturn(false);
+            given(s3StorageService.put(any())).willReturn("https://test.com");
+            given(bookRepository.save(any(Book.class))).willReturn(createdBook);
 
-			//then
-			//s3에 링크 저장 확인
-			//리포에 북 정보 저장되었는가
-			verify(bookRepository.save(any(Book.class)));
 
-		}
+            // when
+            BookDto result = bookService.create(bookCreateRequest, multipartFile);
 
-		@Test
-		@DisplayName("도서 등록 실패-중복 isbn")
-		void testAddBookFailedCauseExistsIsbn() {
+            //then
+            //s3에 이미지 저장
+            //리포에 북 정보 저장
+            verify(s3StorageService).put(any());
+            verify(bookRepository).save(any(Book.class));
 
-			given(bookRepository.existsByIsbn(eq(createdBook.getIsbn()))).willReturn(true);
+            //assertEquals(bookDto, result);
+        }
 
-			// when & then
-			assertThrows(IsbnAlreadyExistsException.class, () -> {
-				bookService.create(bookCreateRequest, imageByte);
-			});
+        @Test
+        @DisplayName("도서 등록 실패-중복 isbn")
+        void testAddBookFailedCauseExistsIsbn() {
 
-			// 저장 메서드는 호출되지 않아야 한다
-			verify(bookRepository, never()).save(any(Book.class));
-		}
+            given(bookRepository.existsByIsbn(eq(createdBook.getIsbn()))).willReturn(true);
 
-		//isbn 중복 체크
+            // when & then
+            assertThrows(IsbnAlreadyExistsException.class, () -> {
+                bookService.create(bookCreateRequest, multipartFile);
+            });
 
-	}
+            // 저장 메서드는 호출되지 않아야 한다
+            verify(bookRepository, never()).save(any(Book.class));
+        }
 
-	//Naver API를 통한 ISBN 책 정보 불러오기
+        //isbn 중복 체크
 
-	//OCR을 통한 ISBN 정보 입력하기 (심화)
+    }
 
-	//이미지 AWS S3 저장소 저장
-	@Test
-	@DisplayName("네이버 API - ISBN 조회 테스트")
-	void testNaverBookApi() {
+    //Naver API를 통한 ISBN 책 정보 불러오기
 
-		//given
-		String isbn = "1234567890";
-		UUID uuid = UUID.randomUUID();
-		BookDto bookDto = new BookDto(
-			"작가",
-			Instant.now(),
-			"네이버 도서 api를 이용해서 로드한  책입니다. ",
-			uuid,
-			"1234567890",
-			LocalDate.parse("2025-01-01"),
-			"출판사",
-			new BigDecimal("5.0"),
-			0,
-			"https://www.naver.com",
-			"제목",
-			Instant.now()
+    //OCR을 통한 ISBN 정보 입력하기 (심화)
 
-		);
-		//
-		// //when
-		// /when(naverBookClient.)
+    //이미지 AWS S3 저장소 저장
+    @Test
+    @DisplayName("네이버 API - ISBN 조회 테스트")
+    void testNaverBookApi() {
 
-	}
+        //given
+        String isbn = "1234567890";
+        UUID uuid = UUID.randomUUID();
+        BookDto bookDto = new BookDto(
+                "작가",
+                Instant.now(),
+                "네이버 도서 api를 이용해서 로드한  책입니다. ",
+                uuid,
+                "1234567890",
+                LocalDate.parse("2025-01-01"),
+                "출판사",
+                new BigDecimal("5.0"),
+                0,
+                "https://www.naver.com",
+                "제목",
+                Instant.now()
+
+        );
+        //
+        // //when
+        // /when(naverBookClient.)
+
+    }
 
 }
