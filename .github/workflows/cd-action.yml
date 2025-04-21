@@ -80,6 +80,14 @@ jobs:
         id: task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition:
-          container-name: ${{ secrets.CONTAINER_NAME }}
+          task-definition: ecs-task-definition.json
+          container-name: deokhugam-container
           image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          cluster: deokhugam-cluster
+          service: deokhugam-service
+          task-definition: ${{ steps.task-definition.outputs.task-definition }}
+          wait-for-service-stability: true
