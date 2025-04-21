@@ -61,4 +61,8 @@ public class Book extends BaseUpdatableEntity {
         this.deleted = deleted;
     }
 
+    public void softDelete() {
+        this.deleted = true;
+    }
+
 }

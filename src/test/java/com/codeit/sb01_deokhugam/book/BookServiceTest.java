@@ -123,12 +123,16 @@ public class BookServiceTest {
         //isbn 중복 체크
 
     }
+    //삭제
 
-    //Naver API를 통한 ISBN 책 정보 불러오기
+    //수정
+
 
     //OCR을 통한 ISBN 정보 입력하기 (심화)
 
     //이미지 AWS S3 저장소 저장
+
+    //Naver API를 통한 ISBN 책 정보 불러오기
     @Test
     @DisplayName("네이버 API - ISBN 조회 테스트")
     void testNaverBookApi() {
