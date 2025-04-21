@@ -68,7 +68,7 @@ jobs:
           
           echo "🛠️ [BUILD] Building the Docker Image..."
           echo "-----------------------------------------------"
-          docker build -t $IMAGE_URI .
+          docker build -t $IMAGE_URI . --quiet
           echo "✅ [BUILD] Docker Image built successfully! : $IMAGE_URI"
           echo ""
           
