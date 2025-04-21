@@ -65,4 +65,5 @@ public class Comment {
     protected void onUpdate() {
         this.updatedAt = ZonedDateTime.now();
     }
+
 }
