@@ -1,16 +1,13 @@
 package com.codeit.sb01_deokhugam.domain.book.dto;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record BookRequest(
+public record BookCreateRequest(
 	@NotBlank(message = "저자는 반드시 입력되어야 합니다.")
 	@Size(max = 100, message = "저자는 100자 이내로 입력해야 합니다.")
 	String author,
@@ -31,7 +28,7 @@ public record BookRequest(
 	String publisher,
 
 	@NotBlank(message = "Thumbnail URL은 반드시 입력되어야 합니다.")
-	@Pattern(regexp = "^(https?|ftp)://[^\s/$.?#].[^\s]*$", message = "유효한 URL 형식이어야 합니다.")
+	@Pattern(regexp = "^(https?|ftp)://[^ /$.?#].[^ ]*$", message = "유효한 URL 형식이어야 합니다.")
 	String thumbnailUrl,
 
 	@NotBlank(message = "제목은 반드시 입력되어야 합니다.")

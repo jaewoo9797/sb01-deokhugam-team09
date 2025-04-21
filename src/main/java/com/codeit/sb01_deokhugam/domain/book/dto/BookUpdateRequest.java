@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record BookUpdateRequest (
+public record BookUpdateRequest(
 	@NotNull(message = "ID는 반드시 입력되어야 합니다.")
 	String id,
 
@@ -31,11 +31,11 @@ public record BookUpdateRequest (
 	String publisher,
 
 	@NotBlank(message = "ISBN은 반드시 입력되어야 합니다.")
-	@Pattern(regexp = "^(97(8|9))?\\d{9}(\\d|X)$", message = "유효한 ISBN을 입력해 주세요.")
+	@Pattern(regexp = "^(97([89]))?\\d{9}(\\d|X)$", message = "유효한 ISBN을 입력해 주세요.")
 	String isbn,
 
 	@NotBlank(message = "Thumbnail URL은 반드시 입력되어야 합니다.")
-	@Pattern(regexp = "^(https?|ftp)://[^\s/$.?#].[^\s]*$", message = "유효한 URL 형식이어야 합니다.")
+	@Pattern(regexp = "^(https?|ftp)://[^ /$.?#].[^ ]*$", message = "유효한 URL 형식이어야 합니다.")
 	String thumbnailUrl,
 
 	@NotNull(message = "평점은 반드시 입력되어야 합니다.")

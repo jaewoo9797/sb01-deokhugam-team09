@@ -18,37 +18,41 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseUpdatableEntity {
 
-	@Column(name="title", nullable = false)
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name="author", nullable = false)
+	@Column(name = "author", nullable = false)
 	private String author;
 
-	@Column(name="isbn", nullable = false)
+	@Column(name = "description", nullable = false)
+	private String description;
+
+	@Column(name = "isbn", nullable = false)
 	private String isbn;
 
-	@Column(name="publisher", nullable = false)
+	@Column(name = "publisher", nullable = false)
 	private String publisher;
 
-	@Column(name="published_date", nullable = false)
+	@Column(name = "published_date", nullable = false)
 	private LocalDate publishedDate;
 
-	@Column(name="thumbnail_url", nullable = false)
+	@Column(name = "thumbnail_url", nullable = false)
 	private String thumbnailUrl;
 
-	@Column(name="review_count", nullable = false)
+	@Column(name = "review_count", nullable = false)
 	private Integer reviewCount;
 
-	@Column(name="rating", nullable = false, precision = 2, scale = 1)
+	@Column(name = "rating", nullable = false, precision = 2, scale = 1)
 	private BigDecimal rating;
 
-	@Column(name="is_deleted", nullable = false)
+	@Column(name = "is_deleted", nullable = false)
 	private boolean deleted;
 
-
-	public Book(String title, String author, String isbn, String publisher, LocalDate publishedDate, String thumbnailUrl, Integer reviewCount, BigDecimal rating, boolean deleted ) {
+	public Book(String title, String author, String description, String isbn, String publisher, LocalDate publishedDate,
+		String thumbnailUrl, Integer reviewCount, BigDecimal rating, boolean deleted) {
 		this.title = title;
 		this.author = author;
+		this.description = description;
 		this.isbn = isbn;
 		this.publisher = publisher;
 		this.publishedDate = publishedDate;
@@ -57,6 +61,5 @@ public class Book extends BaseUpdatableEntity {
 		this.rating = rating;
 		this.deleted = deleted;
 	}
-
 
 }
