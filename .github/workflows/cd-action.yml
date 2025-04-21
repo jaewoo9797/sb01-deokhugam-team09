@@ -76,6 +76,8 @@ jobs:
           echo "-----------------------------------------------"
           docker push $IMAGE_URI
           echo "✅ [PUSH] Docker Image pushed successfully! : $IMAGE_URI"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          echo "::set-output name=image::$IMAGE_URI"
 
       - name: Update ECS Task Definition
         id: task-definition
