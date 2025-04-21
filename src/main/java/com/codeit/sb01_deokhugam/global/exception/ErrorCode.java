@@ -12,6 +12,7 @@ public enum ErrorCode {
 
 	//book
 	BOOK_NOT_FOUND("해당 도서가 존재하지 않습니다."),
+	DUPLICATE_ISBN("동일한 ISBN이 존재합니다."),
 
 	//comment
 	COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다."),
