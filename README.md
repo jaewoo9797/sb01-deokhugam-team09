@@ -26,15 +26,22 @@
 
 <div align="center">
 
-|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Tema_Member-071D49" />              |              <img src="https://img.shields.io/badge/Tema_Member-071D49" />               |              <img src="https://img.shields.io/badge/Tema_Member-071D49" />               |              <img src="https://img.shields.io/badge/Tema_Member-071D49" />               |
+|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />              |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |
 |:---------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
 | <img src="https://avatars.githubusercontent.com/u/90863663?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/92302468?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/101076275?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/132568348?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/157946706?v=4" width="120px;" alt=""/> |
 |                           [김상호](https://github.com/ghtkdrla)                            |                        [김희수](https://github.com/kaya-frog-ramer)                        |                            [김효정](https://github.com/hyojKim2)                            |                          [공병열](https://github.com/byeongyeol12)                          |                           [백재우](https://github.com/jaewoo9797)                           |
 
 </div>
 
-## 프로젝트 소개
-
 ## 기술 스택
+
+<div align=center> 
+
+<p>
+  <img src="https://img.shields.io/badge/Backend_Dev-6DB33F?style=flat-square&logo=spring&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
+</p>
+
+</div>
 
 ## 아키텍처
