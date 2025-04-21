@@ -49,10 +49,17 @@ jobs:
         run: echo "SUB=repo:${{ github.repository }}:ref:${{ github.ref }}"
 #        문제 식별 후 삭제하기
 
-      - name: Inspect GitHub OIDC token (debug)
-        run: |
-          echo "${{ steps.configure-aws-credentials.outputs.id-token }}" | cut -d "." -f 2 | base64 -d
+      - name: Get OIDC Token
+        id: id-token
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const idToken = await core.getIDToken();
+            core.setOutput("id_token", idToken);
 
+      - name: Decode OIDC sub
+        run: |
+          echo "${{ steps.id-token.outputs.id_token }}" | cut -d '.' -f 2 | base64 -d
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
