@@ -30,13 +30,48 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-
 permissions:
-  
+  contents: read
+  id-token: write # This is required for requesting the JWT
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::885532410426:role/GitHubActionsDeployRole
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-duration-seconds: 1200
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push Docker image To Amazon ECR
+        id: build-image
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REGISTRY}:${IMAGE_TAG}
+          
+          echo "🛠️ [BUILD] Building the Docker Image..."
+          echo "-----------------------------------------------"
+          docker build -t $IMAGE_URI .
+          echo "✅ [BUILD] Docker Image built successfully! : $IMAGE_URI"
+          echo ""
+          
+          echo "📦 [PUSH] Pushing the Docker Image to Amazon ECR..."
+          echo "-----------------------------------------------"
+          docker push $IMAGE_URI
+          echo "✅ [PUSH] Docker Image pushed successfully! : $IMAGE_URI"
