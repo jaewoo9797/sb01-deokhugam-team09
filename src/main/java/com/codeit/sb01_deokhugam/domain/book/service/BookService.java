@@ -2,7 +2,6 @@ package com.codeit.sb01_deokhugam.domain.book.service;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
-import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.book.exception.BookNotFoundException;
 import com.codeit.sb01_deokhugam.domain.book.exception.IsbnAlreadyExistsException;
@@ -39,6 +38,7 @@ public class BookService {
      * @return 저장한 도서의 DTO
      * @throws IOException
      */
+    //TODO: 이미지가 항상 어떤 타입으로 들어오는지 알아봐야함. 
     @Transactional
     public BookDto create(BookCreateRequest bookCreateRequest, MultipartFile image) throws IOException {
 
@@ -123,10 +123,10 @@ public class BookService {
      * @throws IOException
      */
     //도서 정보 수정
-    @Transactional
-    public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, MultipartFile image) throws IOException {
-
-    }
+//    @Transactional
+//    public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, MultipartFile image) throws IOException {
+//
+//    }
 
     //인기 도서 목록 조회
 
