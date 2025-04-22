@@ -7,7 +7,7 @@ import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 
 @Component
 public class BookMapper {
-	public static BookDto toDto(Book book) {
+	public BookDto toDto(Book book) {
 		return new BookDto(
 			book.getAuthor(), book.getCreatedAt(),
 			book.getDescription(), book.getId(),
