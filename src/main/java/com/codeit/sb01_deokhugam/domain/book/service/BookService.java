@@ -5,16 +5,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.book.exception.BookNotFoundException;
 import com.codeit.sb01_deokhugam.domain.book.exception.IsbnAlreadyExistsException;
 import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.review.service.ReviewService;
+import com.codeit.sb01_deokhugam.domain.tumbnail.dto.ThumbnailDto;
 import com.codeit.sb01_deokhugam.global.infra.S3StorageService;
 
 import jakarta.transaction.Transactional;
@@ -36,26 +37,22 @@ public class BookService {
 	 * 도서정보를 DB에 저장합니다.
 	 *
 	 * @param bookCreateRequest
-	 * @param image
+	 * @param thumbnailDto
 	 * @return 저장한 도서의 DTO
 	 * @throws IOException
 	 */
 	//TODO: 이미지가 항상 어떤 타입으로 들어오는지 알아봐야함.
 	@Transactional
-	public BookDto create(BookCreateRequest bookCreateRequest, MultipartFile image) throws IOException {
+	public BookDto create(BookCreateRequest bookCreateRequest, ThumbnailDto thumbnailDto) throws IOException {
 
+		//isbn 중복 검증
 		if (bookRepository.existsByIsbn(bookCreateRequest.isbn()) == true) {
 			throw new IsbnAlreadyExistsException();
 		}
 
-		/**
-		 * 1. isbn으로 로드한다 -> isbn 정보를 로드
-		 * 2. createRequest를 넣음(byte)정보
-		 * 3. create 메서드에서 imageUrl을 얻는다(s3에 세이브)**/
-
-		//TODO: 이미지 S3 저장 필요
+		//TODO: 이미지 S3 저장 로직 필요
 		//이미지 byte [] S3저장
-		String imageUrl = s3StorageService.put(image);
+		String imageUrl = s3StorageService.put(thumbnailDto);
 
 		Book createdBook = new Book(
 			bookCreateRequest.title(),
@@ -118,15 +115,37 @@ public class BookService {
 	 *
 	 * @param bookId
 	 * @param bookUpdateRequest
-	 * @param image
+	 * @param thumbnailDto
 	 * @return 수정된 도서 DTO
 	 * @throws IOException
 	 */
 	//도서 정보 수정
-	//    @Transactional
-	//    public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, MultipartFile image) throws IOException {
-	//
-	//    }
+	@Transactional
+	public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, ThumbnailDto thumbnailDto) throws
+		IOException {
+
+		// 기존 도서 조회
+		Book book = bookRepository.findById(bookId)
+			.orElseThrow(() -> new BookNotFoundException());
+
+		// 이미지가 새로 들어온 경우에만 S3 업로드
+		String imageUrl = book.getThumbnailUrl();
+		if (thumbnailDto != null && thumbnailDto.bytes() != null) {
+			imageUrl = s3StorageService.put(thumbnailDto);
+		}
+
+		// 도서 정보 업데이트
+		book.update(
+			bookUpdateRequest.title(),
+			bookUpdateRequest.author(),
+			bookUpdateRequest.description(),
+			bookUpdateRequest.publisher(),
+			bookUpdateRequest.publishedDate(),
+			imageUrl
+		);
+
+		return bookMapper.toDto(book);
+	}
 
 	//인기 도서 목록 조회
 

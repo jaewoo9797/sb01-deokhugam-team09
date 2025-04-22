@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
 		ErrorCode errorCode = exception.getErrorCode();
 		return switch (errorCode) {
 			case BOOK_NOT_FOUND, COMMENT_NOT_FOUND, NOTIFICATION_NOT_FOUND,
-				 REVIEW_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
+				 REVIEW_NOT_FOUND, USER_NOT_FOUND, THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
 			case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
 			case DUPLICATE_ISBN, DUPLICATE_BOOK -> HttpStatus.CONFLICT;
 			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST -> HttpStatus.BAD_REQUEST;

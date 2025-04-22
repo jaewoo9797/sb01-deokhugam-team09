@@ -15,6 +15,9 @@ public enum ErrorCode {
 	DUPLICATE_BOOK("동일한 도서가 존재합니다"),
 	DUPLICATE_ISBN("동일한 ISBN이 존재합니다."),
 
+	//thumbnail
+	THUMBNAIL_NOT_FOUND("이미지가 없습니다."),
+
 	//comment
 	COMMENT_NOT_FOUND("해당 댓글이 존재하지 않습니다."),
 

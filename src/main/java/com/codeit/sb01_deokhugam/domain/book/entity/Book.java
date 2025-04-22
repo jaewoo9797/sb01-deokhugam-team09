@@ -62,6 +62,18 @@ public class Book extends BaseUpdatableEntity {
 		this.deleted = deleted;
 	}
 
+	//도서 정보 업데이트
+	public void update(String title, String author, String description,
+		String publisher, LocalDate publishedDate, String thumbnailUrl) {
+		this.title = title;
+		this.author = author;
+		this.description = description;
+		this.publisher = publisher;
+		this.publishedDate = publishedDate;
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	//논리 삭제합니다.
 	public void softDelete() {
 		this.deleted = true;
 	}
