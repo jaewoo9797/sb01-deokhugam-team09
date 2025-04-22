@@ -7,11 +7,11 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 
-import com.codeit.sb01_deokhugam.domain.user.dto.PowerUserDto;
-import com.codeit.sb01_deokhugam.domain.user.dto.RegisterRequest;
-import com.codeit.sb01_deokhugam.domain.user.dto.UserDto;
-import com.codeit.sb01_deokhugam.domain.user.dto.UserLoginRequest;
-import com.codeit.sb01_deokhugam.domain.user.dto.UserUpdateRequest;
+import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
+import com.codeit.sb01_deokhugam.domain.user.dto.request.UserLoginRequest;
+import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
+import com.codeit.sb01_deokhugam.domain.user.dto.response.PowerUserDto;
+import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 
 public interface UserService {
 
