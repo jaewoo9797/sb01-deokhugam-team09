@@ -13,6 +13,5 @@ public record ReviewLikeDto(
 	UUID userId,
 
 	boolean liked
-
 ) {
 }
