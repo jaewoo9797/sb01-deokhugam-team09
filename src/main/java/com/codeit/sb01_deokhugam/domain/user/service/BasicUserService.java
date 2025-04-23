@@ -7,19 +7,50 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserLoginRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.domain.user.exception.UserAlreadyExistsException;
+import com.codeit.sb01_deokhugam.domain.user.mapper.UserMapper;
+import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class BasicUserService implements UserService {
 
+	private final UserRepository userRepository;
+	private UserMapper userMapper;
+
+	@Transactional
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
-		return null;
+		log.debug("사용자 생성 시작: {}", userRegisterRequest);
+
+		String email = userRegisterRequest.email();
+		String nickname = userRegisterRequest.nickname();
+		String password = userRegisterRequest.password();
+
+		if (userRepository.existsByEmail(email)) {
+			throw UserAlreadyExistsException.withEmail(email);
+		}
+		if (userRepository.existsByNickname(nickname)) {
+			throw UserAlreadyExistsException.withNickname(nickname);
+		}
+
+		User user = new User(email, password, nickname);
+
+		userRepository.save(user);
+		log.info("{} 사용자 생성 완료: id={}, email={}", user.getNickname(), user.getId(), user.getEmail());
+		return userMapper.toDto(user);
 	}
 
 	@Override
@@ -57,3 +88,17 @@ public class BasicUserService implements UserService {
 		return null;
 	}
 }
+//해당유저 없으면 UserException/USER_NOT_FOUND/사용자를 찾을 수 없습니다./404
+//논리삭제만하고 논리삭제 한번더했을때도 마찬가지로 유저낫파운드
+
+//todo 물리삭제하면 이상한거뜸;; 물리삭제 안되는듯? 왜이럼? 나중에 확인해보기
+//논리삭제 및 물리삭제 시도후실패 이후 동일이메일로 계정생성 시도시 이미존재하는 이메일이라고뜸.
+/*
+{
+	"timestamp": "2025-04-22T06:40:26.404564816Z",
+	"code": "DataIntegrityViolationException",
+	"message": "could not execute statement [ERROR: update or delete on table \"users\" violates foreign key constraint \"fk8omq0tc18jd43bu5tjh6jvraq\" on table \"comments\"\n  Detail: Key (id)=(76e8a0b8-d718-47af-a3d1-ec8c27f18833) is still referenced from table \"comments\".] [delete from users where id=?]; SQL [delete from users where id=?]; constraint [fk8omq0tc18jd43bu5tjh6jvraq]",
+	"details": {},
+	"exceptionType": "DataIntegrityViolationException",
+	"status": 500
+	}*/

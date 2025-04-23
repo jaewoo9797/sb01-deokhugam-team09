@@ -25,4 +25,4 @@ public record RegisterRequest(
 //비밀번호 확인 불일치: 비밀번호가 일치하지 않습니다
 
 //닉네임 글자수 조건, 이메일형식, 비번형식 불만족: DomainException/INVALID_INPUT_VALUE/잘못된 입력값입니다./400
-//이미 존재하는 이메일로 가입 시도: UserException/EMAIL_DUPLICATION/이미 존재하는 이메일입니다./409/이메일 반환
+

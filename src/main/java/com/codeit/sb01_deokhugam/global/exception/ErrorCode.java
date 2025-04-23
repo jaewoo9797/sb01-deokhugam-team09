@@ -24,7 +24,7 @@ public enum ErrorCode {
 
 	//user
 	USER_NOT_FOUND("해당 유저가 존재하지 않습니다."),
-	;
+	DUPLICATION_USER("이미 존재하는 사용자입니다.");
 
 	private final String message; //메시지
 

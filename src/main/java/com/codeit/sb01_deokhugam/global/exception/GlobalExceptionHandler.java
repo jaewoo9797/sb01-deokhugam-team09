@@ -63,6 +63,7 @@ public class GlobalExceptionHandler {
 				 REVIEW_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
 			case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
 			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST -> HttpStatus.BAD_REQUEST;
+			case DUPLICATION_USER -> HttpStatus.CONFLICT;
 		};
 	}
 }
