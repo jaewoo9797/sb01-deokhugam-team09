@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,50 +19,49 @@ import lombok.NoArgsConstructor;
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment {
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+	@Column(name = "review_id", nullable = false)
+	private UUID reviewId;
 
-    @Column(name = "review_id", nullable = false)
-    private UUID reviewId;
+	@Column(name = "user_id", nullable = false)
+	private UUID userId;
 
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
+	@Column(name = "content", nullable = false)
+	private String content;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+	@Column(name = "created_at", nullable = false)
+	private ZonedDateTime createdAt;
 
-    @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt;
+	@Column(name = "updated_at")
+	private ZonedDateTime updatedAt;
 
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
+	@Column(name = "is_deleted")
+	private boolean deleted;
 
-    @Column(name = "is_deleted")
-    private boolean deleted;
+	public Comment(UUID reviewId, UUID userId, String content) {
+		this.reviewId = reviewId;
+		this.userId = userId;
+		this.content = content;
+		this.createdAt = ZonedDateTime.now();
+		this.updatedAt = ZonedDateTime.now();
+		this.deleted = false;
+	}
 
-    public Comment(UUID reviewId, UUID userId, String content) {
-        this.reviewId = reviewId;
-        this.userId = userId;
-        this.content = content;
-        this.createdAt = ZonedDateTime.now();
-        this.updatedAt = ZonedDateTime.now();
-        this.deleted = false;
-    }
+	public void updateContent(String content) {
+		this.content = content;
+		this.updatedAt = ZonedDateTime.now();
+	}
 
-    public void updateContent(String content) {
-        this.content = content;
-        this.updatedAt = ZonedDateTime.now();
-    }
+	public void markDeleted() {
+		this.deleted = true;
+	}
 
-    public void markDeleted() {
-        this.deleted = true;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = ZonedDateTime.now();
-    }
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = ZonedDateTime.now();
+	}
 
 }
