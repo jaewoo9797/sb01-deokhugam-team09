@@ -24,7 +24,7 @@ public class Review extends BaseUpdatableEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", columnDefinition = "uuid NOT NULL")
-	private User user;
+	private User author;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "book_id", columnDefinition = "uuid NOT NULL")
@@ -45,8 +45,8 @@ public class Review extends BaseUpdatableEntity {
 	@Column(name = "is_deleted", nullable = false)
 	private boolean deleted = false;
 
-	public Review(User user, Book book, String content, BigDecimal rating) {
-		this.user = user;
+	public Review(User author, Book book, String content, BigDecimal rating) {
+		this.author = author;
 		this.book = book;
 		this.content = content;
 		this.rating = rating;
