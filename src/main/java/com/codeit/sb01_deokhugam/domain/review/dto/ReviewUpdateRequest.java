@@ -11,7 +11,7 @@ public record ReviewUpdateRequest(
 	String content,
 
 	@NotNull(message = "rating은 필수입니다")
-	@Min(value = 1, message = "rating은 최소 1이어야 합니다")
+	@Min(value = 0, message = "rating은 최소 0이어야 합니다")
 	@Max(value = 5, message = "rating은 최대 5이어야 합니다")
 	Integer rating
 
