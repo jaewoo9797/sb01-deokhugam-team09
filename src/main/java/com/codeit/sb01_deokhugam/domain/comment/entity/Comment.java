@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Comment extends BaseUpdatableEntity {
 
     @Column(name = "review_id", nullable = false)
