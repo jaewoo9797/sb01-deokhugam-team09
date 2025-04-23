@@ -97,8 +97,7 @@ create table book_rankings
     rank          integer                  NOT NULL,
     score         decimal(10, 2)           NOT NULL,
     review_count  integer                  NOT NULL,
-    rating        decimal(10, 2) NOT NULL
-        CHECK (rating >= 0.0 AND rating <= 5.0),
+    rating        decimal(10, 2)           NOT NULL,
     thumbnail_url varchar                  NOT NULL,
     title         varchar                  NOT NULL,
     book_id       uuid                     NOT NULL
