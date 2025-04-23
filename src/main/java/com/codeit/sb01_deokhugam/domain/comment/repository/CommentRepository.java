@@ -3,7 +3,7 @@ package com.codeit.sb01_deokhugam.domain.comment.repository;
 import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public interface CommentRepository extends JpaRepository <Comment, UUID> {
     Optional<Comment> findByIdAndDeletedFalse(UUID commentId);
 
     // 특정 시간 이후 생성된 댓글만 조회
-    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAtAsc(UUID reviewId, ZonedDateTime after);
+    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAtAsc(UUID reviewId, Instant after);
 
     // 작성자가 본인인지 확인할 수 있도록
     Optional<Comment> findByIdAndUserIdAndDeletedFalse(UUID commentId, UUID userId);
