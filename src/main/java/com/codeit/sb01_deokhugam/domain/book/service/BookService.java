@@ -2,8 +2,11 @@ package com.codeit.sb01_deokhugam.domain.book.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
@@ -16,6 +19,7 @@ import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.review.service.ReviewService;
 import com.codeit.sb01_deokhugam.domain.tumbnail.dto.ThumbnailDto;
+import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.infra.S3StorageService;
 
 import jakarta.transaction.Transactional;
@@ -41,10 +45,10 @@ public class BookService {
 	 * @return 저장한 도서의 DTO
 	 * @throws IOException
 	 */
-	//TODO: 이미지가 항상 어떤 타입으로 들어오는지 알아봐야함.
 	@Transactional
 	public BookDto create(BookCreateRequest bookCreateRequest, ThumbnailDto thumbnailDto) throws IOException {
 
+		//TODO: 논리적 삭제된 도서와 ISBN이 중복된다면?
 		//isbn 중복 검증
 		if (bookRepository.existsByIsbn(bookCreateRequest.isbn()) == true) {
 			throw new IsbnAlreadyExistsException();
@@ -67,12 +71,61 @@ public class BookService {
 		return bookMapper.toDto(createdBook);
 	}
 
+	@Transactional
 	//도서 목록 조회
+	public PageResponse<BookDto> findAllWithCursor(String keyword, Instant after, String cursor, String orderBy,
+		String direction, int limit) {
 
+		//TODO: keyword 일치 없을시
+		//TODO: nextCursor문제
+		//TODO: orderBy 예외처ㅣㄹ
+		PageRequest pageable = PageRequest.of(0, limit);
+
+		List<Book> books = bookRepository.goCursor(keyword, after, cursor, orderBy, direction, pageable);
+
+		//books size 계산
+		int size = books.size();
+
+		//TODO: 매번 호출 비효율적.
+		//totalElements 계산
+		Long totalElements = bookRepository.totalElements(keyword);
+		List<BookDto> bookDtos = books.stream()
+			.map(bookMapper::toDto)
+			.toList();
+
+		//hasNext 계산
+		boolean hasNext = size < totalElements && totalElements > limit;
+
+		//nextCursor 조회
+		String nextCursor = hasNext ? convertCursor(orderBy, books.get(size - 1)) : null;
+
+		//nextAfter 계산
+		Instant nextAfter = bookDtos.get(size - 1).createdAt();
+
+		return new PageResponse<>(bookDtos, nextAfter, nextCursor, size, hasNext, totalElements);
+	}
+
+	//넥스트 커서 값 반환
+	private String convertCursor(String sortBy, Book book) {
+		switch (sortBy) {
+			case "title":
+				return book.getTitle();
+			case "publishedDate ":
+				return book.getPublishedDate().toString();
+			case "rating":
+				return book.getRating().toString();
+			case "reviewCount":
+				return book.getReviewCount().toString();
+			default:
+				return null;
+		}
+	}
+
+	@Transactional
 	//도서 상세 정보 조회
 	public BookDto findById(UUID bookId) {
 		log.debug("도서 조회 시작: id={}", bookId);
-		BookDto bookDto = bookMapper.toDto(bookRepository.findById(bookId).orElseThrow(
+		BookDto bookDto = bookMapper.toDto(bookRepository.gogo(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId)
 		));
 		log.info("도서 조회 완료: id={}", bookId);
@@ -88,7 +141,7 @@ public class BookService {
 	@Transactional
 	public void delete(UUID bookId) {
 		log.debug("도서 논리 삭제 시작: id={}", bookId);
-		Book book = bookRepository.findById(bookId).orElseThrow(
+		Book book = bookRepository.gogo(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
 		book.softDelete(); //deleted를 true로 변경
 		log.info("도서 논리 삭제 완료: id={}", bookId);
@@ -103,9 +156,10 @@ public class BookService {
 	@Transactional
 	public void deletePhysical(UUID bookId) {
 		log.debug("도서 물리 삭제 시작: id={}", bookId);
-		Book book = bookRepository.findById(bookId).orElseThrow(
+		bookRepository.findById(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
-		log.debug("도서의 리뷰 삭제 시작: id={}", bookId);
+		log.debug("도서의 관련 리뷰 삭제 시작: id={}", bookId);
+		bookRepository.deleteById(bookId);
 		reviewService.deleteByBookPhysicalDelete(bookId);
 		log.info("도서 물리 삭제 완료: id={}", bookId);
 	}
@@ -124,9 +178,9 @@ public class BookService {
 	public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, ThumbnailDto thumbnailDto) throws
 		IOException {
 
-		// 기존 도서 조회
-		Book book = bookRepository.findById(bookId)
-			.orElseThrow(() -> new BookNotFoundException());
+		// 기존 도서 조회 (논리적 삭제 되지 않은 도서)
+		Book book = bookRepository.gogo(bookId)
+			.orElseThrow(() -> new BookNotFoundException().withId(bookId));
 
 		// 이미지가 새로 들어온 경우에만 S3 업로드
 		String imageUrl = book.getThumbnailUrl();
