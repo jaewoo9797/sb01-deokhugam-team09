@@ -14,7 +14,6 @@ public record ReviewUpdateRequest(
 	@Min(value = 0, message = "rating은 최소 0이어야 합니다")
 	@Max(value = 5, message = "rating은 최대 5이어야 합니다")
 	Integer rating
-
 ) {
 
 }
