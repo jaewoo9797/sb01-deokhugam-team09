@@ -1,14 +1,10 @@
 package com.codeit.sb01_deokhugam.domain.comment.entity;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import com.codeit.sb01_deokhugam.domain.base.BaseUpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import lombok.AccessLevel;
@@ -19,11 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Comment extends BaseUpdatableEntity {
 
     @Column(name = "review_id", nullable = false)
     private UUID reviewId;
@@ -34,36 +26,22 @@ public class Comment {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_at", nullable = false)
-    private ZonedDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
-
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
     public Comment(UUID reviewId, UUID userId, String content) {
         this.reviewId = reviewId;
         this.userId = userId;
         this.content = content;
-        this.createdAt = ZonedDateTime.now();
-        this.updatedAt = ZonedDateTime.now();
         this.deleted = false;
     }
 
     public void updateContent(String content) {
         this.content = content;
-        this.updatedAt = ZonedDateTime.now();
     }
 
     public void markDeleted() {
         this.deleted = true;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = ZonedDateTime.now();
     }
 
 }
