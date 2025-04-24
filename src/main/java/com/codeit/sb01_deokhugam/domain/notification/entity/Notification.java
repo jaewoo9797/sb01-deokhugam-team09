@@ -73,4 +73,8 @@ public class Notification extends BaseUpdatableEntity {
 		String content = "나의 리뷰가 역대 인기 리뷰에 선정되었습니다.";
 		return new Notification(user, content, review);
 	}
+
+	public void markAsRead() {
+		this.confirmed = true;
+	}
 }
