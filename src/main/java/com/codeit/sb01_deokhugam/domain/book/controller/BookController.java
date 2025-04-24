@@ -79,7 +79,6 @@ public class BookController {
 		@RequestParam(value = "limit", defaultValue = "50") int limit
 	) {
 		log.info("도서 목록 조회 요청");
-		// Sort sort = Sort.by(Sort.Direction.fromString(direction), orderBy);
 
 		// 커서 기반 페이지네이션을 위한 서비스 호출
 		PageResponse<BookDto> result = bookService.findAllWithCursor(keyword, after, cursor, orderBy, direction, limit);
