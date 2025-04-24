@@ -11,6 +11,6 @@ public record UserLoginRequest(
 	String password
 	// 예외처리 - 타입/코드/메세지/응답코드
 	//아디비번 공백들어왔을 때 DomainException/INVALID_INPUT_VALUE/잘못된 입력값입니다./400
-	//아디비번 중 틀린거잇을때 UserException/LOGIN_INPUT_INVALID/이메일 또는 비밀번호가 올바르지 않습니다./401
+
 ) {
 }

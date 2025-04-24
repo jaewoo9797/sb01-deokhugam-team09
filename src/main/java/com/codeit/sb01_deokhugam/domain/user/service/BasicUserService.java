@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
-import com.codeit.sb01_deokhugam.domain.user.dto.request.UserLoginRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -156,14 +155,7 @@ public class BasicUserService implements UserService {
 
 		log.info("사용자 물리삭제 완료: id={}", id);
 	}
-
-	@Transactional
-	@Override
-	public UserDto login(UserLoginRequest userLoginRequest) {
-		return null;
-	}
 }
-//논리삭제만하고 논리삭제 한번더했을때도 마찬가지로 유저낫파운드
 
 //todo 물리삭제하면 이상한거뜸;; 물리삭제 안되는듯? 왜이럼? 나중에 확인해보기
 //논리삭제 및 물리삭제 시도후실패 이후 동일이메일로 계정생성 시도시 이미존재하는 이메일이라고뜸.
