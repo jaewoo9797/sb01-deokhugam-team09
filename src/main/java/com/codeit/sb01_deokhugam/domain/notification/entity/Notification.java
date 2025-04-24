@@ -45,12 +45,12 @@ public class Notification extends BaseUpdatableEntity {
 	}
 
 	public static Notification fromComment(User user, String content, Review review) {
-		content = String.format("[%s]님이 나의 리뷰에 댓글을 남겼습니다.\\n%s", user.getNickname(), review.getContent());
+		content = String.format("[%s]님이 나의 리뷰에 댓글을 남겼습니다.\n%s", user.getNickname(), review.getContent());
 		return new Notification(user, content, review);
 	}
 
-	public static Notification fromLike(User user, String content, Review review) {
-		content = String.format("[%s]님이 좋아요를 눌렀습니다.", user.getNickname());
+	public static Notification fromLike(User user, Review review) {
+		String content = String.format("[%s]님이 좋아요를 눌렀습니다.", user.getNickname());
 		return new Notification(user, content, review);
 	}
 
