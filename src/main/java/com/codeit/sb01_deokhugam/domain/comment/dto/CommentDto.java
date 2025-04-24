@@ -1,6 +1,6 @@
 package com.codeit.sb01_deokhugam.domain.comment.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public record CommentDto(
@@ -9,6 +9,6 @@ public record CommentDto(
         UUID userId,
         String userNickname,
         String content,
-        ZonedDateTime createdAt,
-        ZonedDateTime updatedAt
+        Instant createdAt,
+        Instant updatedAt
 ) {}
