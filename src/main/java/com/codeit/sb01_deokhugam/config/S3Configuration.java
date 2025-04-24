@@ -27,4 +27,9 @@ public class S3Configuration {
 	public String s3BucketName() {
 		return bucketName;
 	}
+
+	@Bean
+	public String s3Region() {
+		return region;
+	}
 }
