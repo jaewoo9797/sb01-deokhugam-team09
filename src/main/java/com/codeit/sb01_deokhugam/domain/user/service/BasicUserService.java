@@ -16,6 +16,7 @@ import com.codeit.sb01_deokhugam.domain.user.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.exception.UserAlreadyExistsException;
+import com.codeit.sb01_deokhugam.domain.user.exception.UserNotFoundException;
 import com.codeit.sb01_deokhugam.domain.user.mapper.UserMapper;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 
@@ -55,12 +56,17 @@ public class BasicUserService implements UserService {
 
 	@Override
 	public UserDto find(UUID id) {
-		return null;
+		log.debug("사용자 조회 시작: {}", id);
+		UserDto userDto = userRepository.findById(id)
+			.map(userMapper::toDto)
+			.orElseThrow(() -> UserNotFoundException.withId(id));
+		log.info("사용자 조회 완료: {}", id);
+		return userDto;
 	}
 
 	@Override
 	public List<UserDto> findAll() {
-		return List.of();
+
 	}
 
 	@Override
