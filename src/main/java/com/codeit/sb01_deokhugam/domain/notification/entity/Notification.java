@@ -54,4 +54,23 @@ public class Notification extends BaseUpdatableEntity {
 		return new Notification(user, content, review);
 	}
 
+	public static Notification fromDailyRanking(User user, Review review, int rank) {
+		String content = String.format("나의 리뷰가 일간 인기 리뷰 %d위에 선정되었습니다.", rank);
+		return new Notification(user, content, review);
+	}
+
+	public static Notification fromWeeklyRanking(User user, Review review, int rank) {
+		String content = String.format("나의 리뷰가 주간 인기 리뷰 %d위에 선정되었습니다.", rank);
+		return new Notification(user, content, review);
+	}
+
+	public static Notification fromMonthlyRanking(User user, Review review, int rank) {
+		String content = String.format("나의 리뷰가 월간 인기 리뷰 %d위에 선정되었습니다.", rank);
+		return new Notification(user, content, review);
+	}
+
+	public static Notification fromAllTimeRanking(User user, Review review) {
+		String content = "나의 리뷰가 역대 인기 리뷰에 선정되었습니다.";
+		return new Notification(user, content, review);
+	}
 }
