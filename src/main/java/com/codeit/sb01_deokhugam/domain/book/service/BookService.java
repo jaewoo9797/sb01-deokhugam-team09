@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
@@ -76,31 +75,31 @@ public class BookService {
 	public PageResponse<BookDto> findAllWithCursor(String keyword, Instant after, String cursor, String orderBy,
 		String direction, int limit) {
 
-		//TODO: keyword 일치 없을시
-		//TODO: nextCursor문제
 		//TODO: orderBy 예외처ㅣㄹ
-		PageRequest pageable = PageRequest.of(0, limit);
 
-		List<Book> books = bookRepository.goCursor(keyword, after, cursor, orderBy, direction, pageable);
+		List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction, limit + 1);
 
-		//books size 계산
-		int size = books.size();
+		// 실제 size 계산 (초과 조회된 1개는 제외)
+		int fetchedSize = books.size();
+		boolean hasNext = fetchedSize > limit;
+
+		// 실제로 보여줄 limit 개수만큼만 남기기
+		List<Book> resultBooks = hasNext ? books.subList(0, limit) : books;
+		// DTO변환
+		List<BookDto> bookDtos = resultBooks.stream()
+			.map(bookMapper::toDto)
+			.toList();
+		int size = resultBooks.size();
 
 		//TODO: 매번 호출 비효율적.
 		//totalElements 계산
-		Long totalElements = bookRepository.totalElements(keyword);
-		List<BookDto> bookDtos = books.stream()
-			.map(bookMapper::toDto)
-			.toList();
-
-		//hasNext 계산
-		boolean hasNext = size < totalElements && totalElements > limit;
+		Long totalElements = bookRepository.getTotalElements(keyword);
 
 		//nextCursor 조회
 		String nextCursor = hasNext ? convertCursor(orderBy, books.get(size - 1)) : null;
 
-		//nextAfter 계산
-		Instant nextAfter = bookDtos.get(size - 1).createdAt();
+		//nextAfter 조회
+		Instant nextAfter = hasNext ? bookDtos.get(size - 1).createdAt() : null;
 
 		return new PageResponse<>(bookDtos, nextAfter, nextCursor, size, hasNext, totalElements);
 	}
@@ -110,7 +109,7 @@ public class BookService {
 		switch (sortBy) {
 			case "title":
 				return book.getTitle();
-			case "publishedDate ":
+			case "publishedDate":
 				return book.getPublishedDate().toString();
 			case "rating":
 				return book.getRating().toString();
@@ -125,7 +124,7 @@ public class BookService {
 	//도서 상세 정보 조회
 	public BookDto findById(UUID bookId) {
 		log.debug("도서 조회 시작: id={}", bookId);
-		BookDto bookDto = bookMapper.toDto(bookRepository.gogo(bookId).orElseThrow(
+		BookDto bookDto = bookMapper.toDto(bookRepository.findByIdNotLogicalDelete(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId)
 		));
 		log.info("도서 조회 완료: id={}", bookId);
@@ -141,7 +140,7 @@ public class BookService {
 	@Transactional
 	public void delete(UUID bookId) {
 		log.debug("도서 논리 삭제 시작: id={}", bookId);
-		Book book = bookRepository.gogo(bookId).orElseThrow(
+		Book book = bookRepository.findByIdNotLogicalDelete(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
 		book.softDelete(); //deleted를 true로 변경
 		log.info("도서 논리 삭제 완료: id={}", bookId);
@@ -179,7 +178,7 @@ public class BookService {
 		IOException {
 
 		// 기존 도서 조회 (논리적 삭제 되지 않은 도서)
-		Book book = bookRepository.gogo(bookId)
+		Book book = bookRepository.findByIdNotLogicalDelete(bookId)
 			.orElseThrow(() -> new BookNotFoundException().withId(bookId));
 
 		// 이미지가 새로 들어온 경우에만 S3 업로드

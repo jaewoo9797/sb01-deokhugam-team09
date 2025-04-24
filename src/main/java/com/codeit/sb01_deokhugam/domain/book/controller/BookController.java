@@ -70,7 +70,7 @@ public class BookController {
 
 	@GetMapping
 	public ResponseEntity<PageResponse<BookDto>> findAll(
-		@RequestParam(value = "keyword") String keyword,
+		@RequestParam(value = "keyword", required = false) String keyword,
 		@RequestParam(value = "after", required = false) Instant after,
 		@RequestParam(value = "cursor", required = false) String cursor,
 		@RequestParam(value = "orderBy", defaultValue = "title") String orderBy,
