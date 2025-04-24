@@ -92,6 +92,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		// 보조 정렬 조건으로 createdAt 추가 (항상 같은 방향으로 정렬)
 		secondaryOrderSpecifier = direction.equalsIgnoreCase("asc") ? book.createdAt.asc() : book.createdAt.desc();
 
+		//TODO: 메서드로 분리가능한가?
+
 		// 커서 기반 페이지네이션을 위한 조건 구성
 		// cursor와 after는 한 쌍으로 함께 사용됨 (커서값과 그 항목의 생성시간)
 		if (cursor != null && after != null) {
