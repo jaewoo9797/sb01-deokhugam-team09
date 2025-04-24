@@ -19,6 +19,9 @@ build/
 *.env
 .env*
 
+# queryDsl 자동생성파일
+src/main/generated/
+
 # IntelliJ
 .idea/
 *.iml
