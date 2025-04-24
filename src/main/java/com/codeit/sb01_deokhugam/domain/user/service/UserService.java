@@ -21,6 +21,10 @@ public interface UserService {
 
 	List<UserDto> findAllActiveUsers();
 
+	UserDto findUserIncludingDeleted(UUID id);
+
+	List<UserDto> findAllUsersIncludingDeleted();
+
 	//커서는 사용자이름일듯. after(보조커서)는 생성일로, 컨트롤러에선 date-time 문자열로 받게됨.
 	List<PowerUserDto> findPowerUsers(Period period, String cursor, Instant after, Pageable pageable);
 

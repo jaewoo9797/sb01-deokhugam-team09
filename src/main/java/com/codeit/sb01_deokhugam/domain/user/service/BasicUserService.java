@@ -69,6 +69,29 @@ public class BasicUserService implements UserService {
 	@Override
 	public List<UserDto> findAllActiveUsers() {
 		log.debug("전체 사용자 조회 시작");
+		List<UserDto> userDtos = userRepository.findAllByIsDeletedFalse()
+			.stream()
+			.map(userMapper::toDto)
+			.toList();
+		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
+		return userDtos;
+	}
+
+	//논리삭제된 유저 포함하여 단건조회
+	@Override
+	public UserDto findUserIncludingDeleted(UUID id) {
+		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: {}", id);
+		UserDto userDto = userRepository.findById(id)
+			.map(userMapper::toDto)
+			.orElseThrow(() -> UserNotFoundException.withId(id));
+		log.info("사용자 조회 완료: {}", id);
+		return userDto;
+	}
+
+	//논리삭제된 유저 포함하여 전체조회
+	@Override
+	public List<UserDto> findAllUsersIncludingDeleted() {
+		log.debug("논리삭제 상태 포함하여 전체 사용자 조회 시작");
 		List<UserDto> userDtos = userRepository.findAll()
 			.stream()
 			.map(userMapper::toDto)
@@ -77,6 +100,7 @@ public class BasicUserService implements UserService {
 		return userDtos;
 	}
 
+	//todo 파워유저 조회기능 추가
 	@Override
 	public List<PowerUserDto> findPowerUsers(Period period, String cursor, Instant after, Pageable pageable) {
 		return List.of();
