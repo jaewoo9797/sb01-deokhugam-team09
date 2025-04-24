@@ -23,19 +23,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
 
-	@ExceptionHandler(RuntimeException.class)
-	protected ResponseEntity<ErrorResponse> handleRuntimeException(Exception exception) {
-		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR.value());
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-	}
-
-	@ExceptionHandler(IllegalArgumentException.class)
-	protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(Exception exception) {
-		log.error("잘못된 인수가 전달되었습니다:  message = {}", exception.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-	}
-
 	/**
 	 * 덕후감 예외에 대한 처리를 합니다.
 	 *
@@ -50,6 +37,19 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(status).body(errorResponse);
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(Exception exception) {
+		log.error("잘못된 인수가 전달되었습니다:  message = {}", exception.getMessage());
+		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	protected ResponseEntity<ErrorResponse> handleRuntimeException(Exception exception) {
+		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR.value());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	}
+
 	/**
 	 * 덕후감 예외에 대한 상태코드를 반환합니다.
 	 *
@@ -61,8 +61,8 @@ public class GlobalExceptionHandler {
 		return switch (errorCode) {
 			case BOOK_NOT_FOUND, COMMENT_NOT_FOUND, NOTIFICATION_NOT_FOUND,
 				 REVIEW_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
-			case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST -> HttpStatus.BAD_REQUEST;
+			case INTERNAL_SERVER_ERROR, S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST, FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
 		};
 	}
 }
