@@ -1,6 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.user.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserLoginRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -20,6 +21,7 @@ public class BasicAuthService implements AuthService {
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 
+	@Transactional(readOnly = true)
 	@Override
 	public UserDto login(UserLoginRequest userLoginRequest) {
 		log.debug("로그인 시도: email={}", userLoginRequest.email());
@@ -28,10 +30,10 @@ public class BasicAuthService implements AuthService {
 		String password = userLoginRequest.password();
 
 		User user = userRepository.findByEmailAndIsDeletedFalse(email)
-			.orElseThrow(InvalidCredentialsException::wrongPassword);
+			.orElseThrow(InvalidCredentialsException::invalidIdOrPassword);
 
 		if (!user.getPassword().equals(password)) {
-			throw InvalidCredentialsException.wrongPassword();
+			throw InvalidCredentialsException.invalidIdOrPassword();
 		}
 
 		log.debug("로그인 성공: Id={}, email={}", user.getId(), user.getEmail());

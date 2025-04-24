@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BasicUserService implements UserService {
 
 	private final UserRepository userRepository;
-	private UserMapper userMapper;
+	private final UserMapper userMapper;
 
 	@Transactional
 	@Override
@@ -138,7 +138,7 @@ public class BasicUserService implements UserService {
 
 		User user = userRepository.findByIdAndIsDeletedFalse(id)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
-		user.markAsDeleted();
+		user.softDelete();
 
 		log.info("사용자 논리삭제 완료: id={}", id);
 	}

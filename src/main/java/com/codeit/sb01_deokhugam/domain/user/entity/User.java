@@ -8,7 +8,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -25,8 +24,8 @@ public class User extends BaseUpdatableEntity {
 	@Column(length = 20, nullable = false, unique = true)
 	private String nickname;
 
-	@Setter(AccessLevel.PROTECTED)
-	private Boolean isDeleted = false;
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
 
 	public User(String email, String password, String nickname) {
 		this.email = email;
@@ -40,7 +39,7 @@ public class User extends BaseUpdatableEntity {
 		}
 	}
 
-	public void markAsDeleted() {
+	public void softDelete() {
 		this.isDeleted = true;
 	}
 }
