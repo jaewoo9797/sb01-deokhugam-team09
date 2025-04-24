@@ -19,10 +19,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Service
 @RequiredArgsConstructor
 public class S3Service {
-	public static final String FILE_NAME_DELIMITER = "_";
-	public static final String PATH_DELIMITER = "/";
-	public static final String S3_PROTOCOL = "https";
-	public static final String S3_HOST_TEMPLATE = "%s.s3.%s.amazonaws.com";
+	private static final String FILE_NAME_DELIMITER = "_";
+	private static final String PATH_DELIMITER = "/";
+	private static final String S3_PROTOCOL = "https";
+	private static final String S3_HOST_TEMPLATE = "%s.s3.%s.amazonaws.com";
 
 	private final S3Client s3Client;
 	private final String s3BucketName;
