@@ -39,4 +39,8 @@ public class User extends BaseUpdatableEntity {
 			this.nickname = newNickname;
 		}
 	}
+
+	public void markAsDeleted() {
+		this.isDeleted = true;
+	}
 }

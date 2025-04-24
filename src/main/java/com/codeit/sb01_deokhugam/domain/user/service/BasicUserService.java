@@ -114,6 +114,7 @@ public class BasicUserService implements UserService {
 	}
 
 	//
+	@Transactional
 	@Override
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
 		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
@@ -131,22 +132,37 @@ public class BasicUserService implements UserService {
 		return userMapper.toDto(user);
 	}
 
+	@Transactional
 	@Override
 	public void softDelete(UUID id) {
+		log.debug("사용자 논리삭제 시작: id={}", id);
 
+		User user = userRepository.findByIdAndIsDeletedFalse(id)
+			.orElseThrow(() -> UserNotFoundException.withId(id));
+		user.markAsDeleted();
+
+		log.info("사용자 논리삭제 완료: id={}", id);
 	}
 
+	@Transactional
 	@Override
 	public void hardDelete(UUID id) {
+		log.debug("사용자 물리삭제 시작: id={}", id);
 
+		if (!userRepository.existsById(id)) {
+			throw UserNotFoundException.withId(id);
+		}
+		userRepository.deleteById(id);
+
+		log.info("사용자 물리삭제 완료: id={}", id);
 	}
 
+	@Transactional
 	@Override
 	public UserDto login(UserLoginRequest userLoginRequest) {
 		return null;
 	}
 }
-//해당유저 없으면 UserException/USER_NOT_FOUND/사용자를 찾을 수 없습니다./404
 //논리삭제만하고 논리삭제 한번더했을때도 마찬가지로 유저낫파운드
 
 //todo 물리삭제하면 이상한거뜸;; 물리삭제 안되는듯? 왜이럼? 나중에 확인해보기
