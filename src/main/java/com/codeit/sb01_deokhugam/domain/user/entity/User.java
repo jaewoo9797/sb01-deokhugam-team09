@@ -25,7 +25,7 @@ public class User extends BaseUpdatableEntity {
 	private String nickname;
 
 	@Column(name = "is_deleted", nullable = false)
-	private boolean isDeleted = false;
+	private Boolean isDeleted = false;
 
 	public User(String email, String password, String nickname) {
 		this.email = email;
