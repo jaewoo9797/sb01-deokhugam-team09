@@ -41,8 +41,9 @@ public class BookController {
 
 	@PostMapping
 	public ResponseEntity<BookDto> create(@RequestPart("bookData") @Valid BookCreateRequest bookCreateRequest,
-		@RequestPart(value = "thumbnailImage", required = true) MultipartFile file) throws IOException {
+		@RequestPart(value = "thumbnailImage", required = false) MultipartFile file) throws IOException {
 		log.info("도서 생성 요청");
+		//TODO: 임시로 이미지 등록x로 설정
 		ThumbnailDto thumbnailDto = resolveThumbnail(file);
 		BookDto bookDto = bookService.create(bookCreateRequest, thumbnailDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);

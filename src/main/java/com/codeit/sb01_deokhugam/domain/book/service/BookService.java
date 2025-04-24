@@ -16,10 +16,9 @@ import com.codeit.sb01_deokhugam.domain.book.exception.BookNotFoundException;
 import com.codeit.sb01_deokhugam.domain.book.exception.IsbnAlreadyExistsException;
 import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
-import com.codeit.sb01_deokhugam.domain.review.service.ReviewService;
 import com.codeit.sb01_deokhugam.domain.tumbnail.dto.ThumbnailDto;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
-import com.codeit.sb01_deokhugam.global.infra.S3StorageService;
+import com.codeit.sb01_deokhugam.global.s3.S3Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +32,11 @@ public class BookService {
 	private final BookRepository bookRepository;
 	private final BookMapper bookMapper;
 
-	private final S3StorageService s3StorageService;
-	private final ReviewService reviewService;
+	//TODO: 이미지 등록 관련 로직 필요
+	private final S3Service s3Service;
+	//임시로 쓰던 건데 나중에 정리할게요
+	//private final S3StorageService s3StorageService;
+	//private final ReviewService reviewService;
 
 	/**
 	 * 도서정보를 DB에 저장합니다.
@@ -55,7 +57,8 @@ public class BookService {
 
 		//TODO: 이미지 S3 저장 로직 필요
 		//이미지 byte [] S3저장
-		String imageUrl = s3StorageService.put(thumbnailDto);
+		String imageUrl = s3Service.upload(null, "directory");
+		//String imageUrl = s3StorageService.put(thumbnailDto);
 
 		Book createdBook = new Book(
 			bookCreateRequest.title(),
@@ -159,7 +162,8 @@ public class BookService {
 			() -> new BookNotFoundException().withId(bookId));
 		log.debug("도서의 관련 리뷰 삭제 시작: id={}", bookId);
 		bookRepository.deleteById(bookId);
-		reviewService.deleteByBookPhysicalDelete(bookId);
+		//TODO: 리뷰에서 물리삭제 필요
+		//reviewService.deleteByBookPhysicalDelete(bookId);
 		log.info("도서 물리 삭제 완료: id={}", bookId);
 	}
 
@@ -181,10 +185,12 @@ public class BookService {
 		Book book = bookRepository.findByIdNotLogicalDelete(bookId)
 			.orElseThrow(() -> new BookNotFoundException().withId(bookId));
 
+		//TODO: 이미지 로직 변경 필요
+		
 		// 이미지가 새로 들어온 경우에만 S3 업로드
 		String imageUrl = book.getThumbnailUrl();
 		if (thumbnailDto != null && thumbnailDto.bytes() != null) {
-			imageUrl = s3StorageService.put(thumbnailDto);
+			imageUrl = s3Service.upload(null, "directory");
 		}
 
 		// 도서 정보 업데이트
