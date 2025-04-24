@@ -37,11 +37,21 @@ public class Notification extends BaseUpdatableEntity {
 	@JoinColumn(name = "review_id", nullable = false)
 	private Review review;
 
-	public Notification(User user, String content, Review review) {
+	private Notification(User user, String content, Review review) {
 		this.user = user;
 		this.content = content;
 		this.review = review;
 		this.confirmed = false;
+	}
+
+	public static Notification fromComment(User user, String content, Review review) {
+		content = String.format("[%s]님이 나의 리뷰에 댓글을 남겼습니다.\\n%s", user.getNickname(), review.getContent());
+		return new Notification(user, content, review);
+	}
+
+	public static Notification fromLike(User user, String content, Review review) {
+		content = String.format("[%s]님이 좋아요를 눌렀습니다.", user.getNickname());
+		return new Notification(user, content, review);
 	}
 
 }
