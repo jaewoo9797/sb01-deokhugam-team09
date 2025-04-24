@@ -34,7 +34,7 @@ public class BasicUserService implements UserService {
 	@Transactional
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
-		log.debug("사용자 생성 시작: {}", userRegisterRequest);
+		log.debug("사용자 생성 시작: request={}", userRegisterRequest);
 
 		String email = userRegisterRequest.email();
 		String nickname = userRegisterRequest.nickname();
@@ -57,11 +57,12 @@ public class BasicUserService implements UserService {
 	//논리 삭제되지 않은 유저 단건조회
 	@Override
 	public UserDto findActiveUser(UUID id) {
-		log.debug("사용자 조회 시작: {}", id);
+		log.debug("사용자 조회 시작: id={}", id);
+
 		UserDto userDto = userRepository.findByIdAndIsDeletedFalse(id)
 			.map(userMapper::toDto)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
-		log.info("사용자 조회 완료: {}", id);
+		log.info("사용자 조회 완료: id={}", id);
 		return userDto;
 	}
 
@@ -69,10 +70,12 @@ public class BasicUserService implements UserService {
 	@Override
 	public List<UserDto> findAllActiveUsers() {
 		log.debug("전체 사용자 조회 시작");
+
 		List<UserDto> userDtos = userRepository.findAllByIsDeletedFalse()
 			.stream()
 			.map(userMapper::toDto)
 			.toList();
+
 		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
 	}
@@ -80,11 +83,13 @@ public class BasicUserService implements UserService {
 	//논리삭제된 유저 포함하여 단건조회
 	@Override
 	public UserDto findUserIncludingDeleted(UUID id) {
-		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: {}", id);
+		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: id={}", id);
+
 		UserDto userDto = userRepository.findById(id)
 			.map(userMapper::toDto)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
-		log.info("사용자 조회 완료: {}", id);
+
+		log.info("사용자 조회 완료: id={}", id);
 		return userDto;
 	}
 
@@ -92,10 +97,12 @@ public class BasicUserService implements UserService {
 	@Override
 	public List<UserDto> findAllUsersIncludingDeleted() {
 		log.debug("논리삭제 상태 포함하여 전체 사용자 조회 시작");
+
 		List<UserDto> userDtos = userRepository.findAll()
 			.stream()
 			.map(userMapper::toDto)
 			.toList();
+
 		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
 	}
@@ -106,9 +113,22 @@ public class BasicUserService implements UserService {
 		return List.of();
 	}
 
+	//
 	@Override
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
-		return null;
+		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
+
+		User user = userRepository.findByIdAndIsDeletedFalse(id)
+			.orElseThrow(() -> UserNotFoundException.withId(id));
+
+		String newNickname = userUpdateRequest.nickname();
+		if (userRepository.existsByNickname(newNickname)) {
+			throw UserAlreadyExistsException.withNickname(newNickname);
+		}
+		user.update(newNickname);
+
+		log.info("사용자 닉네임 수정 완료: id={}, nickname={}", id, user.getNickname());
+		return userMapper.toDto(user);
 	}
 
 	@Override

@@ -27,23 +27,16 @@ public class User extends BaseUpdatableEntity {
 
 	@Setter(AccessLevel.PROTECTED)
 	private Boolean isDeleted = false;
-	
+
 	public User(String email, String password, String nickname) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 	}
 
-
-	public void update(String newEmail, String newNickname, String newPassword) {
-		if (newEmail != null && !newEmail.equals(this.email)) {
-			this.email = newEmail;
-		}
+	public void update(String newNickname) {
 		if (newNickname != null && !newNickname.equals(this.nickname)) {
 			this.nickname = newNickname;
-		}
-		if (newPassword != null && !newPassword.equals(this.password)) {
-			this.password = newPassword;
 		}
 	}
 }
