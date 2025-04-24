@@ -112,7 +112,7 @@ public class BasicUserService implements UserService {
 		return List.of();
 	}
 
-	//
+	//유저 닉네임 변경
 	@Transactional
 	@Override
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
@@ -131,6 +131,7 @@ public class BasicUserService implements UserService {
 		return userMapper.toDto(user);
 	}
 
+	//유저 isUpdated 필드 false로 변경
 	@Transactional
 	@Override
 	public void softDelete(UUID id) {
@@ -143,6 +144,7 @@ public class BasicUserService implements UserService {
 		log.info("사용자 논리삭제 완료: id={}", id);
 	}
 
+	//물리 삭제
 	@Transactional
 	@Override
 	public void hardDelete(UUID id) {
@@ -156,15 +158,3 @@ public class BasicUserService implements UserService {
 		log.info("사용자 물리삭제 완료: id={}", id);
 	}
 }
-
-//todo 물리삭제하면 이상한거뜸;; 물리삭제 안되는듯? 왜이럼? 나중에 확인해보기
-//논리삭제 및 물리삭제 시도후실패 이후 동일이메일로 계정생성 시도시 이미존재하는 이메일이라고뜸.
-/*
-{
-	"timestamp": "2025-04-22T06:40:26.404564816Z",
-	"code": "DataIntegrityViolationException",
-	"message": "could not execute statement [ERROR: update or delete on table \"users\" violates foreign key constraint \"fk8omq0tc18jd43bu5tjh6jvraq\" on table \"comments\"\n  Detail: Key (id)=(76e8a0b8-d718-47af-a3d1-ec8c27f18833) is still referenced from table \"comments\".] [delete from users where id=?]; SQL [delete from users where id=?]; constraint [fk8omq0tc18jd43bu5tjh6jvraq]",
-	"details": {},
-	"exceptionType": "DataIntegrityViolationException",
-	"status": 500
-	}*/

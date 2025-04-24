@@ -9,8 +9,5 @@ public record UserLoginRequest(
 	String email,
 	@NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
 	String password
-	// 예외처리 - 타입/코드/메세지/응답코드
-	//아디비번 공백들어왔을 때 DomainException/INVALID_INPUT_VALUE/잘못된 입력값입니다./400
-
 ) {
 }
