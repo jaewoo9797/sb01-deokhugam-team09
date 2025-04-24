@@ -22,10 +22,11 @@ public class S3Service {
 	public static final String FILE_NAME_DELIMITER = "_";
 	public static final String PATH_DELIMITER = "/";
 	public static final String S3_PROTOCOL = "https";
-	public static final String S3_DOMAIN_SUFFIX = ".s3.amazonaws.com";
+	public static final String S3_HOST_TEMPLATE = "%s.s3.%s.amazonaws.com";
 
 	private final S3Client s3Client;
 	private final String s3BucketName;
+	private final String s3Region;
 
 	public String upload(MultipartFile file, String directory) {
 		String s3ObjectKey = generateS3ObjectKey(file, directory);
@@ -55,9 +56,10 @@ public class S3Service {
 	}
 
 	private String resolveS3ObjectUrl(String s3ObjectKey) {
+		String s3Host = String.format(S3_HOST_TEMPLATE, s3BucketName, s3Region);
 		return UriComponentsBuilder.newInstance()
 			.scheme(S3_PROTOCOL)
-			.host(s3BucketName + S3_DOMAIN_SUFFIX)
+			.host(s3Host)
 			.path(s3ObjectKey)
 			.build()
 			.toUriString();
