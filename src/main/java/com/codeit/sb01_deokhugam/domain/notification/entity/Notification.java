@@ -44,8 +44,8 @@ public class Notification extends BaseUpdatableEntity {
 		this.confirmed = false;
 	}
 
-	public static Notification fromComment(User user, String content, Review review) {
-		content = String.format("[%s]님이 나의 리뷰에 댓글을 남겼습니다.\n%s", user.getNickname(), review.getContent());
+	public static Notification fromComment(User user, String comment, Review review) {
+		String content = String.format("[%s]님이 나의 리뷰에 댓글을 남겼습니다.\n%s", user.getNickname(), comment);
 		return new Notification(user, content, review);
 	}
 
