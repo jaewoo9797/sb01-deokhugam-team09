@@ -54,19 +54,27 @@ public class BasicUserService implements UserService {
 		return userMapper.toDto(user);
 	}
 
+	//논리 삭제되지 않은 유저 단건조회
 	@Override
-	public UserDto find(UUID id) {
+	public UserDto findActiveUser(UUID id) {
 		log.debug("사용자 조회 시작: {}", id);
-		UserDto userDto = userRepository.findById(id)
+		UserDto userDto = userRepository.findByIdAndIsDeletedFalse(id)
 			.map(userMapper::toDto)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
 		log.info("사용자 조회 완료: {}", id);
 		return userDto;
 	}
 
+	//논리 삭제되지 않은 유저 전체조회
 	@Override
-	public List<UserDto> findAll() {
-
+	public List<UserDto> findAllActiveUsers() {
+		log.debug("전체 사용자 조회 시작");
+		List<UserDto> userDtos = userRepository.findAll()
+			.stream()
+			.map(userMapper::toDto)
+			.toList();
+		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
+		return userDtos;
 	}
 
 	@Override
