@@ -33,10 +33,13 @@ public enum ErrorCode {
 	DUPLICATION_USER("이미 존재하는 사용자입니다."),
 	LOGIN_INPUT_INVALID("이메일 또는 비밀번호가 올바르지 않습니다."),
 
+	// auth
+	UNAUTHORIZED("로그인을 해주세요."),
+
 	//s3
 	S3_UPLOAD_ERROR("S3 업로드 중 오류가 발생했습니다."),
 	FILE_NAME_MISSING("파일 이름이 유효하지 않습니다.");
 
-	private final String message; //메시지
+	private final String message;
 
 }
