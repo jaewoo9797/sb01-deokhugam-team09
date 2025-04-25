@@ -8,7 +8,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -25,25 +24,22 @@ public class User extends BaseUpdatableEntity {
 	@Column(length = 20, nullable = false, unique = true)
 	private String nickname;
 
-	@Setter(AccessLevel.PROTECTED)
+	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted = false;
-	
+
 	public User(String email, String password, String nickname) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 	}
 
-
-	public void update(String newEmail, String newNickname, String newPassword) {
-		if (newEmail != null && !newEmail.equals(this.email)) {
-			this.email = newEmail;
-		}
+	public void update(String newNickname) {
 		if (newNickname != null && !newNickname.equals(this.nickname)) {
 			this.nickname = newNickname;
 		}
-		if (newPassword != null && !newPassword.equals(this.password)) {
-			this.password = newPassword;
-		}
+	}
+
+	public void softDelete() {
+		this.isDeleted = true;
 	}
 }
