@@ -1,7 +1,5 @@
 package com.codeit.sb01_deokhugam.global.resolver;
 
-import javax.naming.AuthenticationException;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -9,6 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.codeit.sb01_deokhugam.auth.exception.LoginRequiredException;
+import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import com.codeit.sb01_deokhugam.global.resolver.annotation.LoginUserId;
 
 @Component
@@ -25,7 +25,7 @@ public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolve
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		String userId = webRequest.getHeader(HEADER_NAME);
 		if (userId == null) {
-			throw new AuthenticationException();
+			throw new LoginRequiredException(ErrorCode.UNAUTHORIZED);
 		}
 		return userId;
 	}
