@@ -27,7 +27,11 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<NotificationDto> updateConfirm(@PathVariable UUID id, @RequestBody NotificationUpdateRequest request, @LoginUserId UUID userId) {
+	public ResponseEntity<NotificationDto> updateConfirm(
+		@PathVariable UUID id,
+		@RequestBody NotificationUpdateRequest request,
+		@LoginUserId UUID userId
+	) {
 		NotificationDto notificationDto = notificationService.confirmNotification(id, userId);
 		return ResponseEntity.ok(notificationDto);
 	}
