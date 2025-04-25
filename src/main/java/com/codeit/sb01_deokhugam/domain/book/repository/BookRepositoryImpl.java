@@ -13,7 +13,6 @@ import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.book.entity.QBook;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -100,7 +99,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 			// 주 정렬 기준에 따라 커서 조건 적용
 			BooleanBuilder cursorPredicate = new BooleanBuilder();
 
-			StringPath stringPath = book.title;
 			if ("title".equals(orderBy)) {
 				if ("asc".equalsIgnoreCase(direction)) {
 					// 오름차순일 때: (title > cursor) OR (title = cursor AND createdAt > after)
@@ -139,7 +137,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 					cursorPredicate.or(book.reviewCount.eq(reviewCount).and(book.createdAt.lt(after)));
 				}
 			}
-
 			predicate.and(cursorPredicate);
 		}
 
