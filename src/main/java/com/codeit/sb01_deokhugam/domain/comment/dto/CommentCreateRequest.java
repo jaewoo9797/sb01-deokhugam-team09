@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record CommentCreateRequest (
         @NotBlank(message = "리뷰 ID는 필수 입력 항목입니다.")
-        UUID reviewID,
+        UUID reviewId,
 
         @NotBlank(message = "사용자 ID는 필수 입력 항목입니다.")
         UUID userId,
