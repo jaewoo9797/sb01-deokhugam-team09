@@ -21,7 +21,7 @@ public class User extends BaseUpdatableEntity {
 	@Column(length = 20, nullable = false)
 	private String password;
 
-	@Column(length = 20, nullable = false, unique = true)
+	@Column(length = 20, nullable = false)
 	private String nickname;
 
 	@Column(name = "is_deleted", nullable = false)

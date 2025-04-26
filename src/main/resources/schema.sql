@@ -16,7 +16,7 @@ create table users
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone,
     email      varchar(100) UNIQUE      NOT NULL,
-    nickname   varchar(50) UNIQUE       NOT NULL,
+    nickname   varchar(50)              NOT NULL,
     password   varchar(60)              NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE    NOT NULL
 );
