@@ -1,23 +1,19 @@
 package com.codeit.sb01_deokhugam.domain.user.service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
-import com.codeit.sb01_deokhugam.domain.user.dto.response.CursorPageResponsePowerUserDto;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.exception.UserAlreadyExistsException;
 import com.codeit.sb01_deokhugam.domain.user.exception.UserNotFoundException;
 import com.codeit.sb01_deokhugam.domain.user.mapper.UserMapper;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
-import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,15 +95,6 @@ public class BasicUserService implements UserService {
 
 		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
-	}
-
-	//todo 파워유저 조회기능 추가
-	@Transactional(readOnly = true)
-	@Override
-	public CursorPageResponsePowerUserDto findPowerUsers(Period period, Sort.Direction direction, String cursor,
-		Instant after, int limit) {
-
-		return null;
 	}
 
 	//유저 닉네임 변경
