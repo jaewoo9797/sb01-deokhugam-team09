@@ -22,11 +22,15 @@
       "secrets": [
         {
           "name": "AWS_REGION",
-          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/deokhugam/aws/region"
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_REGION"
         },
         {
           "name": "AWS_S3_BUCKET_NAME",
-          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/deokhugam/aws/s3-bucket"
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_S3_BUCKET_NAME"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/SPRING_PROFILES_ACTIVE"
         }
       ],
       "logConfiguration": {

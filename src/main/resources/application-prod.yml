@@ -1,4 +1,8 @@
 spring:
+  config:
+    import:
+      - "aws-parameter-store:/prod/deokhugam/aws"
+      - "aws-secrets-manager:/prod/deokhugam/Postgresql"
   datasource:
     url: jdbc:postgresql://${host}:${port}/${dbname}
     username: ${username}

@@ -63,6 +63,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
           IMAGE_TAG: ${{ github.sha }}
+          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
         run: |
           IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REGISTRY}:${IMAGE_TAG}
           
