@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
-import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRepository;
+import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRepositoryCustom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class BasicPowerUserService implements PowerUserService {
 
-	PowerUserRepository powerUserRepository;
+	PowerUserRepositoryCustom powerUserRepositoryCustom;
 
 	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest) {
 
 		//db접근
-		PageResponse<PowerUserDto> powerUsers = powerUserRepository.findPowerUsers(getPowerUsersRequest);
+		PageResponse<PowerUserDto> powerUsers = powerUserRepositoryCustom.findPowerUsers(getPowerUsersRequest);
 
 		//적절한 반환값 형태로 변환
 
