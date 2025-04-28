@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 
-public interface PowerUserRepository extends JpaRepository<UUID, PowerUser> {
+public interface PowerUserRepository extends JpaRepository<PowerUser, UUID> {
 
 	long countByPeriod(Period period);
 }

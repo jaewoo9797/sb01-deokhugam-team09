@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class PowerUserRepositoryImpl implements PowerUserRepositoryCustom {
+public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
 	private final PowerUserMapper powerUserMapper;
@@ -53,13 +53,14 @@ public class PowerUserRepositoryImpl implements PowerUserRepositoryCustom {
 		powerUsers = hasNext ? powerUsers.subList(0, limitSize - 1) : powerUsers;
 		int size = powerUsers.size();
 
-		PowerUser lastUser = (powerUsers.isEmpty() ? null : powerUsers.get(powerUsers.size()));
+		PowerUser lastUser = (powerUsers.isEmpty() ? null : powerUsers.get(powerUsers.size() - 1));
 		int nextCursor = (lastUser != null) ? lastUser.getRank() : 0;
 		Instant nextAfter = (lastUser != null) ? lastUser.getCreatedAt() : null;
-		PageResponse<PowerUserDto> powerUserDtos = powerUserMapper.toPageResponseDto(powerUsers, nextAfter, nextCursor,
-			size, hasNext, totalElements);
 
-		return powerUserDtos;
+		List<PowerUserDto> powerUserDtoList = powerUserMapper.toDtoList(powerUsers);
+
+		return new PageResponse<>(powerUserDtoList, nextAfter, nextCursor,
+			size, hasNext, totalElements);
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(Sort.Direction direction, QPowerUser powerUser) {
