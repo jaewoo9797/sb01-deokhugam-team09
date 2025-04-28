@@ -21,8 +21,6 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -34,9 +32,6 @@ class NotificationControllerTest {
 
 	@LocalServerPort
 	int port;
-
-	@PersistenceContext
-	private EntityManager entityManager;
 
 	@BeforeEach
 	void setUp() {
