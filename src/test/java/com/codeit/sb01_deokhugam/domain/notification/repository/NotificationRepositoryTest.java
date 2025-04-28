@@ -75,7 +75,7 @@ class NotificationRepositoryTest {
 		entityManager.persist(notification);
 		entityManager.flush();
 		entityManager.clear();
-		
+
 		// when
 		Notification foundNotification = notificationRepository.findByIdAndUserId(notification.getId(), user.getId()).orElse(null);
 
@@ -87,7 +87,6 @@ class NotificationRepositoryTest {
 				assertThat(foundNotification.getReview().getId()).isEqualTo(review.getId());
 			}
 		);
-		assertThat(foundNotification).isNotNull();
 	}
 
 	@DisplayName("findByIdAndUserId: 알림 ID와 유저 ID 로 알림을 조회한다. 알림이 존재하지 않을 경우 빈 Optional 을 반환한다.")
