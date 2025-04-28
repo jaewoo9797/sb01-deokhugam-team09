@@ -215,6 +215,11 @@ public class BookService {
 
 	//OCR 텍스트 추출
 	public String extractTextByOcr(MultipartFile image) throws IOException, TesseractException {
+
+		if (image.isEmpty()) {
+			throw new IllegalArgumentException("이미지가 등록되지 않았습니다");
+		}
+
 		// MultipartFile을 BufferedImage로 변환
 		BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
 
