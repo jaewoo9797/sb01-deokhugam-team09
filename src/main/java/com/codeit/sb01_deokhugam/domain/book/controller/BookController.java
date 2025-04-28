@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.sourceforge.tess4j.TesseractException;
+
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
-import com.codeit.sb01_deokhugam.domain.book.dto.IsbnBookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.NaverBookDto;
 import com.codeit.sb01_deokhugam.domain.book.service.BookService;
-import com.codeit.sb01_deokhugam.domain.tumbnail.dto.ThumbnailDto;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,36 +40,53 @@ public class BookController {
 	private final BookService bookService;
 	private final NaverBookClient naverBookClient;
 
+	/**
+	 * 도서를 등록합니다.
+	 * @param bookCreateRequest
+	 * @param file
+	 * @return 등록된 도서 정보 응댭
+	 */
 	@PostMapping
 	public ResponseEntity<BookDto> create(@RequestPart("bookData") @Valid BookCreateRequest bookCreateRequest,
-		@RequestPart(value = "thumbnailImage", required = false) MultipartFile file) throws IOException {
+		@RequestPart(value = "thumbnailImage") MultipartFile file) {
 		log.info("도서 생성 요청");
-		//TODO: 임시로 이미지 등록x로 설정
-		ThumbnailDto thumbnailDto = resolveThumbnail(file);
-		BookDto bookDto = bookService.create(bookCreateRequest, thumbnailDto);
+		BookDto bookDto = bookService.create(bookCreateRequest, file);
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
+	}
+
+	@PostMapping("/isbn/ocr")
+	public ResponseEntity<String> extractTextByOcr(@RequestParam("image") MultipartFile image) throws
+		IOException,
+		TesseractException {
+		log.info("도서 이미지 OCR 처리 요청");
+		String isbn = bookService.extractTextByOcr(image);
+		return ResponseEntity.ok(isbn);
 	}
 
 	/**
 	 * Naver API를 통해 ISBN으로 도서 정보를 조회합니다.
 	 * @param isbn
-	 * @return 도서정보 IsbnBookDto
+	 * @return ISBN으로 조회된 도서 정보 응답
 	 * @throws JsonProcessingException
 	 */
 	@GetMapping("/info")
-	public ResponseEntity<IsbnBookDto> searchByIsbn(@RequestParam("isbn") String isbn) throws JsonProcessingException {
+	public ResponseEntity<NaverBookDto> searchByIsbn(@RequestParam("isbn") String isbn) throws JsonProcessingException {
+
 		log.info("도서 ISBN 검색 요청 : {}", isbn);
-		IsbnBookDto isbnBookDto = naverBookClient.search(isbn);
-		return ResponseEntity.status(HttpStatus.OK).body(isbnBookDto);
+		NaverBookDto naverBookDto = naverBookClient.search(isbn);
+		return ResponseEntity.status(HttpStatus.OK).body(naverBookDto);
 	}
 
-	@GetMapping("/{bookId}")
-	public ResponseEntity<BookDto> findById(@PathVariable("bookId") UUID bookId) {
-		log.info("도서 조회 요청 : {}", bookId);
-		BookDto bookDto = bookService.findById(bookId);
-		return ResponseEntity.status(HttpStatus.OK).body(bookDto);
-	}
-
+	/**
+	 * 검색필터링과 정렬 조건에 따라 도서 목록을 조회합니다.
+	 * @param keyword
+	 * @param after
+	 * @param cursor
+	 * @param orderBy
+	 * @param direction
+	 * @param limit
+	 * @return 도서 목록 응답
+	 */
 	@GetMapping
 	public ResponseEntity<PageResponse<BookDto>> findAll(
 		@RequestParam(value = "keyword", required = false) String keyword,
@@ -79,27 +97,44 @@ public class BookController {
 		@RequestParam(value = "limit", defaultValue = "50") int limit
 	) {
 		log.info("도서 목록 조회 요청");
-
-		// 커서 기반 페이지네이션을 위한 서비스 호출
 		PageResponse<BookDto> result = bookService.findAllWithCursor(keyword, after, cursor, orderBy, direction, limit);
-
 		return ResponseEntity.ok(result);
 	}
 
+	/**
+	 * 도서 하나를 조회합니다.
+	 * @param bookId
+	 * @return 도서 정보 응답
+	 */
+	@GetMapping("/{bookId}")
+	public ResponseEntity<BookDto> findById(@PathVariable("bookId") UUID bookId) {
+		log.info("도서 조회 요청 : {}", bookId);
+		BookDto bookDto = bookService.findById(bookId);
+		return ResponseEntity.status(HttpStatus.OK).body(bookDto);
+	}
+
+	/**
+	 * 도서를 수정합니다.
+	 * @param bookId
+	 * @param bookUpdateRequest
+	 * @param file
+	 * @return 도서 정보 응답
+	 */
 	@PatchMapping("/{bookId}")
 	public ResponseEntity<BookDto> update(@PathVariable("bookId") UUID bookId,
 		@RequestPart("bookData") @Valid BookUpdateRequest bookUpdateRequest,
-		@RequestPart(value = "thumbnailImage", required = false) MultipartFile file) throws IOException {
+		@RequestPart(value = "thumbnailImage", required = false) MultipartFile file) {
 		log.info("도서 수정 요청 : {}", bookId);
-		ThumbnailDto thumbnailDto = null;
-		if (file != null) {
-			thumbnailDto = resolveThumbnail(file);
-		}
-		BookDto bookDto = bookService.update(bookId, bookUpdateRequest, thumbnailDto);
+		BookDto bookDto = bookService.update(bookId, bookUpdateRequest, file);
 		return ResponseEntity.status(HttpStatus.OK).body(bookDto);
 
 	}
 
+	/**
+	 * 도서를 논리 삭제합니다.
+	 * @param bookId
+	 * @return
+	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> delete(@PathVariable("bookId") UUID bookId) {
 		log.info("도서 논리 삭제 요청 : {}", bookId);
@@ -109,6 +144,11 @@ public class BookController {
 			.build();
 	}
 
+	/**
+	 * 도서를 물리 삭제합니다. 연관된 리뷰와 댓글을 함께 삭제합니다.
+	 * @param bookId
+	 * @return
+	 */
 	@DeleteMapping("/{bookId}/hard")
 	public ResponseEntity<Void> deletePhysical(@PathVariable("bookId") UUID bookId) {
 		log.info("도서 물리 삭제 요청 : {}", bookId);
@@ -118,20 +158,4 @@ public class BookController {
 			.build();
 	}
 
-	private ThumbnailDto resolveThumbnail(MultipartFile file) {
-		if (file.isEmpty()) {
-			throw new IllegalArgumentException("파일이 첨부되지 않았습니다.");
-		} else {
-			try {
-				return new ThumbnailDto(
-					UUID.randomUUID(),
-					file.getBytes()
-				);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
 }
-
-
