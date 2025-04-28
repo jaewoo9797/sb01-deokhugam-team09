@@ -6,7 +6,7 @@ spring:
       data-locations: classpath:data.sql
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
