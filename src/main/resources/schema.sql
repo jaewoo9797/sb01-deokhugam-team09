@@ -55,7 +55,7 @@ create table books
     author         varchar                  NOT NULL,
     description    varchar                  NOT NULL,
     publisher      varchar                  NOT NULL,
-    published_date timestamp with time zone NOT NULL,
+    published_date date                     NOT NULL,
     isbn           varchar                  NOT NULL,
     thumbnail_url  varchar                  NOT NULL,
     review_count   integer                  NOT NULL default 0,
