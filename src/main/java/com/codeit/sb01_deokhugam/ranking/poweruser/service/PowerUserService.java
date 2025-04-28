@@ -1,10 +1,11 @@
 package com.codeit.sb01_deokhugam.ranking.poweruser.service;
 
+import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
-import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.CursorPageResponsePowerUserDto;
+import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 
 public interface PowerUserService {
 
-	CursorPageResponsePowerUserDto findPowerUsers(GetPowerUsersRequest getPowerUsersRequest);
+	PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest);
 
 }

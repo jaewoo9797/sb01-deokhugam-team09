@@ -3,8 +3,9 @@ package com.codeit.sb01_deokhugam.ranking.poweruser.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
-import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.CursorPageResponsePowerUserDto;
+import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,10 @@ public class BasicPowerUserService implements PowerUserService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public CursorPageResponsePowerUserDto findPowerUsers(GetPowerUsersRequest getPowerUsersRequest) {
+	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest) {
 
 		//db접근
-		CursorPageResponsePowerUserDto powerUsers = powerUserRepository.findPowerUsers(getPowerUsersRequest);
+		PageResponse<PowerUserDto> powerUsers = powerUserRepository.findPowerUsers(getPowerUsersRequest);
 
 		//적절한 반환값 형태로 변환
 
