@@ -17,7 +17,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.codeit.sb01_deokhugam.domain.book.dto.IsbnBookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.NaverBookDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class NaverBookClient {
 
-	public IsbnBookDto search(String isbn) throws JsonProcessingException {
+	public NaverBookDto search(String isbn) throws JsonProcessingException {
 		//TODO: 민감정보 .env파일로 옮기기
 		String clientId = "9ObJRHDKexjVfqRXCx4e"; //애플리케이션 클라이언트 아이디
 		String clientSecret = "Hv4Kx6O8ol"; //애플리케이션 클라이언트 시크릿
@@ -48,7 +48,7 @@ public class NaverBookClient {
 		requestHeaders.put("X-Naver-Client-Secret", clientSecret);
 		String responseBody = get(apiURL, requestHeaders); //헤더에 클라이언트 아이디와 클라이언트 시크릿을 더해 전송
 
-		IsbnBookDto result = parseResponse(responseBody);
+		NaverBookDto result = parseResponse(responseBody);
 
 		return result;
 	}
@@ -106,7 +106,7 @@ public class NaverBookClient {
 	}
 
 	//JSON 문자열 파싱 -> IsbnBookDto 만드는 함수
-	private IsbnBookDto parseResponse(String responseBody) throws JsonProcessingException {
+	private NaverBookDto parseResponse(String responseBody) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode root = objectMapper.readTree(responseBody);
 		JsonNode item = root.get("items").get(0); // 첫 번째 책 정보만 가져옴
@@ -126,7 +126,7 @@ public class NaverBookClient {
 		byte[] imageBytes = downloadImage(imageUrl);
 		String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-		return new IsbnBookDto(title, author, description, publishedDate, isbn, imageBase64);
+		return new NaverBookDto(title, author, description, publishedDate, isbn, imageBase64);
 	}
 
 	private byte[] downloadImage(String imageUrl) {

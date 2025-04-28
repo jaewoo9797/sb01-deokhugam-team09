@@ -45,6 +45,9 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.2'   // AWS Secrets Manager
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store:3.0.2'   // AWS Parameter Store
 
+    // OCR
+    implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
 
