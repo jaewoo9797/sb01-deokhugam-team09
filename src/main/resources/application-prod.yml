@@ -4,9 +4,9 @@ spring:
       - "aws-parameter-store:/prod/deokhugam/aws"
       - "aws-secrets-manager:/prod/deokhugam/Postgresql"
   datasource:
-    url: jdbc:postgresql://${host}:${port}/${dbname}
-    username: ${username}
-    password: ${password}
+    url: jdbc:postgresql://${HOST}:${PORT}/${DB_NAME}
+    username: ${USERNAME}
+    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
