@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:885532410426:task-definition/deokhugam-task:1",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:885532410426:task-definition/deokhugam-task:3",
   "containerDefinitions": [
     {
       "name": "deokhugam-container",
-      "image": "<IMAGE_URI>",
+      "image": "885532410426.dkr.ecr.ap-northeast-2.amazonaws.com/deokhugam-app:ea97daededb119dd87adef177dd2e62e4c027eaf",
       "cpu": 0,
       "portMappings": [
         {
@@ -19,7 +19,20 @@
       "environmentFiles": [],
       "mountPoints": [],
       "volumesFrom": [],
-      "ulimits": [],
+      "secrets": [
+        {
+          "name": "AWS_REGION",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_REGION"
+        },
+        {
+          "name": "AWS_S3_BUCKET_NAME",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_S3_BUCKET_NAME"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/SPRING_PROFILES_ACTIVE"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -36,9 +49,10 @@
     }
   ],
   "family": "deokhugam-task",
+  "taskRoleArn": "arn:aws:iam::885532410426:role/deokhugam-task-role",
   "executionRoleArn": "arn:aws:iam::885532410426:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "revision": 1,
+  "revision": 3,
   "volumes": [],
   "status": "ACTIVE",
   "requiresAttributes": [
@@ -58,7 +72,13 @@
       "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
     },
     {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
       "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "ecs.capability.secrets.ssm.environment-variables"
     },
     {
       "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
@@ -84,7 +104,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2025-04-21T06:25:46.866Z",
+  "registeredAt": "2025-04-23T07:06:11.032Z",
   "registeredBy": "arn:aws:iam::885532410426:user/SangHoKim",
   "tags": []
 }

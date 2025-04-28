@@ -24,13 +24,13 @@ create table users
 -- notifications
 create table notifications
 (
-    id         uuid PRIMARY KEY,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone,
-    content    varchar                  NOT NULL,
-    confirmed  boolean                  NOT NULL default false,
-    user_id    uuid,
-    review_id  uuid
+    id           uuid PRIMARY KEY,
+    created_at   timestamp with time zone NOT NULL,
+    updated_at   timestamp with time zone,
+    content      varchar                  NOT NULL,
+    is_confirmed BOOLEAN                  NOT NULL default false,
+    user_id      uuid                     NOT NULL,
+    review_id    uuid                     NOT NULL
 );
 
 -- comment
@@ -55,7 +55,7 @@ create table books
     author         varchar                  NOT NULL,
     description    varchar                  NOT NULL,
     publisher      varchar                  NOT NULL,
-    published_date timestamp with time zone NOT NULL,
+    published_date date                     NOT NULL,
     isbn           varchar                  NOT NULL,
     thumbnail_url  varchar                  NOT NULL,
     review_count   integer                  NOT NULL default 0,
@@ -93,7 +93,7 @@ create table book_rankings
 (
     id            uuid PRIMARY KEY,
     created_at    timestamp with time zone NOT NULL,
-    period        varchar(20)              NOT NULL,
+    period varchar (20) NOT NULL,
     rank          integer                  NOT NULL,
     score         decimal(10, 2)           NOT NULL,
     review_count  integer                  NOT NULL,
@@ -108,7 +108,7 @@ create table user_rankings
 (
     id               uuid PRIMARY KEY,
     created_at       timestamp with time zone NOT NULL,
-    period           varchar(20)              NOT NULL,
+    period varchar (20) NOT NULL,
     rank             integer                  NOT NULL,
     score            decimal(10, 2)           NOT NULL,
     like_count       integer                  NOT NULL,
@@ -129,7 +129,7 @@ create table review_rankings
     user_id            uuid                     NOT NULL,
     user_nickname      varchar                  NOT NULL,
     review_rating      decimal(2, 1)            NOT NULL,
-    period             varchar                  NOT NULL,
+    period varchar NOT NULL,
     created_at         timestamp with time zone NOT NULL,
     rank               integer                  NOT NULL,
     score              decimal(2, 1)            NOT NULL,
