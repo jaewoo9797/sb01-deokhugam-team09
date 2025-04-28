@@ -1,0 +1,20 @@
+spring:
+  config:
+    import:
+      - "aws-parameter-store:/prod/deokhugam/aws"
+      - "aws-secrets-manager:/prod/deokhugam/Postgresql"
+  datasource:
+    url: jdbc:postgresql://${HOST}:${PORT}/${DB_NAME}
+    username: ${USERNAME}
+    password: ${PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  sql:
+    init:
+      mode: never
