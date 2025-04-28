@@ -73,6 +73,14 @@ public class Book extends BaseUpdatableEntity {
 		this.thumbnailUrl = thumbnailUrl;
 	}
 
+	public void updateRating(BigDecimal rating) {
+		this.rating = rating;
+	}
+
+	public void updateReviewCount(int reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
 	//논리 삭제합니다.
 	public void softDelete() {
 		this.deleted = true;
