@@ -1,7 +1,7 @@
 spring:
   sql:
     init:
-      mode: always       # 항상 schema.sql, data.sql 실행
+      mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
   jpa:
