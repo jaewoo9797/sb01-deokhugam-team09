@@ -28,6 +28,7 @@ import com.codeit.sb01_deokhugam.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
+	
 	@InjectMocks
 	private NotificationService notificationService;
 
