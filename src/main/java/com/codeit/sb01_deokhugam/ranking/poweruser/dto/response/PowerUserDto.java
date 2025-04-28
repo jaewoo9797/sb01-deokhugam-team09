@@ -8,10 +8,10 @@ public record PowerUserDto(
 	String nickname,
 	String period, //랭킹 조회시의 기간조건
 	Instant createdAt,
-	Integer rank,
-	Double score,
-	Double reviewScoreSum,
-	Integer likeCount,
-	Integer commentCount
+	int rank,
+	double score,
+	double reviewScoreSum,
+	int likeCount,
+	int commentCount
 ) {
 }
