@@ -18,16 +18,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "review")
+@Table(name = "reviews")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends BaseUpdatableEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", columnDefinition = "uuid NOT NULL")
+	@JoinColumn(name = "user_id", nullable = false)
 	private User author;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "book_id", columnDefinition = "uuid NOT NULL")
+	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
 
 	@Column(name = "content", nullable = false)
