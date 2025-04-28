@@ -1,5 +1,6 @@
 package com.codeit.sb01_deokhugam.domain.book.controller;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.sourceforge.tess4j.TesseractException;
+
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
-import com.codeit.sb01_deokhugam.domain.book.dto.IsbnBookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.NaverBookDto;
 import com.codeit.sb01_deokhugam.domain.book.service.BookService;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
@@ -51,6 +54,15 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
 	}
 
+	@PostMapping("/isbn/ocr")
+	public ResponseEntity<String> extractTextByOcr(@RequestParam("image") MultipartFile image) throws
+		IOException,
+		TesseractException {
+		log.info("도서 이미지 OCR 처리 요청");
+		String isbn = bookService.extractTextByOcr(image);
+		return ResponseEntity.ok(isbn);
+	}
+
 	/**
 	 * Naver API를 통해 ISBN으로 도서 정보를 조회합니다.
 	 * @param isbn
@@ -58,11 +70,11 @@ public class BookController {
 	 * @throws JsonProcessingException
 	 */
 	@GetMapping("/info")
-	public ResponseEntity<IsbnBookDto> searchByIsbn(@RequestParam("isbn") String isbn) throws JsonProcessingException {
+	public ResponseEntity<NaverBookDto> searchByIsbn(@RequestParam("isbn") String isbn) throws JsonProcessingException {
 
 		log.info("도서 ISBN 검색 요청 : {}", isbn);
-		IsbnBookDto isbnBookDto = naverBookClient.search(isbn);
-		return ResponseEntity.status(HttpStatus.OK).body(isbnBookDto);
+		NaverBookDto naverBookDto = naverBookClient.search(isbn);
+		return ResponseEntity.status(HttpStatus.OK).body(naverBookDto);
 	}
 
 	/**

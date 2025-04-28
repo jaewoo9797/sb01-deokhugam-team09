@@ -1,5 +1,6 @@
 package com.codeit.sb01_deokhugam.domain.book.service;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -7,8 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
@@ -32,6 +38,8 @@ public class BookService {
 
 	private final BookRepository bookRepository;
 	private final BookMapper bookMapper;
+	//image OCR
+	private final Tesseract tesseract;
 
 	//TODO: 이미지 등록 관련 로직 필요
 	private final S3Service s3Service;
@@ -49,10 +57,9 @@ public class BookService {
 	@Transactional
 	public BookDto create(BookCreateRequest bookCreateRequest, MultipartFile thumnailImage) {
 
-		//TODO: 논리적 삭제된 도서와 ISBN이 중복된다면?
-		//isbn 중복 검증
-		if (bookRepository.existsByIsbn(bookCreateRequest.isbn()) == true) {
-			throw new IsbnAlreadyExistsException();
+		//isbn 중복 검증 - 논리적 삭제된 책 ISBN도 포함
+		if (bookRepository.existsByIsbn(bookCreateRequest.isbn())) {
+			throw new IsbnAlreadyExistsException().withIsbn(bookCreateRequest.isbn());
 		}
 
 		//TODO: 이미지 S3 저장 로직 필요
@@ -143,13 +150,12 @@ public class BookService {
 	 *
 	 * @param bookId
 	 */
-	//도서 논리 삭제 -soft deleted
 	@Transactional
 	public void delete(UUID bookId) {
 		log.debug("도서 논리 삭제 시작: id={}", bookId);
 		Book book = bookRepository.findByIdNotLogicalDelete(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
-		book.softDelete(); //deleted를 true로 변경
+		book.softDelete(); //엔티티의 deleted를 true로 변경
 		log.info("도서 논리 삭제 완료: id={}", bookId);
 	}
 
@@ -158,7 +164,6 @@ public class BookService {
 	 *
 	 * @param bookId
 	 */
-	//도서 물리 삭제
 	@Transactional
 	public void deletePhysical(UUID bookId) {
 		log.debug("도서 물리 삭제 시작: id={}", bookId);
@@ -166,7 +171,7 @@ public class BookService {
 			() -> new BookNotFoundException().withId(bookId));
 		log.debug("도서의 관련 리뷰 삭제 시작: id={}", bookId);
 		bookRepository.deleteById(bookId);
-		//TODO: 리뷰에서 물리삭제 필요
+		//TODO: 리뷰에서 물리삭제 확인 필요
 		//reviewService.deleteByBookPhysicalDelete(bookId);
 		log.info("도서 물리 삭제 완료: id={}", bookId);
 	}
@@ -180,7 +185,6 @@ public class BookService {
 	 * @return 수정된 도서 DTO
 	 * @throws IOException
 	 */
-	//도서 정보 수정
 	@Transactional
 	public BookDto update(UUID bookId, BookUpdateRequest bookUpdateRequest, MultipartFile thumnailImage) {
 
@@ -208,6 +212,28 @@ public class BookService {
 
 		return bookMapper.toDto(book);
 	}
+
+	//OCR 텍스트 추출
+	public String extractTextByOcr(MultipartFile image) throws IOException, TesseractException {
+		// MultipartFile을 BufferedImage로 변환
+		BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+
+		// OCR 수행
+		String result = tesseract.doOCR(bufferedImage);
+
+		// 숫자만 추출하기 (정규식 사용)
+		String isbn = result.replaceAll("[^0-9]", "");  // 숫자 외 다른 문자 제거
+
+		// 이미지에 ISBN에 중복되는 케이스 처리
+		if (isbn.startsWith("97") && isbn.length() >= 13 || isbn.startsWith("98") && isbn.length() >= 13) {
+			// 97 혹은 98로 시작하는 13자리 ISBN 번호 반환
+			return isbn.substring(0, 13);
+		}
+
+		return isbn;
+	}
+
+	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )
 
 	//인기 도서 목록 조회
 
