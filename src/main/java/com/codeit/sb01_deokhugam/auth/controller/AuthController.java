@@ -1,4 +1,4 @@
-package com.codeit.sb01_deokhugam.domain.user.controller;
+package com.codeit.sb01_deokhugam.auth.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codeit.sb01_deokhugam.domain.user.dto.request.UserLoginRequest;
+import com.codeit.sb01_deokhugam.auth.request.UserLoginRequest;
+import com.codeit.sb01_deokhugam.auth.service.AuthService;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
-import com.codeit.sb01_deokhugam.domain.user.service.AuthService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

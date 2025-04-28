@@ -1,4 +1,4 @@
-package com.codeit.sb01_deokhugam.domain.user.dto.request;
+package com.codeit.sb01_deokhugam.auth.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
