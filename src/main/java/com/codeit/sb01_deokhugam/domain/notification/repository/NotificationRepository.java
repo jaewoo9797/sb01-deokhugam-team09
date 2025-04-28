@@ -5,12 +5,13 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-	@Query(value = "SELECT n FROM Notification n WHERE n.id= :id AND n.user.id = :userId")
-	Optional<Notification> findByIdAndUserId(UUID id, UUID userId);
+	@Query(value = "SELECT n FROM Notification n JOIN FETCH n.user u JOIN FETCH n.review r WHERE n.id = :id AND n.user.id = :userId")
+	Optional<Notification> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 
 }
