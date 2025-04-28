@@ -8,6 +8,8 @@ import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "user_ranking")
+@Table(name = "user_rankings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PowerUser extends BaseEntity {
 
@@ -25,6 +27,7 @@ public class PowerUser extends BaseEntity {
 	@Column(name = "nickname", nullable = false)
 	private String nickname;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "period", nullable = false)
 	Period period;
 

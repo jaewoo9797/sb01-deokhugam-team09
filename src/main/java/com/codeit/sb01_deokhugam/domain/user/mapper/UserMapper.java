@@ -11,7 +11,5 @@ import com.codeit.sb01_deokhugam.domain.user.entity.User;
 public interface UserMapper {
 	UserDto toDto(User user);
 
-	User toEntity(UserDto userDto);
-
-	List<UserDto> toDto(List<User> users);
+	List<UserDto> toDtos(List<User> users);
 }

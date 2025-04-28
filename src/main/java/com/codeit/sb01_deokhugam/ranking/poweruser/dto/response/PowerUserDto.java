@@ -3,10 +3,12 @@ package com.codeit.sb01_deokhugam.ranking.poweruser.dto.response;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.codeit.sb01_deokhugam.global.enumType.Period;
+
 public record PowerUserDto(
 	UUID userId,
 	String nickname,
-	String period, //랭킹 조회시의 기간조건
+	Period period, //랭킹 조회시의 기간조건
 	Instant createdAt,
 	int rank,
 	double score,
