@@ -221,12 +221,12 @@ public class BookService {
 		// OCR 수행
 		String result = tesseract.doOCR(bufferedImage);
 
-		// 숫자만 추출하기 (정규식 사용)
+		// 숫자만 추출하기 
 		String isbn = result.replaceAll("[^0-9]", "");  // 숫자 외 다른 문자 제거
 
-		// 이미지에 ISBN에 중복되는 케이스 처리
+		// 이미지에 ISBN이 중복되어있는 케이스 처리
 		if (isbn.startsWith("97") && isbn.length() >= 13 || isbn.startsWith("98") && isbn.length() >= 13) {
-			// 97 혹은 98로 시작하는 13자리 ISBN 번호 반환
+			// 국제표준 ISBN 접두부 97 혹은 98로 시작하는 13자리 ISBN 번호 반환
 			return isbn.substring(0, 13);
 		}
 
