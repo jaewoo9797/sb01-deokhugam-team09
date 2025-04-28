@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.global.resolver;
 
+import java.util.UUID;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -27,6 +29,10 @@ public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolve
 		if (userId == null) {
 			throw new LoginRequiredException(ErrorCode.UNAUTHORIZED);
 		}
-		return userId;
+		try {
+			return UUID.fromString(userId);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("잘못된 UUID 형식입니다: " + userId);
+		}
 	}
 }
