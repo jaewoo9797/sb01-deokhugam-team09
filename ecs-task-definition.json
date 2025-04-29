@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:885532410426:task-definition/deokhugam-task:3",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:885532410426:task-definition/deokhugam-task:7",
   "containerDefinitions": [
     {
       "name": "deokhugam-container",
-      "image": "885532410426.dkr.ecr.ap-northeast-2.amazonaws.com/deokhugam-app:ea97daededb119dd87adef177dd2e62e4c027eaf",
+      "image": "885532410426.dkr.ecr.ap-northeast-2.amazonaws.com/deokhugam-app:latest",
       "cpu": 0,
       "portMappings": [
         {
