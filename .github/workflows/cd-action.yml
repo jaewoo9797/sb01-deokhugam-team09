@@ -41,6 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
+    env:
+      ECS_TASK_DEFINITION: .github/ecs/ecs-task-definition.json
+      CONTAINER_NAME: deokhugam-container
+      ECS_CLUSTER: deokhugam-cluster
+      ECS_SERVICE: deokhugam-service-alb
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,21 +83,20 @@ jobs:
           echo "-----------------------------------------------"
           docker push $IMAGE_URI
           echo "✅ [PUSH] Docker Image pushed successfully! : $IMAGE_URI"
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-          echo "::set-output name=image::$IMAGE_URI"
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
       - name: Update ECS Task Definition
         id: task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ecs-task-definition.json
-          container-name: deokhugam-container
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: deokhugam-cluster
-          service: deokhugam-service-alb
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
           task-definition: ${{ steps.task-definition.outputs.task-definition }}
           wait-for-service-stability: true
