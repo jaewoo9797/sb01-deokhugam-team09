@@ -100,7 +100,8 @@ create table book_rankings
     rating        decimal(10, 2)           NOT NULL,
     thumbnail_url varchar                  NOT NULL,
     title         varchar                  NOT NULL,
-    book_id       uuid                     NOT NULL
+    book_id       uuid                     NOT NULL,
+    author        varchar                  NOT NULL
 );
 
 -- user_ranking

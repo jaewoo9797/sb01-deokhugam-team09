@@ -19,12 +19,17 @@ import net.sourceforge.tess4j.TesseractException;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
+import com.codeit.sb01_deokhugam.domain.book.dto.PopularBookDto;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
+import com.codeit.sb01_deokhugam.domain.book.entity.BookRanking;
 import com.codeit.sb01_deokhugam.domain.book.exception.BookNotFoundException;
 import com.codeit.sb01_deokhugam.domain.book.exception.IsbnAlreadyExistsException;
 import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
+import com.codeit.sb01_deokhugam.domain.book.mapper.PopularBookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
+import com.codeit.sb01_deokhugam.domain.book.repository.PopularBookRepository;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
+import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.global.s3.S3Service;
 
 import jakarta.transaction.Transactional;
@@ -40,6 +45,8 @@ public class BookService {
 	private final BookMapper bookMapper;
 	//image OCR
 	private final Tesseract tesseract;
+	private final PopularBookRepository popularBookRepository;
+	private final PopularBookMapper popularBookMapper;
 
 	//TODO: 이미지 등록 관련 로직 필요
 	private final S3Service s3Service;
@@ -109,7 +116,7 @@ public class BookService {
 		//totalElements 계산
 		Long totalElements = bookRepository.getTotalElements(keyword);
 
-		//nextCursor 조회
+		//nextCursor 조회. hasNext가 있으면 존재.
 		String nextCursor = hasNext ? convertCursor(orderBy, books.get(size - 1)) : null;
 
 		//nextAfter 조회
@@ -132,6 +139,7 @@ public class BookService {
 			default:
 				return null;
 		}
+
 	}
 
 	@Transactional
@@ -214,6 +222,7 @@ public class BookService {
 	}
 
 	//OCR 텍스트 추출
+	//TODO: 모든 예외를 도서 정보 등록 중 요류가.. 이거상속하게
 	public String extractTextByOcr(MultipartFile image) throws IOException, TesseractException {
 
 		if (image.isEmpty()) {
@@ -238,8 +247,47 @@ public class BookService {
 		return isbn;
 	}
 
-	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )
-
 	//인기 도서 목록 조회
+	public PageResponse<PopularBookDto> findPopularBook(String period, Instant after, String cursor, String direction,
+		int limit) {
+
+		// period가 enum에 속하는지 검증 ->
+		try {
+			Period.valueOf(period);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("잘못된 period가 전달되었습니다. period  : " + period);
+		}
+
+		List<BookRanking> bookRankings = popularBookRepository.findListByCursor(period, after, cursor, direction,
+			limit + 1);
+
+		// 실제 size 계산 (초과 조회된 1개는 제외)
+		int fetchedSize = bookRankings.size();
+		boolean hasNext = fetchedSize > limit;
+
+		// 실제로 보여줄 limit 개수만큼만 남기기
+		List<BookRanking> resultBooks = hasNext ? bookRankings.subList(0, limit) : bookRankings;
+
+		List<PopularBookDto> popularBookDtos = resultBooks.stream()
+			.map(popularBookMapper::toDto)
+			.toList();
+		int size = resultBooks.size();
+
+		//TODO: 매번 호출 비효율적.
+		//totalElements 계산
+		Long totalElements = popularBookRepository.getTotalElements(period);
+
+		//nextCursor 조회
+		String nextCursor =
+			hasNext ? String.valueOf(cursor == null ? limit : Integer.parseInt(cursor) + limit) : null;
+
+		//nextAfter 조회
+		Instant nextAfter = hasNext ? popularBookDtos.get(size - 1).createdAt() : null;
+
+		return new PageResponse<>(popularBookDtos, nextAfter, nextCursor, size, hasNext, totalElements);
+
+	}
+
+	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )
 
 }
