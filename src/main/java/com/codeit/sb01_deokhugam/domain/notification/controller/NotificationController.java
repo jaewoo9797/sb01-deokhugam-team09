@@ -37,8 +37,9 @@ public class NotificationController {
 	}
 
 	@PatchMapping("/read-all")
-	public void updateConfirmAll() {
-
+	public ResponseEntity<Void> updateConfirmAll(@LoginUserId UUID userId) {
+		notificationService.confirmAllNotifications(userId);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
