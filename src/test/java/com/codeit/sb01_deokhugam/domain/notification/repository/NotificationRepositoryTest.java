@@ -9,29 +9,36 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.codeit.sb01_deokhugam.config.JpaAuditingConfiguration;
 import com.codeit.sb01_deokhugam.config.QueryDslConfig;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
+import com.codeit.sb01_deokhugam.domain.notification.dto.request.NotificationSearchCondition;
 import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 
+import groovy.util.logging.Log4j2;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @DataJpaTest
 @ActiveProfiles("test")
 @Import({QueryDslConfig.class, JpaAuditingConfiguration.class})
+@Log4j2
 class NotificationRepositoryTest {
 
+	private static final Logger log = LogManager.getLogger(NotificationRepositoryTest.class);
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -148,6 +155,25 @@ class NotificationRepositoryTest {
 		boolean exists = notificationRepository.existsByUserIdAndConfirmedFalse(user.getId());
 		// then
 		assertThat(exists).isFalse();
+	}
+
+	@DisplayName("findByCursorPagination: 커서 기반 페이지네이션으로 알림을 조회한다.")
+	@Test
+	void findByCursorPaginationTest() {
+		//given
+		UUID userId = UUID.fromString("54b78d8f-68fb-4c60-8f26-00bb1a5e219d");
+		NotificationSearchCondition condition = new NotificationSearchCondition(userId, Sort.Direction.ASC, null, null);
+
+		int limit = 5;
+
+		// when
+		List<Notification> notifications = notificationRepository.findByCursorPagination(condition, limit);
+		notifications.forEach(notification -> {
+			log.info("Notification ID: {}", notification.getId());
+			log.info("Notification createdAt: {}", notification.getCreatedAt());
+		});
+		// then
+		assertThat(notifications).isNotNull();
 	}
 
 }
