@@ -149,4 +149,5 @@ class NotificationRepositoryTest {
 		// then
 		assertThat(exists).isFalse();
 	}
+
 }
