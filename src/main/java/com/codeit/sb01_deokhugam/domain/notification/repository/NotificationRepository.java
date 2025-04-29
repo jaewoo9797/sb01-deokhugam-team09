@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 
-public interface NotificationRepository extends JpaRepository<Notification, UUID> {
+public interface NotificationRepository extends JpaRepository<Notification, UUID>, NotificationRepositoryCustom {
 
 	@Query(value = "SELECT n FROM Notification n JOIN FETCH n.user u JOIN FETCH n.review r WHERE n.id = :id AND n.user.id = :userId")
 	Optional<Notification> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
@@ -24,4 +24,5 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 
 	// 알림이 확인되지 않고 계속해서 쌓여간다면 조회 시 복합 인덱스 고려
 	boolean existsByUserIdAndConfirmedFalse(UUID userId);
+
 }
