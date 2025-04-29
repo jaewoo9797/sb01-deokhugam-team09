@@ -28,6 +28,7 @@ public class NotificationService {
 	}
 
 	public void confirmAllNotifications(UUID userId) {
+		// TODO : 성능 개선하기 (데이터베이스에 유저의 알림이 많을 경우 락 걸림)
 		notificationRepository.updateAllConfirmed(userId);
 	}
 }
