@@ -1,16 +1,26 @@
 package com.codeit.sb01_deokhugam.domain.notification.dto.request;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.data.domain.Sort;
 
-import lombok.Getter;
+public record NotificationSearchCondition(
+	UUID userId,
+	Sort.Direction direction,
+	Instant cursor,
+	Instant after
+) {
+	public NotificationSearchCondition {
+		cursor = resolveInstantOrNow(cursor);
+		after = resolveInstantOrNow(after);
+	}
 
-@Getter
-public class NotificationSearchCondition {
-
-	private Sort.Direction direction;
-	private Instant cursor;
-	private Instant after;
-
+	private Instant resolveInstantOrNow(Instant instant) {
+		if (instant == null) {
+			return Instant.now();
+		}
+		return instant;
+	}
 }
+
