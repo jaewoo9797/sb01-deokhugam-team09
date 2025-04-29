@@ -28,7 +28,7 @@ import com.codeit.sb01_deokhugam.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
-	
+
 	@InjectMocks
 	private NotificationService notificationService;
 
@@ -96,4 +96,5 @@ class NotificationServiceTest {
 			.hasMessageContaining(ErrorCode.NOTIFICATION_NOT_FOUND.getMessage());
 		verify(notificationRepository).findByIdAndUserId(notificationId, userId);
 	}
+
 }
