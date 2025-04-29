@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeit.sb01_deokhugam.auth.request.UserLoginRequest;
 import com.codeit.sb01_deokhugam.auth.service.AuthService;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
+import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/api/users/login")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class AuthController {
 
 	private final AuthService authService;
+	private final UserService userService;
 
-	@PostMapping(path = "/")
+	@PostMapping(path = "/login")
 	public ResponseEntity<UserDto> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
 		log.info("로그인 요청: email={}", userLoginRequest.email());
 		UserDto user = authService.login(userLoginRequest);

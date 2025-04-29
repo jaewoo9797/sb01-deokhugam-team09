@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +33,8 @@ public class UserController {
 
 	private final UserService userService;
 
-	@PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public ResponseEntity<UserDto> create(@Valid RegisterRequest registerRequest) {
+	@PostMapping
+	public ResponseEntity<UserDto> create(@Valid @RequestBody RegisterRequest registerRequest) {
 		log.info("사용자 생성 요청: email={}, nickname={}", registerRequest.email(), registerRequest.nickname());
 		UserDto createdUser = userService.create(registerRequest);
 		log.debug("사용자 생성 응답: {}", createdUser);
