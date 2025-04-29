@@ -9,7 +9,15 @@ INSERT INTO books (id, created_at, updated_at, title, author, description, publi
 VALUES ('11111111-2222-3333-4444-555555555555', now(), now(),
         '테스트 책 제목', '작가 이름', '이 책은 테스트용입니다.',
         '출판사 이름', TIMESTAMP '2024-01-01 00:00:00',
-        '1234567890123', 'http://example.com/thumb.jpg', 0, 4.5, false);
+        '9734567890123', 'http://example.com/thumb.jpg', 0, 4.5, false),
+       ('11111112-2222-3333-4444-555555555555', now(), now(),
+        '테스트 책 제목2', '작가 이름2', '이 책은 테스트용입니다.',
+        '출판사 이름', TIMESTAMP '2024-01-02 00:00:00',
+        '9734567890122', 'http://example.com/thumb2.jpg', 0, 4.5, false),
+       ('11111113-2222-3333-4444-555555555555', now(), now(),
+        '테스트 책 제목3', '작가 이름', '이 책은 테스트용입니다.',
+        '출판사 이름', TIMESTAMP '2024-01-03 00:00:00',
+        '9834567890123', 'http://example.com/thumb3.jpg', 0, 4.5, false);
 
 -- REVIEWS
 INSERT INTO reviews (id, created_at, updated_at, content, rating, like_count, comment_count,
