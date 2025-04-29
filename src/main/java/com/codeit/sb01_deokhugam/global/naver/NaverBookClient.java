@@ -1,4 +1,4 @@
-package com.codeit.sb01_deokhugam.global.infra;
+package com.codeit.sb01_deokhugam.global.naver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
