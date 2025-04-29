@@ -125,4 +125,28 @@ class NotificationRepositoryTest {
 		assertThat(updateRowCount).isEqualTo(5);
 		assertThat(notificationConfirm).containsExactly(true, true, true, true, true);
 	}
+
+	@DisplayName("existsByUserIdAndConfirmedFalse: 유저 ID로 읽지 않은 알림이 존재하는지 확인한다.")
+	@Test
+	void givenUserId_whenExistsUnreadNotifications_thenReturnTrue() {
+		//given
+		Notification notification = Notification.fromLike(user, review);
+		entityManager.persist(notification);
+		entityManager.flush();
+		entityManager.clear();
+		// when
+		boolean exists = notificationRepository.existsByUserIdAndConfirmedFalse(user.getId());
+		// then
+		assertThat(exists).isTrue();
+	}
+
+	@DisplayName("existsByUserIdAndConfirmedFalse: 유저 ID로 읽지 않은 알림이 존재하지 않는 경우 false 를 반환한다.")
+	@Test
+	void givenUserId_whenNoUnreadNotifications_thenReturnFalse() {
+		//given
+		// when
+		boolean exists = notificationRepository.existsByUserIdAndConfirmedFalse(user.getId());
+		// then
+		assertThat(exists).isFalse();
+	}
 }
