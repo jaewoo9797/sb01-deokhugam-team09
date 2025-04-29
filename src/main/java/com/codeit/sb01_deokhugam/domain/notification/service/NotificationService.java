@@ -26,4 +26,8 @@ public class NotificationService {
 		notification.markAsRead();
 		return NotificationDto.of(notification);
 	}
+
+	public void confirmAllNotifications(UUID userId) {
+		notificationRepository.updateAllConfirmed(userId);
+	}
 }
