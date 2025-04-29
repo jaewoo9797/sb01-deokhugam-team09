@@ -23,9 +23,10 @@ import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.NaverBookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.PopularBookDto;
 import com.codeit.sb01_deokhugam.domain.book.service.BookService;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
-import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
+import com.codeit.sb01_deokhugam.global.naver.NaverBookClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ public class BookController {
 	 * 도서를 등록합니다.
 	 * @param bookCreateRequest
 	 * @param file
-	 * @return 등록된 도서 정보 응댭
+	 * @return 등록된 도서 정보 응답
 	 */
 	@PostMapping
 	public ResponseEntity<BookDto> create(@RequestPart("bookData") @Valid BookCreateRequest bookCreateRequest,
@@ -130,6 +131,19 @@ public class BookController {
 
 	}
 
+	@GetMapping("/popular")
+	public ResponseEntity<PageResponse<PopularBookDto>> findPopularBook(
+		@RequestParam(value = "period", defaultValue = "DAILY") String period,
+		@RequestParam(value = "direction", defaultValue = "DESC") String direction,
+		@RequestParam(value = "cursor", required = false) String cursor,
+		@RequestParam(value = "after", required = false) Instant after,
+		@RequestParam(value = "limit", defaultValue = "50") int limit
+	) {
+		log.info("인기 도서 목록 조회 요청");
+		PageResponse<PopularBookDto> result = bookService.findPopularBook(period, after, cursor, direction, limit);
+		return ResponseEntity.ok(result);
+	}
+
 	/**
 	 * 도서를 논리 삭제합니다.
 	 * @param bookId
@@ -137,6 +151,7 @@ public class BookController {
 	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> delete(@PathVariable("bookId") UUID bookId) {
+
 		log.info("도서 논리 삭제 요청 : {}", bookId);
 		bookService.delete(bookId);
 		return ResponseEntity
