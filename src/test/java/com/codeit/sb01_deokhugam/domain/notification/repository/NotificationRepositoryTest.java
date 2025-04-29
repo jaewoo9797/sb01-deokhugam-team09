@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -101,5 +102,27 @@ class NotificationRepositoryTest {
 
 		// then
 		assertThat(result).isEmpty();
+	}
+
+	@DisplayName("updateAllConfirmed: 유저 ID로 모든 알림을 읽음 처리한다.")
+	@Test
+	void given_userId_when_updateAll_confirm() {
+		//given
+		for (int i = 0; i < 5; i++) {
+			Notification notification = Notification.fromLike(user, review);
+			entityManager.persist(notification);
+		}
+		entityManager.flush();
+		entityManager.clear();
+
+		// when
+		int updateRowCount = notificationRepository.updateAllConfirmed(user.getId());
+		List<Boolean> notificationConfirm = notificationRepository.findAllByUserId(user.getId())
+			.stream()
+			.map(Notification::isConfirmed).toList();
+
+		// then
+		assertThat(updateRowCount).isEqualTo(5);
+		assertThat(notificationConfirm).containsExactly(true, true, true, true, true);
 	}
 }
