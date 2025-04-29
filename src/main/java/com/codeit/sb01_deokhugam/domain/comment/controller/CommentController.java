@@ -4,6 +4,7 @@ import com.codeit.sb01_deokhugam.domain.comment.dto.CommentCreateRequest;
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.comment.service.CommentService;
+import com.codeit.sb01_deokhugam.global.resolver.annotation.LoginUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class CommentController {
 
     @PostMapping
     public CommentDto create(@RequestBody CommentCreateRequest request,
-                             @RequestHeader("UserID") UUID userId,
+                             @LoginUserId UUID userId,
                              @RequestHeader("UserNickname") String userNickname) {
         return commentService.create(request.reviewId(), userId, request.content(), userNickname);
     }
@@ -40,7 +41,7 @@ public class CommentController {
 
     @PatchMapping("/{commentId}")
     public CommentDto update(@PathVariable UUID commentId,
-                             @RequestHeader("UserID") UUID userId,
+                             @LoginUserId UUID userId,
                              @RequestBody CommentUpdateRequest request,
                              @RequestHeader("UserNickname") String userNickname) {
         return commentService.update(commentId, userId, request.content(), userNickname);
@@ -48,7 +49,7 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public void delete(@PathVariable UUID commentId,
-                       @RequestHeader("UserID") UUID userId,
+                       @LoginUserId UUID userId,
                        @RequestParam(defaultValue = "false") boolean hard) {
         if (hard) {
             commentService.hardDelete(commentId);
