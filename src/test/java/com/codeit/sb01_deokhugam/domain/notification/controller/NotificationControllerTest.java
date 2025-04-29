@@ -57,7 +57,7 @@ class NotificationControllerTest {
 
 	@DisplayName("updateConfirm : 알림 확인 수정 API 실패 테스트 - 존재하지 않는 알림 ID")
 	@Test
-	void testMethodNameHere() {
+	void update_notification_when_fail_not_exist_id_then_return_status_404() {
 		//given
 		UUID invalidNotificationId = UUID.randomUUID();
 		Map<String, Object> requestBody = Map.of("confirmed", true);
@@ -77,5 +77,22 @@ class NotificationControllerTest {
 			() -> assertThat(result.getString("code")).isEqualTo("NOTIFICATION_NOT_FOUND"),
 			() -> assertThat(result.getString("timestamp")).isNotNull()
 		);
+	}
+
+	@DisplayName("PATCH /read-all 요청 시 모든 알림을 읽음 처리하고 204를 반환한다.")
+	@Test
+	void confirmAllNotifications_returns204NoContent() {
+		//given
+
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.header(LOGIN_USER_HEADER, USER_ID_UUID)
+			.contentType(ContentType.JSON)
+			.when().patch("/api/notifications/read-all")
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
