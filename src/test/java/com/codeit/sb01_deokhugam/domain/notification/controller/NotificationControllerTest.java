@@ -3,11 +3,11 @@ package com.codeit.sb01_deokhugam.domain.notification.controller;
 import static io.restassured.RestAssured.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -71,10 +73,10 @@ class NotificationControllerTest {
 			.extract();
 		// then
 		final JsonPath result = response.jsonPath();
-		Assertions.assertAll(
+		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-			() -> assertThat(result.getString("message")).isEqualTo("해당 알림이 존재하지 않습니다."),
-			() -> assertThat(result.getString("code")).isEqualTo("NOTIFICATION_NOT_FOUND"),
+			() -> assertThat(result.getString("message")).isEqualTo(ErrorCode.NOTIFICATION_NOT_FOUND.getMessage()),
+			() -> assertThat(result.getString("code")).isEqualTo(ErrorCode.NOTIFICATION_NOT_FOUND.name()),
 			() -> assertThat(result.getString("timestamp")).isNotNull()
 		);
 	}
@@ -94,5 +96,49 @@ class NotificationControllerTest {
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+	}
+
+	@DisplayName("PATCH /read-all 요청 시 헤더에 유저 ID가 없으면 401 에러를 반환한다.")
+	@Test
+	void returns401_whenUserIdHeaderIsMissing() {
+		//given
+
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.contentType(ContentType.JSON)
+			.when().patch("/api/notifications/read-all")
+			.then().log().all()
+			.extract();
+
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value()),
+			() -> assertThat(result.getString("message")).isEqualTo(ErrorCode.UNAUTHORIZED.getMessage()),
+			() -> assertThat(result.getString("code")).isEqualTo(ErrorCode.UNAUTHORIZED.name()),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
+	}
+
+	@DisplayName("PATCH /read-all 요청 시 유효하지 않은 유저 ID 이면 404를 반환한다.")
+	@Test
+	void returnsNotFound_whenUserIdDoesNotExist() {
+		//given
+		UUID nonExistentUserId = UUID.randomUUID();
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.header(LOGIN_USER_HEADER, nonExistentUserId)
+			.contentType(ContentType.JSON)
+			.when().patch("/api/notifications/read-all")
+			.then().log().all()
+			.extract();
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+			() -> assertThat(result.getString("message")).isEqualTo(ErrorCode.USER_NOT_FOUND.getMessage()),
+			() -> assertThat(result.getString("code")).isEqualTo(ErrorCode.USER_NOT_FOUND.name()),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
 	}
 }
