@@ -1,9 +1,11 @@
 package com.codeit.sb01_deokhugam.domain.notification.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,4 +16,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	@Query(value = "SELECT n FROM Notification n JOIN FETCH n.user u JOIN FETCH n.review r WHERE n.id = :id AND n.user.id = :userId")
 	Optional<Notification> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE Notification n SET n.confirmed = true WHERE n.user.id = :userId AND n.confirmed = false")
+	int updateAllConfirmed(@Param("userId") UUID userId);
+
+	List<Notification> findAllByUserId(UUID userId);
 }
