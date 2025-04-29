@@ -45,7 +45,7 @@ public class BookController {
 	 * 도서를 등록합니다.
 	 * @param bookCreateRequest
 	 * @param file
-	 * @return 등록된 도서 정보 응댭
+	 * @return 등록된 도서 정보 응답
 	 */
 	@PostMapping
 	public ResponseEntity<BookDto> create(@RequestPart("bookData") @Valid BookCreateRequest bookCreateRequest,
