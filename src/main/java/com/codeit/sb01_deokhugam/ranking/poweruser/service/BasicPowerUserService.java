@@ -14,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class BasicPowerUserService implements PowerUserService {
 
 	PowerUserRepositoryCustom powerUserRepositoryCustom;
 
-	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest) {
 

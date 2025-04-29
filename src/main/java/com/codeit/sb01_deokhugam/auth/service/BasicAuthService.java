@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class BasicAuthService implements AuthService {
 
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 
-	@Transactional(readOnly = true)
 	@Override
 	public UserDto login(UserLoginRequest userLoginRequest) {
 		log.debug("로그인 시도: email={}", userLoginRequest.email());

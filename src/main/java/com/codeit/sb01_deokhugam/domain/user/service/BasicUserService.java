@@ -19,14 +19,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicUserService implements UserService {
 
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
 		log.debug("사용자 생성 시작: request={}", userRegisterRequest);
@@ -47,7 +48,6 @@ public class BasicUserService implements UserService {
 	}
 
 	//논리 삭제되지 않은 유저 단건조회
-	@Transactional(readOnly = true)
 	@Override
 	public UserDto findActiveUser(UUID id) {
 		log.debug("사용자 조회 시작: id={}", id);
@@ -60,7 +60,6 @@ public class BasicUserService implements UserService {
 	}
 
 	//논리 삭제되지 않은 유저 전체조회
-	@Transactional(readOnly = true)
 	@Override
 	public List<UserDto> findAllActiveUsers() {
 		log.debug("전체 사용자 조회 시작");
@@ -72,7 +71,6 @@ public class BasicUserService implements UserService {
 	}
 
 	//논리삭제된 유저 포함하여 단건조회
-	@Transactional(readOnly = true)
 	@Override
 	public UserDto findUserIncludingDeleted(UUID id) {
 		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: id={}", id);
@@ -86,7 +84,6 @@ public class BasicUserService implements UserService {
 	}
 
 	//논리삭제된 유저 포함하여 전체조회
-	@Transactional(readOnly = true)
 	@Override
 	public List<UserDto> findAllUsersIncludingDeleted() {
 		log.debug("논리삭제 상태 포함하여 전체 사용자 조회 시작");
@@ -98,8 +95,8 @@ public class BasicUserService implements UserService {
 	}
 
 	//유저 닉네임 변경
-	@Transactional
 	@Override
+	@Transactional(readOnly = false)
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
 		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
 
@@ -113,8 +110,8 @@ public class BasicUserService implements UserService {
 	}
 
 	//유저 isDeleted 필드 false로 변경
-	@Transactional
 	@Override
+	@Transactional(readOnly = false)
 	public void softDelete(UUID id) {
 		log.debug("사용자 논리삭제 시작: id={}", id);
 
@@ -125,8 +122,8 @@ public class BasicUserService implements UserService {
 	}
 
 	//물리 삭제
-	@Transactional
 	@Override
+	@Transactional(readOnly = false)
 	public void hardDelete(UUID id) {
 		log.debug("사용자 물리삭제 시작: id={}", id);
 
