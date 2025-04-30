@@ -141,4 +141,99 @@ class NotificationControllerTest {
 			() -> assertThat(result.getString("timestamp")).isNotNull()
 		);
 	}
+
+	@DisplayName("GET / 알림 목록 커서 기반 조회에 성공한다.")
+	@Test
+	void should_return_notifications_with_nextCursor_when_hasNext_is_true() {
+		// given
+		int limit = 3;
+
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.contentType(ContentType.JSON)
+			.header(LOGIN_USER_HEADER, USER_ID_UUID)
+			.queryParam("userId", USER_ID_UUID)
+			.queryParam("limit", limit)
+			.when().get("/api/notifications")
+			.then().log().all()
+			.extract();
+
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(result.getList("content")).isNotEmpty(),
+			() -> assertThat(result.getBoolean("hasNext")).isTrue(),
+			() -> assertThat(result.getString("nextCursor")).isNotNull()
+		);
+	}
+
+	@DisplayName("GET / 알림 개수가 limit 이하일 때 hasNext=false, nextCursor는 null이다")
+	@Test
+	void should_return_hasNext_false_and_null_cursor_when_notifications_do_not_exceed_limit() {
+		//given
+		int limit = 20;
+
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.contentType(ContentType.JSON)
+			.header(LOGIN_USER_HEADER, USER_ID_UUID)
+			.queryParam("userId", USER_ID_UUID)
+			.queryParam("limit", limit)
+			.when().get("/api/notifications")
+			.then().log().all()
+			.extract();
+
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(result.getList("content")).isNotEmpty(),
+			() -> assertThat(result.getBoolean("hasNext")).isFalse(),
+			() -> assertThat(result.getString("nextCursor")).isNull()
+		);
+	}
+
+	@DisplayName("GET / userId가 없으면 400 Bad Request 를 반환한다")
+	@Test
+	void should_return_400_when_userId_is_missing() {
+		//given
+
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.contentType(ContentType.JSON)
+			.header(LOGIN_USER_HEADER, USER_ID_UUID)
+			.when().get("/api/notifications")
+			.then().log().all()
+			.extract();
+
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+			() -> assertThat(result.getString("code")).isEqualTo("MissingServletRequestParameterException"),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
+	}
+
+	@DisplayName("GET / Header 에 userId가 없으면 401 Unauthorized 를 반환한다")
+	@Test
+	void should_return_401_when_userId_has_not_loginUserId() {
+		//given
+		// when
+		ExtractableResponse<Response> response = given().log().all()
+			.contentType(ContentType.JSON)
+			.queryParam("userId", USER_ID_UUID)
+			.when().get("/api/notifications")
+			.then().log().all()
+			.extract();
+		// then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value()),
+			() -> assertThat(result.getString("message")).isEqualTo(ErrorCode.UNAUTHORIZED.getMessage()),
+			() -> assertThat(result.getString("code")).isEqualTo(ErrorCode.UNAUTHORIZED.name()),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
+	}
 }
