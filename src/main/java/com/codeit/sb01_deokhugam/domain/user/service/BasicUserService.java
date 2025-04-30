@@ -27,7 +27,7 @@ public class BasicUserService implements UserService {
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 
-	@Transactional(readOnly = false)
+	@Transactional
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
 		log.debug("사용자 생성 시작: request={}", userRegisterRequest);
@@ -96,7 +96,7 @@ public class BasicUserService implements UserService {
 
 	//유저 닉네임 변경
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
 		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
 
@@ -111,7 +111,7 @@ public class BasicUserService implements UserService {
 
 	//유저 isDeleted 필드 false로 변경
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional
 	public void softDelete(UUID id) {
 		log.debug("사용자 논리삭제 시작: id={}", id);
 
@@ -123,7 +123,7 @@ public class BasicUserService implements UserService {
 
 	//물리 삭제
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional
 	public void hardDelete(UUID id) {
 		log.debug("사용자 물리삭제 시작: id={}", id);
 
