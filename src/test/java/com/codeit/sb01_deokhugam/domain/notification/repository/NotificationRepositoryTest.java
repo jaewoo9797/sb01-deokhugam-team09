@@ -161,19 +161,27 @@ class NotificationRepositoryTest {
 	@Test
 	void findByCursorPaginationTest() {
 		//given
-		UUID userId = UUID.fromString("54b78d8f-68fb-4c60-8f26-00bb1a5e219d");
-		NotificationSearchCondition condition = new NotificationSearchCondition(userId, Sort.Direction.ASC, null, null);
+		for (int i = 0; i < 10; i++) {
+			Notification notification = Notification.fromLike(user, review);
+			entityManager.persist(notification);
+		}
 
-		int limit = 5;
+		NotificationSearchCondition condition = new NotificationSearchCondition(user.getId(), Sort.Direction.ASC, null, null);
+		int limit = 3;
 
 		// when
 		List<Notification> notifications = notificationRepository.findByCursorPagination(condition, limit);
-		notifications.forEach(notification -> {
-			log.info("Notification ID: {}", notification.getId());
-			log.info("Notification createdAt: {}", notification.getCreatedAt());
-		});
+		boolean result = notificationRepository.findAllByUserId(user.getId())
+			.stream()
+			.allMatch(Notification::isConfirmed);
+
 		// then
-		assertThat(notifications).isNotNull();
+		assertAll(
+			() -> assertThat(notifications).isNotEmpty(),
+			() -> assertThat(notifications).hasSizeLessThanOrEqualTo(4),
+			() -> assertThat(notifications.get(0).getUser().getId()).isEqualTo(user.getId()),
+			() -> assertThat(result).isFalse()
+		);
 	}
 
 }
