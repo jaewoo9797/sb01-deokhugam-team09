@@ -6,6 +6,8 @@ import static org.mockito.BDDMockito.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,8 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
+import com.codeit.sb01_deokhugam.domain.notification.dto.request.NotificationSearchCondition;
 import com.codeit.sb01_deokhugam.domain.notification.dto.response.NotificationDto;
 import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 import com.codeit.sb01_deokhugam.domain.notification.exception.NotificationException;
@@ -26,6 +30,7 @@ import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.service.UserService;
+import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import com.codeit.sb01_deokhugam.util.TestUtils;
 
@@ -44,15 +49,17 @@ class NotificationServiceTest {
 	private UUID notificationId;
 	private UUID userId;
 	private Notification notification;
+	private User user;
+	private Review review;
 
 	@BeforeEach
 	void setUp() {
 		notificationId = UUID.randomUUID();
 		userId = UUID.randomUUID();
 
-		User user = new User("test@email.com", "pw", "닉네임");
+		user = new User("test@email.com", "pw", "닉네임");
 		Book book = getBook();
-		Review review = new Review(user, book, "좋아요", BigDecimal.valueOf(4.0));
+		review = new Review(user, book, "좋아요", BigDecimal.valueOf(4.0));
 
 		notification = Notification.fromComment(user, "댓글 내용", review);
 		TestUtils.setId(notification, notificationId);
@@ -127,6 +134,42 @@ class NotificationServiceTest {
 
 		// then
 		verify(notificationRepository, never()).updateAllConfirmed(userId);
+	}
+
+	@DisplayName("다음 페이지가 존재하면 hasNext=true, nextCursor 설정됨")
+	@Test
+	void should_return_hasNext_true_and_nextCursor_when_notifications_exceed_limit() {
+		//given
+		int totalCount = 6;
+		int limit = 3;
+		List<Notification> notifications = createNotificationsWithCreatedAt(totalCount);
+		NotificationSearchCondition condition = new NotificationSearchCondition(userId, Sort.Direction.DESC, null, null);
+
+		given(notificationRepository.findByCursorPagination(condition, limit))
+			.willReturn(notifications);
+		given(notificationRepository.countByUserIdAndConfirmedFalse(userId))
+			.willReturn((long)totalCount);
+
+		// when
+		PageResponse<NotificationDto> result = notificationService.getNotificationsByCursor(condition, limit);
+
+		// then
+		assertThat(result.isHasNext()).isTrue();
+		assertThat(result.getNextCursor()).isNotNull();
+	}
+
+	private List<Notification> createNotificationsWithCreatedAt(int count) {
+		List<Notification> notifications = new ArrayList<>();
+		Instant baseTime = Instant.now();
+
+		for (int i = 0; i < count; i++) {
+			Notification n = Notification.fromLike(user, review);
+			Instant createdAt = baseTime.minusSeconds(i * 60L); // 1분 간격으로 생성 시간 차이
+			TestUtils.setField(n, "createdAt", createdAt);
+			notifications.add(n);
+		}
+
+		return notifications;
 	}
 
 	private static Book getBook() {
