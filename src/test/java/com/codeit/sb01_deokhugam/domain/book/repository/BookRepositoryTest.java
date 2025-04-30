@@ -1,0 +1,161 @@
+package com.codeit.sb01_deokhugam.domain.book.repository;
+
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.codeit.sb01_deokhugam.config.JpaAuditingConfiguration;
+import com.codeit.sb01_deokhugam.config.QueryDslConfig;
+import com.codeit.sb01_deokhugam.domain.book.entity.Book;
+
+@DataJpaTest
+@ActiveProfiles("test") //인메모리 DB사용
+@Import({QueryDslConfig.class, JpaAuditingConfiguration.class})
+public class BookRepositoryTest {
+
+	@Autowired
+	private TestEntityManager entityManager; //test용 엔티티매니저- 엔티티를 저장 및 조회할때마다 영속성 컨텍스트에 엔티티를 보관하고 관리한다.
+
+	@Autowired
+	private BookRepository bookRepository;
+
+	private Book book;
+	private Book book2;
+	private Book book3;
+
+	@BeforeEach
+	void setUp() {
+		book = new Book(
+			"제목", "저자", "책입니다.", "12345678",
+			"출판사", LocalDate.parse("2025-01-01"),
+			"https://test.com",
+			0, new BigDecimal("0.0"), false
+		);
+
+		book2 = new Book(
+			"제목2", "저자", "책입니다2.", "22345678",
+			"출판사", LocalDate.parse("2025-01-02"),
+			"https://test.com",
+			0, new BigDecimal("0.0"), false
+		);
+
+		book3 = new Book(
+			"제목2", "저자", "책입니다.", "32345678",
+			"출판사", LocalDate.parse("2025-01-01"),
+			"https://test.com",
+			0, new BigDecimal("0.0"), false
+		);
+
+	}
+
+	@Nested
+	@DisplayName("논리적 삭제되지 않은 도서 조회")
+	public class FindByIdNotLogicalDelete {
+
+		@Test
+		@DisplayName("논리적 삭제되지 않은 도서를 조회한다.")
+		public void findByIdNotLogicalDelete_NotDeletedBook_ReturnsBook() {
+			//given
+			bookRepository.save(book);
+			UUID id = book.getId(); //저장 후 id가 생김.
+
+			// 영속성 컨텍스트 초기화 - 1차 캐시 비우기. 이미 조회되어 1차 캐시에 저장된 것을 찾지 않고, DB에서 찾게 하도록 설정한다.
+			entityManager.flush();
+			entityManager.clear();
+
+			//when
+			Optional<Book> result = bookRepository.findByIdNotLogicalDelete(id);
+
+			//then
+			assertThat(result).isPresent();
+			assertThat(result.get().getId()).isEqualTo(id);
+		}
+
+		@Test
+		@DisplayName("논리적 삭제된 도서를 조회한다. 빈 Optional을 반환받는다.")
+		public void findByIdNotLogicalDelete_DeletedBook_ReturnsOptional() {
+			//given
+			bookRepository.save(book);
+			book.softDelete(); //논리적 삭제
+			UUID id = book.getId();
+
+			//when
+			Optional<Book> result = bookRepository.findByIdNotLogicalDelete(id);
+
+			//then
+			assertThat(result).isEmpty();
+		}
+	}
+
+	@Nested
+	@DisplayName("도서 목록을 커서 기반 페이지네이션으로 조회한다.")
+	public class findListByCursor {
+
+		@Test
+		@DisplayName("필터링과 정렬기준으로 도서를 커서 기반 페이징하여 처음 조회한다. ")
+		public void findListByCursor_ReturnsBook() {
+			//given
+			String keyword = "제목";
+			String orderBy = "title";
+			String direction = "DESC";
+			String cursor = null;
+			Instant after = null;
+			Integer limit = 10;
+
+			//DB 데이터 지우기
+			bookRepository.deleteAll();
+
+			//저장
+			bookRepository.save(book);
+			bookRepository.save(book2);
+			bookRepository.save(book3);
+
+			//영속성 컨텍스트 1차 캐시 지우기
+			entityManager.flush();
+			entityManager.clear();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+			assertThat(books.size()).isEqualTo(3); //books의 사이즈가 저장한 책들의 수와 동일한지 확인
+
+			//제목 순대로 정렬되었는가
+			assertThat(books.get(0).getTitle()).isEqualTo("제목2");
+
+			//제목이 동일하다면, 2차 커서인 createAt으로 정렬되었는지 근삿값 비교(자바-postgreSql Instant 표현 방식 차이)
+			Duration diff = Duration.between(book2.getCreatedAt(), books.get(0).getCreatedAt());
+			assertThat(Math.abs(diff.getSeconds())).isLessThanOrEqualTo(1);
+		}
+
+	}
+
+	// @Nested
+	// @DisplayName("필터링된 도서 목록의 총 개수를 조회한다.")
+	// public class getTotalElements{
+	//
+	// 	@Test
+	// 	@DisplayName("필터링된 도서 목록의 총 개")
+	//
+	// }
+	//dg
+
+}
