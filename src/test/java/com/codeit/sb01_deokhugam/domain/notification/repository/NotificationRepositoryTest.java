@@ -174,13 +174,13 @@ class NotificationRepositoryTest {
 	@Test
 	void shouldDeleteOnlyConfirmedNotificationsOlderThanAWeek() {
 		//given
-		Instant cutoffDate = Instant.now().minus(7, ChronoUnit.DAYS);
+		Instant oneWeekAgo = Instant.now().minus(7, ChronoUnit.DAYS);
 		List<Notification> deletable = notificationRepository.findAll().stream()
-			.filter(notification -> notification.isConfirmed() && notification.getUpdatedAt().isBefore(cutoffDate))
+			.filter(notification -> notification.isConfirmed() && notification.getUpdatedAt().isBefore(oneWeekAgo))
 			.toList();
 
 		// when
-		int deletedCount = notificationRepository.deleteOldNotificationsOlderThan(cutoffDate);
+		int deletedCount = notificationRepository.deleteConfirmedOlderThan(oneWeekAgo);
 		// then
 		assertThat(deletedCount).isEqualTo(deletable.size());
 	}
