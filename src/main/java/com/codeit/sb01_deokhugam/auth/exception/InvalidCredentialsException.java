@@ -1,5 +1,6 @@
-package com.codeit.sb01_deokhugam.domain.user.exception;
+package com.codeit.sb01_deokhugam.auth.exception;
 
+import com.codeit.sb01_deokhugam.domain.user.exception.UserException;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 
 public class InvalidCredentialsException extends UserException {

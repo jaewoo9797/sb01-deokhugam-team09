@@ -21,11 +21,11 @@ public class User extends BaseUpdatableEntity {
 	@Column(length = 20, nullable = false)
 	private String password;
 
-	@Column(length = 20, nullable = false, unique = true)
+	@Column(length = 20, nullable = false)
 	private String nickname;
 
 	@Column(name = "is_deleted", nullable = false)
-	private Boolean isDeleted = false;
+	private boolean isDeleted = false;
 
 	public User(String email, String password, String nickname) {
 		this.email = email;

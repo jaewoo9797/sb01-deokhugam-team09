@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,18 +23,23 @@ import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 import com.codeit.sb01_deokhugam.domain.notification.exception.NotificationException;
 import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import com.codeit.sb01_deokhugam.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
-	
+
 	@InjectMocks
 	private NotificationService notificationService;
 
 	@Mock
 	private NotificationRepository notificationRepository;
+
+	@Mock
+	private UserService userService;
 
 	private UUID notificationId;
 	private UUID userId;
@@ -50,21 +56,6 @@ class NotificationServiceTest {
 
 		notification = Notification.fromComment(user, "댓글 내용", review);
 		TestUtils.setId(notification, notificationId);
-	}
-
-	private static Book getBook() {
-		return new Book(
-			"이펙티브 자바",
-			"조슈아 블로크",
-			"자바 모범 사례를 담은 책입니다.",
-			"9780134685991",
-			"한빛미디어",
-			LocalDate.of(2018, 1, 1),
-			"https://example.com/thumbnail.jpg",
-			10,
-			new BigDecimal("4.8"),
-			false
-		);
 	}
 
 	@Test
@@ -96,4 +87,61 @@ class NotificationServiceTest {
 			.hasMessageContaining(ErrorCode.NOTIFICATION_NOT_FOUND.getMessage());
 		verify(notificationRepository).findByIdAndUserId(notificationId, userId);
 	}
+
+	@DisplayName("알림이 존재하는 유저는 업데이트 메서드가 호출된다.")
+	@Test
+	void CallUpdateAllConfirmed_when_exists() {
+		//given
+		UUID userId = UUID.randomUUID();
+		UserDto userDto = new UserDto(userId, "test@email.com", "nickname", Instant.now());
+
+		when(userService.findActiveUser(userId))
+			.thenReturn(userDto);
+
+		when(notificationRepository.existsByUserIdAndConfirmedFalse(userId))
+			.thenReturn(true);
+
+		// when
+		notificationService.confirmAllNotifications(userId);
+
+		// then
+		verify(notificationRepository).existsByUserIdAndConfirmedFalse(userId);
+		verify(notificationRepository).updateAllConfirmed(userId);
+	}
+
+	@DisplayName("알림이 존재하지 않는 유저는 업데이트 메서드가 호출되지 않는다.")
+	@Test
+	void doesNotCallUpdateAllConfirmed_whenNoNotificationsExist() {
+		//given
+		UUID userId = UUID.randomUUID();
+		UserDto userDto = new UserDto(userId, "test@email.com", "nickname", Instant.now());
+
+		when(userService.findActiveUser(userId))
+			.thenReturn(userDto);
+
+		when(notificationRepository.existsByUserIdAndConfirmedFalse(userId))
+			.thenReturn(false);
+
+		// when
+		notificationService.confirmAllNotifications(userId);
+
+		// then
+		verify(notificationRepository, never()).updateAllConfirmed(userId);
+	}
+
+	private static Book getBook() {
+		return new Book(
+			"이펙티브 자바",
+			"조슈아 블로크",
+			"자바 모범 사례를 담은 책입니다.",
+			"9780134685991",
+			"한빛미디어",
+			LocalDate.of(2018, 1, 1),
+			"https://example.com/thumbnail.jpg",
+			10,
+			new BigDecimal("4.8"),
+			false
+		);
+	}
+
 }

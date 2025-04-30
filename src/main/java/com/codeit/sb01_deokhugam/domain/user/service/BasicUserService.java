@@ -1,17 +1,13 @@
 package com.codeit.sb01_deokhugam.domain.user.service;
 
-import java.time.Instant;
-import java.time.Period;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
-import com.codeit.sb01_deokhugam.domain.user.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.exception.UserAlreadyExistsException;
@@ -23,14 +19,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicUserService implements UserService {
 
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
 		log.debug("사용자 생성 시작: request={}", userRegisterRequest);
@@ -42,14 +39,11 @@ public class BasicUserService implements UserService {
 		if (userRepository.existsByEmail(email)) {
 			throw UserAlreadyExistsException.withEmail(email);
 		}
-		if (userRepository.existsByNickname(nickname)) {
-			throw UserAlreadyExistsException.withNickname(nickname);
-		}
 
 		User user = new User(email, password, nickname);
 
 		userRepository.save(user);
-		log.info("{} 사용자 생성 완료: id={}, email={}", user.getNickname(), user.getId(), user.getEmail());
+		log.info("사용자 생성 완료: id={}, email={}, nickname={}", user.getId(), user.getEmail(), user.getNickname());
 		return userMapper.toDto(user);
 	}
 
@@ -70,10 +64,7 @@ public class BasicUserService implements UserService {
 	public List<UserDto> findAllActiveUsers() {
 		log.debug("전체 사용자 조회 시작");
 
-		List<UserDto> userDtos = userRepository.findAllByIsDeletedFalse()
-			.stream()
-			.map(userMapper::toDto)
-			.toList();
+		List<UserDto> userDtos = userRepository.findAllByIsDeletedFalse().stream().map(userMapper::toDto).toList();
 
 		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
@@ -97,56 +88,42 @@ public class BasicUserService implements UserService {
 	public List<UserDto> findAllUsersIncludingDeleted() {
 		log.debug("논리삭제 상태 포함하여 전체 사용자 조회 시작");
 
-		List<UserDto> userDtos = userRepository.findAll()
-			.stream()
-			.map(userMapper::toDto)
-			.toList();
+		List<UserDto> userDtos = userRepository.findAll().stream().map(userMapper::toDto).toList();
 
 		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
 	}
 
-	//todo 파워유저 조회기능 추가
-	@Override
-	public List<PowerUserDto> findPowerUsers(Period period, String cursor, Instant after, Pageable pageable) {
-		return List.of();
-	}
-
 	//유저 닉네임 변경
-	@Transactional
 	@Override
+	@Transactional(readOnly = false)
 	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
 		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
 
-		User user = userRepository.findByIdAndIsDeletedFalse(id)
-			.orElseThrow(() -> UserNotFoundException.withId(id));
+		User user = userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> UserNotFoundException.withId(id));
 
 		String newNickname = userUpdateRequest.nickname();
-		if (userRepository.existsByNickname(newNickname)) {
-			throw UserAlreadyExistsException.withNickname(newNickname);
-		}
 		user.update(newNickname);
 
 		log.info("사용자 닉네임 수정 완료: id={}, nickname={}", id, user.getNickname());
 		return userMapper.toDto(user);
 	}
 
-	//유저 isUpdated 필드 false로 변경
-	@Transactional
+	//유저 isDeleted 필드 false로 변경
 	@Override
+	@Transactional(readOnly = false)
 	public void softDelete(UUID id) {
 		log.debug("사용자 논리삭제 시작: id={}", id);
 
-		User user = userRepository.findByIdAndIsDeletedFalse(id)
-			.orElseThrow(() -> UserNotFoundException.withId(id));
+		User user = userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> UserNotFoundException.withId(id));
 		user.softDelete();
 
 		log.info("사용자 논리삭제 완료: id={}", id);
 	}
 
 	//물리 삭제
-	@Transactional
 	@Override
+	@Transactional(readOnly = false)
 	public void hardDelete(UUID id) {
 		log.debug("사용자 물리삭제 시작: id={}", id);
 
