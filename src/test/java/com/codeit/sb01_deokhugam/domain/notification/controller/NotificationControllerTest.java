@@ -5,18 +5,30 @@ import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.codeit.sb01_deokhugam.domain.book.entity.Book;
+import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
+import com.codeit.sb01_deokhugam.util.EntityProvider;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -34,6 +46,18 @@ class NotificationControllerTest {
 
 	@LocalServerPort
 	int port;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private BookRepository bookRepository;
+
+	@Autowired
+	private ReviewRepository reviewRepository;
+
+	@Autowired
+	private NotificationRepository notificationRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -146,13 +170,14 @@ class NotificationControllerTest {
 	@Test
 	void should_return_notifications_with_nextCursor_when_hasNext_is_true() {
 		// given
+		User user = insertNotification();
 		int limit = 3;
 
 		// when
 		ExtractableResponse<Response> response = given().log().all()
 			.contentType(ContentType.JSON)
-			.header(LOGIN_USER_HEADER, USER_ID_UUID)
-			.queryParam("userId", USER_ID_UUID)
+			.header(LOGIN_USER_HEADER, user.getId())
+			.queryParam("userId", user.getId())
 			.queryParam("limit", limit)
 			.when().get("/api/notifications")
 			.then().log().all()
@@ -172,13 +197,14 @@ class NotificationControllerTest {
 	@Test
 	void should_return_hasNext_false_and_null_cursor_when_notifications_do_not_exceed_limit() {
 		//given
+		User user = insertNotification();
 		int limit = 20;
 
 		// when
 		ExtractableResponse<Response> response = given().log().all()
 			.contentType(ContentType.JSON)
-			.header(LOGIN_USER_HEADER, USER_ID_UUID)
-			.queryParam("userId", USER_ID_UUID)
+			.header(LOGIN_USER_HEADER, user.getId())
+			.queryParam("userId", user.getId())
 			.queryParam("limit", limit)
 			.when().get("/api/notifications")
 			.then().log().all()
@@ -235,5 +261,20 @@ class NotificationControllerTest {
 			() -> assertThat(result.getString("code")).isEqualTo(ErrorCode.UNAUTHORIZED.name()),
 			() -> assertThat(result.getString("timestamp")).isNotNull()
 		);
+	}
+
+	private User insertNotification() {
+		User user = EntityProvider.createUser();
+		userRepository.save(user);
+		Book book = EntityProvider.createBook();
+		bookRepository.save(book);
+		Review review = EntityProvider.createReview(user, book);
+		reviewRepository.save(review);
+		List<Notification> notifications = new ArrayList<>();
+		for (int i = 0; i <= 10; i++) {
+			notifications.add(Notification.fromComment(user, "좋은 책입니다.", review));
+		}
+		notificationRepository.saveAll(notifications);
+		return user;
 	}
 }

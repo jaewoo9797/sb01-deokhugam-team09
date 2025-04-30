@@ -3,8 +3,6 @@ package com.codeit.sb01_deokhugam.domain.notification.repository;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +25,7 @@ import com.codeit.sb01_deokhugam.domain.notification.dto.request.NotificationSea
 import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.util.EntityProvider;
 
 import groovy.util.logging.Log4j2;
 import jakarta.persistence.EntityManager;
@@ -50,29 +49,14 @@ class NotificationRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		user = new User("test@email.com", "password", "test");
-		Book book = getBook();
-		review = new Review(user, book, "좋은 책입니다.", new BigDecimal("4.5"));
+		user = EntityProvider.createUser();
+		Book book = EntityProvider.createBook();
+		review = EntityProvider.createReview(user, book);
 		entityManager.persist(user);
 		entityManager.persist(book);
 		entityManager.persist(review);
 		entityManager.flush();
 		entityManager.clear();
-	}
-
-	private static Book getBook() {
-		return new Book(
-			"이펙티브 자바",
-			"조슈아 블로크",
-			"자바 모범 사례를 담은 책입니다.",
-			"9780134685991",
-			"한빛미디어",
-			LocalDate.of(2018, 1, 1),
-			"https://example.com/thumbnail.jpg",
-			10,
-			new BigDecimal("4.8"),
-			false
-		);
 	}
 
 	@DisplayName("findByIdAndUserId: 알림 ID와 유저 ID 로 알림을 조회한다.")
