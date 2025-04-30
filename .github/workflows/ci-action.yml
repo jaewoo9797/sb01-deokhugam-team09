@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write  # jacoco PR 코멘트 작성 권한 추가
 
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +70,7 @@ jobs:
         with:
           title: 📝 테스트 커버리지 리포트
           paths: ${{ github.workspace }}/build/jacocoReport/test/jacocoTestReport.xml
-          token: ${{ secrets.GITHUB_TOKEN }}  # 또는 PRIVATE_REPO_ACCESS_TOKEN
+          token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 0
           min-coverage-changed-files: 80
 
