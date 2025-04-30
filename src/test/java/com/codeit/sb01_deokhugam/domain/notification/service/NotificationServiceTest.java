@@ -46,53 +46,49 @@ class NotificationServiceTest {
 	@Mock
 	private UserService userService;
 
-	private UUID notificationId;
-	private UUID userId;
 	private Notification notification;
 	private User user;
 	private Review review;
 
 	@BeforeEach
 	void setUp() {
-		notificationId = UUID.randomUUID();
-		userId = UUID.randomUUID();
 
 		user = new User("test@email.com", "pw", "닉네임");
 		Book book = getBook();
 		review = new Review(user, book, "좋아요", BigDecimal.valueOf(4.0));
 
 		notification = Notification.fromComment(user, "댓글 내용", review);
-		TestUtils.setId(notification, notificationId);
+		TestUtils.setId(notification, UUID.randomUUID());
 	}
 
 	@Test
 	@DisplayName("알림 확인 성공 시 DTO 반환")
 	void confirmNotification_Success() {
 		// given
-		given(notificationRepository.findByIdAndUserId(notificationId, userId))
+		given(notificationRepository.findByIdAndUserId(notification.getId(), user.getId()))
 			.willReturn(Optional.of(notification));
 
 		// when
-		NotificationDto dto = notificationService.confirmNotification(notificationId, userId);
+		NotificationDto dto = notificationService.confirmNotification(notification.getId(), user.getId());
 
 		// then
-		assertThat(dto.id()).isEqualTo(notificationId);
+		assertThat(dto.id()).isEqualTo(notification.getId());
 		assertThat(dto.confirmed()).isTrue();
-		verify(notificationRepository).findByIdAndUserId(notificationId, userId);
+		verify(notificationRepository).findByIdAndUserId(notification.getId(), user.getId());
 	}
 
 	@DisplayName("알림이 없으면 예외 발생")
 	@Test
 	void confirmNotification_ThrowsException_WhenNotFound() {
 		//given
-		given(notificationRepository.findByIdAndUserId(notificationId, userId))
+		given(notificationRepository.findByIdAndUserId(notification.getId(), user.getId()))
 			.willReturn(Optional.empty());
 
 		// when then
-		assertThatThrownBy(() -> notificationService.confirmNotification(notificationId, userId))
+		assertThatThrownBy(() -> notificationService.confirmNotification(notification.getId(), user.getId()))
 			.isInstanceOf(NotificationException.class)
 			.hasMessageContaining(ErrorCode.NOTIFICATION_NOT_FOUND.getMessage());
-		verify(notificationRepository).findByIdAndUserId(notificationId, userId);
+		verify(notificationRepository).findByIdAndUserId(notification.getId(), user.getId());
 	}
 
 	@DisplayName("알림이 존재하는 유저는 업데이트 메서드가 호출된다.")
@@ -143,11 +139,11 @@ class NotificationServiceTest {
 		int totalCount = 6;
 		int limit = 3;
 		List<Notification> notifications = createNotificationsWithCreatedAt(totalCount);
-		NotificationSearchCondition condition = new NotificationSearchCondition(userId, Sort.Direction.DESC, null, null);
+		NotificationSearchCondition condition = new NotificationSearchCondition(user.getId(), Sort.Direction.DESC, null, null);
 
 		given(notificationRepository.findByCursorPagination(condition, limit))
 			.willReturn(notifications);
-		given(notificationRepository.countByUserIdAndConfirmedFalse(userId))
+		given(notificationRepository.countByUserIdAndConfirmedFalse(user.getId()))
 			.willReturn((long)totalCount);
 
 		// when
