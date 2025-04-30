@@ -39,13 +39,21 @@ public class BookRepositoryTest {
 	private Book book2;
 	private Book book3;
 
+	private String keyword = "제목";
+	private String orderBy = "title";
+	private String direction = "DESC";
+	private String cursor = null;
+	private Instant after = null;
+	private Integer limit = 10;
+
 	@BeforeEach
 	void setUp() {
+
 		book = new Book(
 			"제목", "저자", "책입니다.", "12345678",
 			"출판사", LocalDate.parse("2025-01-01"),
 			"https://test.com",
-			0, new BigDecimal("0.0"), false
+			5, new BigDecimal("3.0"), false
 		);
 
 		book2 = new Book(
@@ -59,7 +67,7 @@ public class BookRepositoryTest {
 			"제목2", "저자", "책입니다.", "32345678",
 			"출판사", LocalDate.parse("2025-01-01"),
 			"https://test.com",
-			0, new BigDecimal("0.0"), false
+			5, new BigDecimal("3.0"), false
 		);
 
 	}
@@ -103,33 +111,34 @@ public class BookRepositoryTest {
 		}
 	}
 
+	//TODO: impl 코드를 더럽게 썼더니
 	@Nested
 	@DisplayName("도서 목록을 커서 기반 페이지네이션으로 조회한다.")
 	public class findListByCursor {
 
-		@Test
-		@DisplayName("필터링과 정렬기준으로 도서를 커서 기반 페이징하여 처음 조회한다. ")
-		public void findListByCursor_ReturnsBook() {
-			//given
-			String keyword = "제목";
-			String orderBy = "title";
-			String direction = "DESC";
-			String cursor = null;
-			Instant after = null;
-			Integer limit = 10;
+		@BeforeEach
+		void setUp() throws InterruptedException {
 
 			//DB 데이터 지우기
 			bookRepository.deleteAll();
 
 			//저장
 			bookRepository.save(book);
+			Thread.sleep(100);
 			bookRepository.save(book2);
+			Thread.sleep(100);
 			bookRepository.save(book3);
 
 			//영속성 컨텍스트 1차 캐시 지우기
 			entityManager.flush();
 			entityManager.clear();
 
+		}
+
+		@Test
+		@DisplayName("검색어 필터링과 제목 정렬기준으로 도서를 커서 기반 페이징하여 처음 조회한다. ")
+		public void findListByCursor_ReturnsBook() {
+			//given
 			//when
 			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
 				limit); //service에서 limit에 1을 더해 보낸다.
@@ -142,20 +151,131 @@ public class BookRepositoryTest {
 			assertThat(books.get(0).getTitle()).isEqualTo("제목2");
 
 			//제목이 동일하다면, 2차 커서인 createAt으로 정렬되었는지 근삿값 비교(자바-postgreSql Instant 표현 방식 차이)
-			Duration diff = Duration.between(book2.getCreatedAt(), books.get(0).getCreatedAt());
+			Duration diff = Duration.between(book3.getCreatedAt(), books.get(0).getCreatedAt());
 			assertThat(Math.abs(diff.getSeconds())).isLessThanOrEqualTo(1);
+		}
+
+		@Test
+		@DisplayName("키워드 없이 reviewcount 정렬기준과 커서를 이용해 검색한다.")
+		public void findListByCursor_FilterWithReviewCountCursor_ReturnsBook() {
+			//given
+			keyword = null;
+			orderBy = "reviewCount";
+			limit = 2;
+			cursor = "5";
+			after = book.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+
+			//reviewcount 0인가
+			assertThat(books.get(books.size() - 1).getReviewCount()).isEqualTo(0);
+
+		}
+
+		@Test
+		@DisplayName("키워드 없이 title 정렬기준과 커서를 이용해 내림차순 검색한다.")
+		public void findListByCursor_FilterWithTitleCursorDesc_ReturnsBook() {
+			//given
+			keyword = null;
+			limit = 2;
+			cursor = "제목2";
+			after = book2.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+
+			//제목이 "제목"인가
+			assertThat(books.get(books.size() - 1).getTitle()).isEqualTo("제목");
+
+		}
+
+		@Test
+		@DisplayName("키워드 없이 title 정렬기준과 커서를 이용해 오름차순 검색한다.")
+		public void findListByCursor_FilterWithTitleCursor_ReturnsBook() {
+			//given
+			keyword = null;
+			direction = "ASC";
+			limit = 2;
+			cursor = "제목2";
+			after = book2.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+			assertThat(books.get(books.size() - 1).getTitle()).isEqualTo("제목2");
+
+		}
+
+		@Test
+		@DisplayName("키워드 없이 rating 정렬기준과 커서를 이용해 내림차순 검색한다.")
+		public void findListByCursor_FilterWithRatingCursorDesc_ReturnsBook() {
+			//given
+			keyword = null;
+			limit = 2;
+			orderBy = "rating";
+			cursor = "3.0";
+			after = book.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();  // 리스트가 비어있지 않음을 확인
+			assertThat(books.get(books.size() - 1).getRating()).isEqualTo("0.0");
+
+		}
+
+		@Test
+		@DisplayName("키워드 없이 rating 정렬기준과 커서를 이용해 오름차순 검색한다.")
+		public void findListByCursor_FilterWithRatingCursorAsc_ReturnsBook() {
+			//given
+			keyword = null;
+			limit = 2;
+			direction = "ASC";
+			orderBy = "rating";
+			cursor = "3.0";
+			after = book.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+			assertThat(books.get(books.size() - 1).getRating()).isEqualTo("3.0");
+
 		}
 
 	}
 
-	// @Nested
-	// @DisplayName("필터링된 도서 목록의 총 개수를 조회한다.")
-	// public class getTotalElements{
-	//
-	// 	@Test
-	// 	@DisplayName("필터링된 도서 목록의 총 개")
-	//
-	// }
-	//dg
+	@Nested
+	@DisplayName("필터링된 도서 목록의 총 개수를 조회한다.")
+	public class getTotalElements {
+
+		@Test
+		@DisplayName("필터링된 도서 목록의 총 개수 조회를 성공한다.")
+		public void getTotalElements_returnsTotalElemets() {
+			//given
+
+			//when
+			Long totalElements = bookRepository.getTotalElements(keyword);
+
+			assertThat(totalElements).isEqualTo(3);
+		}
+
+	}
 
 }
