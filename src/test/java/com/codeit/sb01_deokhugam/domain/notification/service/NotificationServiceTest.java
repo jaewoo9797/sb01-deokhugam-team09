@@ -3,9 +3,7 @@ package com.codeit.sb01_deokhugam.domain.notification.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +30,7 @@ import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
+import com.codeit.sb01_deokhugam.util.EntityProvider;
 import com.codeit.sb01_deokhugam.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,10 +51,9 @@ class NotificationServiceTest {
 
 	@BeforeEach
 	void setUp() {
-
-		user = new User("test@email.com", "pw", "닉네임");
-		Book book = getBook();
-		review = new Review(user, book, "좋아요", BigDecimal.valueOf(4.0));
+		user = EntityProvider.createUser();
+		Book book = EntityProvider.createBook();
+		review = EntityProvider.createReview(user, book);
 
 		notification = Notification.fromComment(user, "댓글 내용", review);
 		TestUtils.setId(notification, UUID.randomUUID());
@@ -166,21 +164,6 @@ class NotificationServiceTest {
 		}
 
 		return notifications;
-	}
-
-	private static Book getBook() {
-		return new Book(
-			"이펙티브 자바",
-			"조슈아 블로크",
-			"자바 모범 사례를 담은 책입니다.",
-			"9780134685991",
-			"한빛미디어",
-			LocalDate.of(2018, 1, 1),
-			"https://example.com/thumbnail.jpg",
-			10,
-			new BigDecimal("4.8"),
-			false
-		);
 	}
 
 }
