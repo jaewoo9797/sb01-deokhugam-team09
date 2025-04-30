@@ -33,10 +33,10 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 	public Optional<Book> findByIdNotLogicalDelete(UUID id) {
 		QBook book = QBook.book;
 
-		if (id == null) {
-			return Optional.empty();
-		}
-		
+		// if (id == null) {
+		// 	return Optional.empty();
+		// }
+
 		Book result = queryFactory
 			.selectFrom(book)
 			.where(book.id.eq(id).and(book.deleted.isFalse()))
