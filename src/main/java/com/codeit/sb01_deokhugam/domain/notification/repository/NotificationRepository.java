@@ -29,7 +29,7 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 	long countByUserIdAndConfirmedFalse(UUID userId);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
-	@Query("DELETE FROM Notification n WHERE n.confirmed = true AND n.updatedAt < :date")
-	int deleteOldNotificationsOlderThan(@Param("date") Instant date);
+	@Query("DELETE FROM Notification n WHERE n.confirmed = true AND n.updatedAt < :cutOfDate")
+	int deleteConfirmedOlderThan(@Param("cutOfDate") Instant cutOfDate);
 
 }
