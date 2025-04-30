@@ -24,7 +24,7 @@ public class PowerUser extends BaseEntity {
 	@Column(name = "user_id", nullable = false)
 	private UUID userId;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(name = "nickname", nullable = false, length = 20)
 	private String nickname;
 
 	@Enumerated(EnumType.STRING)
@@ -37,7 +37,7 @@ public class PowerUser extends BaseEntity {
 	@Column(name = "score", precision = 2, scale = 1)
 	BigDecimal score;
 
-	@Column(name = "review_score_sum", precision = 2, scale = 1)
+	@Column(name = "review_score_sum")
 	BigDecimal reviewScoreSum;
 
 	@Column(name = "like_count", nullable = false)
@@ -45,4 +45,24 @@ public class PowerUser extends BaseEntity {
 
 	@Column(name = "comment_count", nullable = false)
 	int commentCount;
+
+	//todo 소수점 1자리까지만 나타낼건데 테이블에 반올림한 데이터로 저장할지(정확성 내려감. 컬럼에 프리시전, 스케일 속성 추가하기) 데이터 제공시에 반올림처리해서 내보낼지 고민하기
+	public PowerUser(UUID userId, String nickname, Period period, int rank, BigDecimal score, BigDecimal reviewScoreSum,
+		int likeCount, int commentCount) {
+		if (userId == null || nickname == null || period == null || rank < 0 || score.doubleValue() < 0.0
+			|| reviewScoreSum.doubleValue() < 0.0 || likeCount < 0 || commentCount < 0) {
+			throw new IllegalArgumentException("유효한 값을 입력해주세요.");
+		}
+		if (nickname.length() < 2 || nickname.length() > 20) {
+			throw new IllegalArgumentException("닉네임은 2자 이상 20자 이하로 입력해주세요.");
+		}
+
+		this.userId = userId;
+		this.nickname = nickname;
+		this.period = period;
+		this.rank = rank;
+		this.score = score;
+		this.reviewScoreSum = reviewScoreSum;
+		this.likeCount = likeCount;
+	}
 }
