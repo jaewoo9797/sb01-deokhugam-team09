@@ -25,4 +25,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 	// 알림이 확인되지 않고 계속해서 쌓여간다면 조회 시 복합 인덱스 고려
 	boolean existsByUserIdAndConfirmedFalse(UUID userId);
 
+	long countByUserIdAndConfirmedFalse(UUID userId);
+
 }
