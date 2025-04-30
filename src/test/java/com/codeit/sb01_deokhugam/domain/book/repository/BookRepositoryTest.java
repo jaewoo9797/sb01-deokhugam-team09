@@ -111,7 +111,6 @@ public class BookRepositoryTest {
 		}
 	}
 
-	//TODO: impl 코드를 더럽게 썼더니
 	@Nested
 	@DisplayName("도서 목록을 커서 기반 페이지네이션으로 조회한다.")
 	public class findListByCursor {
@@ -122,7 +121,7 @@ public class BookRepositoryTest {
 			//DB 데이터 지우기
 			bookRepository.deleteAll();
 
-			//저장
+			//저장. createAt에 100ms 차이를 주기 위하여 sleep(100) 수행
 			bookRepository.save(book);
 			Thread.sleep(100);
 			bookRepository.save(book2);

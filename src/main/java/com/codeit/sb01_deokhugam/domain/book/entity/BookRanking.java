@@ -11,11 +11,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "book_rankings")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookRanking extends BaseEntity {
 
 	@Column(name = "period", nullable = false)
@@ -45,4 +48,18 @@ public class BookRanking extends BaseEntity {
 
 	@Column(name = "book_id", nullable = false)
 	private UUID bookId;
+
+	public BookRanking(Period period, Integer rank, BigDecimal score, Integer reviewCount, BigDecimal rating,
+		String thumbnailUrl, String title, String author, UUID bookId) {
+		this.period = period;
+		this.rank = rank;
+		this.score = score;
+		this.reviewCount = reviewCount;
+		this.rating = rating;
+		this.thumbnailUrl = thumbnailUrl;
+		this.title = title;
+		this.author = author;
+		this.bookId = bookId;
+	}
+
 }
