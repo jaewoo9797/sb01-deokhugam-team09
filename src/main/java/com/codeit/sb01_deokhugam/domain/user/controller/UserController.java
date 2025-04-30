@@ -49,8 +49,9 @@ public class UserController {
 			.body(user);
 	}
 
-	@PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public ResponseEntity<UserDto> update(@PathVariable UUID id, @Valid UserUpdateRequest userUpdateRequest) {
+	@PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserDto> update(@PathVariable UUID id,
+		@Valid @RequestBody UserUpdateRequest userUpdateRequest) {
 		log.info("사용자 닉네임 변경 요청: id={}, nickname={}", id, userUpdateRequest.nickname());
 		UserDto updatedUser = userService.update(id, userUpdateRequest);
 		log.debug("사용자 닉네임 변경 응답: {}", updatedUser);
