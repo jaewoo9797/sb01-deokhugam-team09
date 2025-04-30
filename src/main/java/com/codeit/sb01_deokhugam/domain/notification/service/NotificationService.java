@@ -47,6 +47,7 @@ public class NotificationService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<NotificationDto> getNotificationsByCursor(NotificationSearchCondition condition, int limit) {
+		userService.findActiveUser(condition.getUserId());
 		List<Notification> notifications = notificationRepository.findByCursorPagination(condition, limit);
 		long totalCount = notificationRepository.countByUserIdAndConfirmedFalse(condition.getUserId());
 
