@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeit.sb01_deokhugam.domain.user.dto.ValidationSequence;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -32,7 +34,8 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping
-	public ResponseEntity<UserDto> create(@Valid @RequestBody RegisterRequest registerRequest) {
+	public ResponseEntity<UserDto> create(
+		@Validated(ValidationSequence.class) @RequestBody RegisterRequest registerRequest) {
 		log.info("사용자 생성 요청: email={}, nickname={}", registerRequest.email(), registerRequest.nickname());
 		UserDto createdUser = userService.create(registerRequest);
 		log.debug("사용자 생성 응답: {}", createdUser);
