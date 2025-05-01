@@ -1,9 +1,11 @@
 package com.codeit.sb01_deokhugam.domain.notification.service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class NotificationService {
+
+	public static final Instant ONE_WEEK_AGO = Instant.now().minus(7, ChronoUnit.DAYS);
 
 	private final UserService userService;
 	private final NotificationRepository notificationRepository;
@@ -59,6 +63,11 @@ public class NotificationService {
 		Instant nextCursor = getNextCursor(hasNext, notifications);
 		int size = content.size();
 		return new PageResponse<>(content, nextCursor, nextCursor, size, hasNext, totalCount);
+	}
+
+	@Scheduled(cron = "0 0 3 * * *")
+	public void deleteConfirmedOlderThanAWeek() {
+		notificationRepository.deleteConfirmedOlderThan(ONE_WEEK_AGO);
 	}
 
 	private Instant getNextCursor(boolean hasNext, List<Notification> notifications) {
