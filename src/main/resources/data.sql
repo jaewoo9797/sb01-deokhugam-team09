@@ -21,7 +21,25 @@ VALUES ('22222222-3333-4444-5555-666666666666', now(), now(),
 
 -- NOTIFICATIONS
 INSERT INTO notifications (id, created_at, updated_at, content, is_confirmed, user_id, review_id)
-VALUES ('cc1b6cbd-4b76-4204-9294-1bc918ffd1c8', now(), now(),
+VALUES ('cc1b6cbd-4b76-4204-9294-1bc918ffd1c8', '2024-01-01T10:00:00', '2024-01-01T10:00:00',
         '[테스터]님이 좋아요를 눌렀습니다.', false,
+        '54b78d8f-68fb-4c60-8f26-00bb1a5e219d',
+        '22222222-3333-4444-5555-666666666666');
+
+INSERT INTO notifications (id, created_at, updated_at, content, is_confirmed, user_id, review_id)
+VALUES ('dc2b7cbd-4b76-4204-9294-1bc918ffd1c9', '2024-02-01T10:00:00', '2024-02-01T10:00:00',
+        '[테스터]님이 댓글을 남겼습니다.', false,
+        '54b78d8f-68fb-4c60-8f26-00bb1a5e219d',
+        '22222222-3333-4444-5555-666666666666');
+
+INSERT INTO notifications (id, created_at, updated_at, content, is_confirmed, user_id, review_id)
+VALUES ('ec3b8cbd-4b76-4204-9294-1bc918ffd1ca', '2024-03-01T10:00:00', '2024-03-01T10:00:00',
+        '[테스터]님이 팔로우했습니다.', false,
+        '54b78d8f-68fb-4c60-8f26-00bb1a5e219d',
+        '22222222-3333-4444-5555-666666666666');
+
+INSERT INTO notifications (id, created_at, updated_at, content, is_confirmed, user_id, review_id)
+VALUES ('fc4c9cbd-4b76-4204-9294-1bc918ffd1cb', '2024-04-01T10:00:00', '2024-04-01T10:00:00',
+        '[테스터]님이 리뷰를 작성했습니다.', false,
         '54b78d8f-68fb-4c60-8f26-00bb1a5e219d',
         '22222222-3333-4444-5555-666666666666');
