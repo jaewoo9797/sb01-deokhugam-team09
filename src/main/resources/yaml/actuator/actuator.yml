@@ -1,0 +1,31 @@
+management:
+  endpoints:
+    web:
+      base-path: "/manage"
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+        exclude:
+          - env
+          - beans
+          - threaddump
+          - heapdump
+          - shutdown
+          - loggers
+  endpoint:
+    health:
+      show-details: always
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+  health:
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+      threshold: 10MB

@@ -13,6 +13,9 @@ java {
     }
 
 }
+springBoot {
+    buildInfo()
+}
 
 bootJar {
     archiveFileName = 'deokhugam.jar'
@@ -40,9 +43,12 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+    // Monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
     // AWS
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0")
-
     implementation 'io.awspring.cloud:spring-cloud-aws-s3'
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager'
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
