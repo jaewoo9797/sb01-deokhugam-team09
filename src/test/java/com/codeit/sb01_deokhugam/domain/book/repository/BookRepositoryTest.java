@@ -258,6 +258,47 @@ public class BookRepositoryTest {
 
 		}
 
+		@Test
+		@DisplayName("키워드 없이 publishedDate 정렬기준과 커서를 이용해 내림차순 검색한다.")
+		public void findListByCursor_FilterWithLocalDateCursorDesc_ReturnsBook() {
+			//given
+			keyword = null;
+			limit = 2;
+			orderBy = "publishedDate";
+			cursor = "2025-01-01";
+			after = book3.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+			assertThat(books.get(books.size() - 1).getPublishedDate()).isEqualTo("2025-01-01");
+
+		}
+
+		@Test
+		@DisplayName("키워드 없이 publishedDate 정렬기준과 커서를 이용해 오름차순 검색한다.")
+		public void findListByCursor_FilterWithLocalDateCursorAsc_ReturnsBook() {
+			//given
+			keyword = null;
+			limit = 2;
+			direction = "ASC";
+			orderBy = "publishedDate";
+			cursor = "2025-01-01";
+			after = book3.getCreatedAt();
+
+			//when
+			List<Book> books = bookRepository.findListByCursor(keyword, after, cursor, orderBy, direction,
+				limit); //service에서 limit에 1을 더해 보낸다.
+
+			//then
+			assertThat(books).isNotNull();
+			assertThat(books.get(books.size() - 1).getPublishedDate()).isEqualTo("2025-01-02");
+
+		}
+
 	}
 
 	@Nested
