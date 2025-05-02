@@ -6,14 +6,20 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
+import com.codeit.sb01_deokhugam.util.EntityProvider;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -32,12 +38,15 @@ public class UserControllerTest {
 	@LocalServerPort
 	int port;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = port;
 	}
 
-	@DisplayName("유저 생성 테스트")
+	@DisplayName("유저 생성 성공 테스트")
 	@Test
 	void create_user_return_status_201() {
 		//given
@@ -158,10 +167,75 @@ public class UserControllerTest {
 		);
 	}
 
-	@DisplayName("유저 조회 테스트")
+	@DisplayName("유저 조회 성공 테스트")
 	@Test
-	void findUser() {
+	void find_user_return_status_200() {
+		User user = insurtTestUser();
+		userRepository.save(user);
 
+		//given
+		UUID userId = user.getId();
+
+		//when
+		given().log().all()
+			.when().get("/api/users/" + userId.toString())
+			.then().log().all()
+			.statusCode(200)
+			.body("id", equalTo(userId.toString()))
+			.body("email", equalTo(user.getEmail()))
+			.body("nickname", equalTo(user.getNickname()))
+			.body("createdAt", notNullValue());
+	}
+
+	@DisplayName("유저 조회 실패 테스트 - 논리삭제된 유저 조회")
+	@Test
+	void find_user_when_soft_deleted_user_then_return_status_404() {
+		User user = insurtTestUser();
+		user.softDelete();
+		userRepository.save(user);  // DB에 변경사항 저장
+
+		//given
+		UUID userId = user.getId();
+
+		//when
+		ExtractableResponse<Response> response = given().log().all()
+			.when().get("/api/users/" + userId.toString())
+			.then().log().all()
+			.statusCode(404)
+			.extract();
+
+		//then
+		final JsonPath result = response.jsonPath();
+		Map<String, String> details = result.getMap("details");
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+			() -> assertThat(result.getString("message")).isEqualTo("사용자를 찾을 수 없습니다."),
+			() -> assertThat(result.getString("code")).isEqualTo("USER_NOT_FOUND"),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
+	}
+
+	@DisplayName("유저 조회 실패 테스트 - 존재하지 않는 유저 조회")
+	@Test
+	void find_user_when_nonexistent_user_then_return_status_404() {
+		//given
+		UUID nonexistentUserId = UUID.randomUUID();
+
+		//when
+		ExtractableResponse<Response> response = given().log().all()
+			.when().get("/api/users/" + nonexistentUserId.toString())
+			.then().log().all()
+			.statusCode(404)
+			.extract();
+
+		final JsonPath result = response.jsonPath();
+		Map<String, String> details = result.getMap("details");
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+			() -> assertThat(result.getString("message")).isEqualTo("사용자를 찾을 수 없습니다."),
+			() -> assertThat(result.getString("code")).isEqualTo("USER_NOT_FOUND"),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
 	}
 
 	@DisplayName("유저 정보 수정 테스트")
@@ -175,8 +249,13 @@ public class UserControllerTest {
 	void softDelete() {
 	}
 
+	//todo 하드삭제 메서드 구현 후 테스트
 	@DisplayName("유저 하드 삭제 테스트")
 	@Test
 	void hardDelete() {
+	}
+
+	User insurtTestUser() {
+		return EntityProvider.createUser();
 	}
 }

@@ -44,9 +44,9 @@ public class UserController {
 			.body(createdUser);
 	}
 
-	@GetMapping(path = "{id}")
-	public ResponseEntity<UserDto> findUser(@PathVariable UUID id) {
-		UserDto user = userService.findActiveUser(id);
+	@GetMapping(path = "{userId}")
+	public ResponseEntity<UserDto> findUser(@PathVariable UUID userId) {
+		UserDto user = userService.findActiveUser(userId);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(user);

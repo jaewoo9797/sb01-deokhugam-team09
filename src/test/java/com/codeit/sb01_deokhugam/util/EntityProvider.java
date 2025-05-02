@@ -7,11 +7,8 @@ import java.util.UUID;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
-import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 
 public class EntityProvider {
-
-	UserService userService;
 
 	public static User createUser() {
 		String randomString = UUID.randomUUID().toString().substring(0, 5);

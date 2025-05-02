@@ -29,7 +29,7 @@ public enum ErrorCode {
 	REVIEW_NOT_FOUND("해당 리뷰가 존재하지 않습니다"),
 
 	//user
-	USER_NOT_FOUND("해당 유저가 존재하지 않습니다."),
+	USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
 	DUPLICATION_USER("이미 존재하는 사용자입니다."),
 	LOGIN_INPUT_INVALID("이메일 또는 비밀번호가 올바르지 않습니다."),
 
