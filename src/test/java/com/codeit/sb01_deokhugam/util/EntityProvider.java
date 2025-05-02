@@ -7,11 +7,18 @@ import java.util.UUID;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 
 public class EntityProvider {
 
+	UserService userService;
+
 	public static User createUser() {
-		return new User("test" + UUID.randomUUID() + "@email.com", "password", "test");
+		String randomString = UUID.randomUUID().toString().substring(0, 5);
+		return new User(
+			"test" + randomString + "@email.com",
+			"password486!!",
+			"nickname" + randomString);
 	}
 
 	public static Book createBook() {
