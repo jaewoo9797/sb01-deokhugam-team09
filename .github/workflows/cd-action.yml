@@ -41,16 +41,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
+    env:
+      ECS_TASK_DEFINITION: .github/ecs/ecs-task-definition.json
+      CONTAINER_NAME: deokhugam-container
+      ECS_CLUSTER: deokhugam-cluster
+      ECS_SERVICE: deokhugam-service-alb
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::885532410426:role/GitHubActionsDeployRole
           aws-region: ${{ secrets.AWS_REGION }}
-          role-duration-seconds: 1200
+          role-session-name: deploy-from-github-actions
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -63,12 +69,13 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY}}
           IMAGE_TAG: ${{ github.sha }}
+          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
         run: |
           IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REGISTRY}:${IMAGE_TAG}
           
           echo "🛠️ [BUILD] Building the Docker Image..."
           echo "-----------------------------------------------"
-          docker build -t $IMAGE_URI .
+          docker build -t $IMAGE_URI . --quiet
           echo "✅ [BUILD] Docker Image built successfully! : $IMAGE_URI"
           echo ""
           
@@ -76,19 +83,20 @@ jobs:
           echo "-----------------------------------------------"
           docker push $IMAGE_URI
           echo "✅ [PUSH] Docker Image pushed successfully! : $IMAGE_URI"
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
       - name: Update ECS Task Definition
         id: task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ecs-task-definition.json
-          container-name: deokhugam-container
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: deokhugam-cluster
-          service: deokhugam-service-alb
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
           task-definition: ${{ steps.task-definition.outputs.task-definition }}
           wait-for-service-stability: true

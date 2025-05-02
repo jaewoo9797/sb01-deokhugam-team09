@@ -3,7 +3,6 @@ package com.codeit.sb01_deokhugam.domain.comment.entity;
 import java.util.UUID;
 
 import com.codeit.sb01_deokhugam.domain.base.BaseUpdatableEntity;
-import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -42,18 +41,6 @@ public class Comment extends BaseUpdatableEntity {
 
     public void markDeleted() {
         this.deleted = true;
-    }
-
-    public CommentDto toDto(String userNickname) {
-        return new CommentDto(
-                this.getId(),
-                this.reviewId,
-                this.userId,
-                userNickname,
-                this.content,
-                this.getCreatedAt(),
-                this.getUpdatedAt()
-        );
     }
 
 }

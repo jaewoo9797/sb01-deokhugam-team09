@@ -1,0 +1,52 @@
+{
+  "family": "deokhugam-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::885532410426:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::885532410426:role/deokhugam-task-role",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "3072",
+  "containerDefinitions": [
+    {
+      "name": "deokhugam-container",
+      "image": "REPLACE_ME",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "secrets": [
+        {
+          "name": "AWS_REGION",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_REGION"
+        },
+        {
+          "name": "AWS_S3_BUCKET_NAME",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/AWS_S3_BUCKET_NAME"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "valueFrom": "arn:aws:ssm:ap-northeast-2:885532410426:parameter/prod/deokhugam/aws/SPRING_PROFILES_ACTIVE"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/deokhugam-task",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs",
+          "mode": "non-blocking",
+          "awslogs-create-group": "true",
+          "max-buffer-size": "25m"
+        }
+      }
+    }
+  ]
+}

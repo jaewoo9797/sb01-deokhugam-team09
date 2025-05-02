@@ -16,7 +16,7 @@ create table users
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone,
     email      varchar(100) UNIQUE      NOT NULL,
-    nickname   varchar(50) UNIQUE       NOT NULL,
+    nickname   varchar(50)              NOT NULL,
     password   varchar(60)              NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE    NOT NULL
 );
@@ -55,7 +55,7 @@ create table books
     author         varchar                  NOT NULL,
     description    varchar                  NOT NULL,
     publisher      varchar                  NOT NULL,
-    published_date timestamp with time zone NOT NULL,
+    published_date date                     NOT NULL,
     isbn           varchar                  NOT NULL,
     thumbnail_url  varchar                  NOT NULL,
     review_count   integer                  NOT NULL default 0,
@@ -100,7 +100,8 @@ create table book_rankings
     rating        decimal(10, 2)           NOT NULL,
     thumbnail_url varchar                  NOT NULL,
     title         varchar                  NOT NULL,
-    book_id       uuid                     NOT NULL
+    book_id       uuid                     NOT NULL,
+    author        varchar                  NOT NULL
 );
 
 -- user_ranking
