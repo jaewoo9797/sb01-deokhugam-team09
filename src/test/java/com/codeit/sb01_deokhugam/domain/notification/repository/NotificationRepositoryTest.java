@@ -3,6 +3,8 @@ package com.codeit.sb01_deokhugam.domain.notification.repository;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -168,4 +170,18 @@ class NotificationRepositoryTest {
 		);
 	}
 
+	@DisplayName("일주일 이상 지난 확인된 알림만 삭제된다")
+	@Test
+	void shouldDeleteOnlyConfirmedNotificationsOlderThanAWeek() {
+		//given
+		Instant oneWeekAgo = Instant.now().minus(7, ChronoUnit.DAYS);
+		List<Notification> deletable = notificationRepository.findAll().stream()
+			.filter(notification -> notification.isConfirmed() && notification.getUpdatedAt().isBefore(oneWeekAgo))
+			.toList();
+
+		// when
+		int deletedCount = notificationRepository.deleteConfirmedOlderThan(oneWeekAgo);
+		// then
+		assertThat(deletedCount).isEqualTo(deletable.size());
+	}
 }

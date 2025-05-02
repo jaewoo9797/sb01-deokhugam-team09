@@ -42,7 +42,7 @@ class NotificationControllerTest {
 
 	public static final String LOGIN_USER_HEADER = "Deokhugam-Request-User-ID";
 	public static final String USER_ID_UUID = "54b78d8f-68fb-4c60-8f26-00bb1a5e219d";
-	public static final String NOTIFICATION_ID_UUID = "cc1b6cbd-4b76-4204-9294-1bc918ffd1c8";
+	public static final String NOTIFICATION_ID_UUID = "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
 	@LocalServerPort
 	int port;

@@ -32,8 +32,7 @@ public class CursorNotificationRepositoryImpl implements CursorNotificationRepos
 			.join(notification.review).fetchJoin()
 			.where(
 				notification.user.id.eq(condition.getUserId()),
-				cursorPredicate(condition, notification),
-				notification.confirmed.eq(false)
+				cursorPredicate(condition, notification)
 			)
 			.orderBy(orderSpecifier(condition.getDirection(), notification))
 			.limit(limit + 1)
