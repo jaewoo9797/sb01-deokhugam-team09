@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codeit.sb01_deokhugam.auth.exception.AccessDeniedException;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -97,41 +98,56 @@ public class BasicUserService implements UserService {
 	//유저 닉네임 변경
 	@Override
 	@Transactional
-	public UserDto update(UUID id, UserUpdateRequest userUpdateRequest) {
-		log.debug("사용자 닉네임 변경 시작: id={}, request={}", id, userUpdateRequest);
+	public UserDto update(UUID pathId, UUID headerId, UserUpdateRequest userUpdateRequest) {
+		log.debug("사용자 닉네임 변경 시작: pathId={}, request={}", pathId, userUpdateRequest);
 
-		User user = userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> UserNotFoundException.withId(id));
+		User user = userRepository.findByIdAndIsDeletedFalse(pathId).orElseThrow(() -> UserNotFoundException.withId(
+			pathId));
+		verifyUserMatch(pathId, headerId);
 
 		String newNickname = userUpdateRequest.nickname();
 		user.update(newNickname);
 
-		log.info("사용자 닉네임 수정 완료: id={}, nickname={}", id, user.getNickname());
+		log.info("사용자 닉네임 수정 완료: pathId={}, nickname={}", pathId, user.getNickname());
 		return userMapper.toDto(user);
 	}
 
 	//유저 isDeleted 필드 false로 변경
 	@Override
 	@Transactional
-	public void softDelete(UUID id) {
-		log.debug("사용자 논리삭제 시작: id={}", id);
+	public void softDelete(UUID pathId, UUID headerId) {
+		log.debug("사용자 논리삭제 시작: id={}", pathId);
 
-		User user = userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> UserNotFoundException.withId(id));
+		verifyUserMatch(pathId, headerId);
+		User user = userRepository.findByIdAndIsDeletedFalse(pathId)
+			.orElseThrow(() -> UserNotFoundException.withId(pathId));
 		user.softDelete();
 
-		log.info("사용자 논리삭제 완료: id={}", id);
+		log.info("사용자 논리삭제 완료: id={}", pathId);
 	}
 
-	//물리 삭제
+	// todo 물리 삭제 제대로 구현
 	@Override
 	@Transactional
-	public void hardDelete(UUID id) {
-		log.debug("사용자 물리삭제 시작: id={}", id);
+	public void hardDelete(UUID pathId, UUID headerId) {
+		log.debug("사용자 물리삭제 시작: id={}", pathId);
 
-		if (!userRepository.existsById(id)) {
-			throw UserNotFoundException.withId(id);
+		verifyUserMatch(pathId, headerId);
+		if (!userRepository.existsById(pathId)) {
+			throw UserNotFoundException.withId(pathId);
 		}
-		userRepository.deleteById(id);
+		userRepository.deleteById(pathId);
 
-		log.info("사용자 물리삭제 완료: id={}", id);
+		log.info("사용자 물리삭제 완료: id={}", pathId);
 	}
+
+	// 경로변수와 헤더에 기재된 id의 일치여부 비교
+	private void verifyUserMatch(UUID pathId, UUID headerId) {
+		if (!pathId.equals(headerId)) {
+			throw AccessDeniedException.accessByInvalidUser();
+		}
+	}
+
 }
+
+
