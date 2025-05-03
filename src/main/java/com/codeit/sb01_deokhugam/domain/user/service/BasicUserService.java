@@ -118,9 +118,9 @@ public class BasicUserService implements UserService {
 	public void softDelete(UUID pathId, UUID headerId) {
 		log.debug("사용자 논리삭제 시작: id={}", pathId);
 
-		verifyUserMatch(pathId, headerId);
 		User user = userRepository.findByIdAndIsDeletedFalse(pathId)
 			.orElseThrow(() -> UserNotFoundException.withId(pathId));
+		verifyUserMatch(pathId, headerId);
 		user.softDelete();
 
 		log.info("사용자 논리삭제 완료: id={}", pathId);
@@ -132,10 +132,10 @@ public class BasicUserService implements UserService {
 	public void hardDelete(UUID pathId, UUID headerId) {
 		log.debug("사용자 물리삭제 시작: id={}", pathId);
 
-		verifyUserMatch(pathId, headerId);
 		if (!userRepository.existsById(pathId)) {
 			throw UserNotFoundException.withId(pathId);
 		}
+		verifyUserMatch(pathId, headerId);
 		userRepository.deleteById(pathId);
 
 		log.info("사용자 물리삭제 완료: id={}", pathId);

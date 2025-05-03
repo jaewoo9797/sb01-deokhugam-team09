@@ -170,7 +170,7 @@ public class UserControllerTest {
 	@DisplayName("유저 생성 실패 테스트 - 이미 존재하는 이메일로 회원가입 요청")
 	@Test
 	void create_user_when_fail_existent_email_then_return_status_409() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
 		//given
 		String existingEmail = user.getEmail();
 		Map<String, String> requestBody = Map.of("email", existingEmail, "nickname", "user", "password",
@@ -196,7 +196,7 @@ public class UserControllerTest {
 	@DisplayName("유저 조회 성공 테스트")
 	@Test
 	void find_user_return_status_200() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
 		//when & then
@@ -210,18 +210,17 @@ public class UserControllerTest {
 			.body("createdAt", notNullValue());
 	}
 
-	// todo 영속성 컨텍스트 초기화 로직 고려
 	@DisplayName("유저 조회 실패 테스트 - 논리삭제된 유저 조회")
 	@Test
 	void find_user_when_soft_deleted_user_then_return_status_404() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
 		user.softDelete();
 		userRepository.save(user);
 		//given
-		UUID userId = user.getId();
+		UUID softDeletedUserId = user.getId();
 		//when
 		ExtractableResponse<Response> response = given().log().all()
-			.when().get("/api/users/" + userId.toString())
+			.when().get("/api/users/" + softDeletedUserId.toString())
 			.then().log().all()
 			.statusCode(404)
 			.extract();
@@ -259,7 +258,7 @@ public class UserControllerTest {
 	@DisplayName("유저 정보수정 성공 테스트")
 	@Test
 	void update_user_return_status_200() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
 		//given
 		Map<String, String> requestBody = Map.of("nickname", "newNickname");
 		UUID userId = user.getId();
@@ -267,7 +266,6 @@ public class UserControllerTest {
 		given().log().all()
 			.contentType(ContentType.JSON)
 			.header("deokhugam-request-user-id", userId)
-			// 헤더추가
 			.body(requestBody)
 			.when().patch("/api/users/" + userId.toString())
 			.then().log().all()
@@ -278,10 +276,11 @@ public class UserControllerTest {
 	@DisplayName("유저 정보수정 실패 테스트 - 형식에 맞지 않는 닉네임으로 수정 시도")
 	@Test
 	void update_user_when_invalid_formated_field_then_return_status_400() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
 		//given
 		Map<String, String> requestBody = Map.of("nickname", "n");
 		UUID userId = user.getId();
+		//when
 		ExtractableResponse<Response> response = given().log().all()
 			.contentType(ContentType.JSON)
 			.header("deokhugam-request-user-id", userId)
@@ -290,6 +289,7 @@ public class UserControllerTest {
 			.then().log().all()
 			.statusCode(400)
 			.extract();
+		//then
 		final JsonPath result = response.jsonPath();
 		Map<String, String> details = result.getMap("details");
 		assertAll(
@@ -304,10 +304,12 @@ public class UserControllerTest {
 	@DisplayName("유저 정보수정 실패 테스트 - 요청 헤더의 id와 경로변수 불일치")
 	@Test
 	void update_user_when_header_id_differs_from_path_id_then_return_status_403() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
+		//given
 		UUID userId = user.getId();
 		UUID wrongUserId = UUID.randomUUID();
 		Map<String, String> requestBody = Map.of("nickname", "newNickname");
+		//when
 		ExtractableResponse<Response> response = given().log().all()
 			.contentType(ContentType.JSON)
 			.header("deokhugam-request-user-id", wrongUserId.toString())
@@ -316,6 +318,7 @@ public class UserControllerTest {
 			.then().log().all()
 			.statusCode(403)
 			.extract();
+		//then
 		final JsonPath result = response.jsonPath();
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value()),
@@ -328,10 +331,12 @@ public class UserControllerTest {
 	@DisplayName("유저 정보수정 실패 테스트 - 존재하지 않는 유저 수정 시도")
 	@Test
 	void update_user_when_nonexistent_user_then_return_status_404() {
-		User user = insurtTestUser();
+		User user = insertTestUser();
+		//given
 		UUID userId = user.getId();
 		UUID wrongPathVariable = UUID.randomUUID();
 		Map<String, String> requestBody = Map.of("nickname", "newNickname");
+		//when
 		ExtractableResponse<Response> response = given().log().all()
 			.contentType(ContentType.JSON)
 			.header("deokhugam-request-user-id", userId.toString())
@@ -340,6 +345,7 @@ public class UserControllerTest {
 			.then().log().all()
 			.statusCode(404)
 			.extract();
+		//then
 		final JsonPath result = response.jsonPath();
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
@@ -349,9 +355,71 @@ public class UserControllerTest {
 		);
 	}
 
-	@DisplayName("유저 소프트 삭제 테스트")
+	@DisplayName("유저 소프트 삭제 성공 테스트")
 	@Test
-	void softDelete() {
+	void soft_delete_user_return_status_204() {
+		User user = insertTestUser();
+		//given
+		UUID userId = user.getId();
+
+		//when
+		given().log().all()
+			.header("deokhugam-request-user-id", userId)
+			.when().delete("/api/users/" + userId.toString())
+			.then().log().all()
+			.statusCode(204);
+
+		//then
+		User softDeletedUser = userRepository.findById(userId).orElseThrow();
+		assertThat(softDeletedUser.isDeleted()).isTrue();
+	}
+
+	@DisplayName("유저 소프트 삭제 실패 테스트 - 요청 헤더의 id와 경로변수 불일치 ")
+	@Test
+	void soft_delete_user_when_header_id_differs_from_path_id_then_return_status_403() {
+		User user = insertTestUser();
+		//given
+		UUID userId = user.getId();
+		UUID wrongUserId = UUID.randomUUID();
+		//when
+		ExtractableResponse<Response> response = given().log().all()
+			.header("deokhugam-request-user-id", wrongUserId.toString())
+			.when().delete("/api/users/" + userId.toString())
+			.then().log().all()
+			.statusCode(403)
+			.extract();
+		//then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value()),
+			() -> assertThat(result.getString("message")).isEqualTo("접근 권한이 없습니다."),
+			() -> assertThat(result.getString("code")).isEqualTo("ACCESS_DENIED"),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
+	}
+
+	@DisplayName("유저 소프트 삭제 실패 테스트 - 존재하지 않는 유저 삭제 시도")
+	@Test
+	void soft_delete_user_when_nonexistent_user_then_return_status_404() {
+		User user = insertTestUser();
+		//given
+		UUID userId = user.getId();
+		UUID wrongPathVariable = UUID.randomUUID();
+		//when
+		ExtractableResponse<Response> response = given().log().all()
+			.header("deokhugam-request-user-id", userId.toString())
+			.when().delete("/api/users/" + wrongPathVariable.toString())
+			.then().log().all()
+			.statusCode(404)
+			.extract();
+		//then
+		final JsonPath result = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
+			() -> assertThat(result.getString("message")).isEqualTo("사용자를 찾을 수 없습니다."),
+			() -> assertThat(result.getString("code")).isEqualTo("USER_NOT_FOUND"),
+			() -> assertThat(result.getString("timestamp")).isNotNull()
+		);
 	}
 
 	//todo 하드삭제 메서드 구현 후 테스트
@@ -360,9 +428,10 @@ public class UserControllerTest {
 	void hardDelete() {
 	}
 
-	User insurtTestUser() {
+	User insertTestUser() {
 		User user = EntityProvider.createUser();
 		userRepository.save(user);
 		return user;
 	}
 }
+

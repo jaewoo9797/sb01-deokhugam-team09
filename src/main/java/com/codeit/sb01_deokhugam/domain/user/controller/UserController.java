@@ -53,6 +53,7 @@ public class UserController {
 			.body(user);
 	}
 
+	// todo 헤더가 없을 시 예외처리 나중에 추가
 	@PatchMapping(path = "{pathId}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserDto> update(@RequestHeader("deokhugam-request-user-id") UUID headerId,
 		@PathVariable UUID pathId,
