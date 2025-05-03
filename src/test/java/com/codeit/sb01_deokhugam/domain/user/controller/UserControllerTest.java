@@ -48,7 +48,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 생성 성공 테스트")
 	@Test
-	void create_user_return_status_201() {
+	void givenValidRequest_whenCreateUser_thenReturnCreatedUserWith201() {
 		//given
 		Map<String, Object> requestBody = Map.of(
 			"email", TEST_EMAIL,
@@ -68,9 +68,9 @@ public class UserControllerTest {
 			.body("createdAt", notNullValue());
 	}
 
-	@DisplayName("유저 생성 실패 테스트 - 잘못된 이메일, 닉네임, 비밀번호 형식")
+	@DisplayName("유저 생성 실패 테스트 - 잘못된 이메일, 닉네임, 비밀번호 형식의 요청")
 	@Test
-	void create_user_when_fail_invalid_formated_fields_then_return_status_400() {
+	void givenInvalidFields_whenCreateUser_thenReturn400() {
 		//given
 		Map<String, Object> requestBody = Map.of(
 			"email", "invalid_formated_email", //이메일 형식이 아님
@@ -101,9 +101,9 @@ public class UserControllerTest {
 		);
 	}
 
-	@DisplayName("유저 생성 실패 테스트 - 공백으로 이루어진 문자열로 회원가입")
+	@DisplayName("유저 생성 실패 테스트 - 공백으로 이루어진 문자열로 회원가입 요청")
 	@Test
-	void create_user_when_fail_empty_string_fields_then_return_status_400() {
+	void givenRequestWithEmptyStringValues_whenCreateUser_thenReturn400() {
 		//given
 		Map<String, Object> requestBody = Map.of(
 			"email", "            ",
@@ -136,7 +136,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 생성 실패 테스트 - 빈 필드로 회원가입 요청")
 	@Test
-	void create_user_when_fail_empty_fields_then_return_status_400() {
+	void givenBlankRequest_whenCreateUser_thenReturn400() {
 		//given
 		Map<String, Object> requestBody = Map.of(
 			"email", "",
@@ -169,7 +169,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 생성 실패 테스트 - 이미 존재하는 이메일로 회원가입 요청")
 	@Test
-	void create_user_when_fail_existent_email_then_return_status_409() {
+	void givenExistingEmail_whenCreateUser_thenReturn409() {
 		User user = insertTestUser();
 		//given
 		String existingEmail = user.getEmail();
@@ -195,7 +195,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 조회 성공 테스트")
 	@Test
-	void find_user_return_status_200() {
+	void givenExistingUserId_whenGetUser_thenReturnUserWith200() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
@@ -212,7 +212,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 조회 실패 테스트 - 논리삭제된 유저 조회")
 	@Test
-	void find_user_when_soft_deleted_user_then_return_status_404() {
+	void givenSoftDeletedUserId_whenGetUser_thenReturn404() {
 		User user = insertTestUser();
 		user.softDelete();
 		userRepository.save(user);
@@ -236,7 +236,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 조회 실패 테스트 - 존재하지 않는 유저 조회")
 	@Test
-	void find_user_when_nonexistent_user_then_return_status_404() {
+	void givenNonExistentUserId_whenGetUser_thenReturn404() {
 		//given
 		UUID nonexistentUserId = UUID.randomUUID();
 		//when
@@ -257,7 +257,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 정보수정 성공 테스트")
 	@Test
-	void update_user_return_status_200() {
+	void givenValidRequest_whenUpdateUser_thenReturnUserWith200() {
 		User user = insertTestUser();
 		//given
 		Map<String, String> requestBody = Map.of("nickname", "newNickname");
@@ -275,7 +275,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 정보수정 실패 테스트 - 형식에 맞지 않는 닉네임으로 수정 시도")
 	@Test
-	void update_user_when_invalid_formated_field_then_return_status_400() {
+	void givenInvalidNickname_whenUpdateUser_thenReturn400() {
 		User user = insertTestUser();
 		//given
 		Map<String, String> requestBody = Map.of("nickname", "n");
@@ -303,7 +303,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 정보수정 실패 테스트 - 요청 헤더의 id와 경로변수 불일치")
 	@Test
-	void update_user_when_header_id_differs_from_path_id_then_return_status_403() {
+	void givenMismatchedHeaderIdAndPathId_whenUpdateUser_thenReturn403() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
@@ -330,7 +330,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 정보수정 실패 테스트 - 존재하지 않는 유저 수정 시도")
 	@Test
-	void update_user_when_nonexistent_user_then_return_status_404() {
+	void givenNonExistentUserId_whenUpdateUser_thenReturn404() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
@@ -357,7 +357,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 소프트 삭제 성공 테스트")
 	@Test
-	void soft_delete_user_return_status_204() {
+	void givenValidRequest_whenSoftDeleteUser_thenReturn204() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
@@ -376,7 +376,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 소프트 삭제 실패 테스트 - 요청 헤더의 id와 경로변수 불일치 ")
 	@Test
-	void soft_delete_user_when_header_id_differs_from_path_id_then_return_status_403() {
+	void givenMismatchedHeaderIdAndPathId_whenSoftDeleteUser_thenReturn_403() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
@@ -400,7 +400,7 @@ public class UserControllerTest {
 
 	@DisplayName("유저 소프트 삭제 실패 테스트 - 존재하지 않는 유저 삭제 시도")
 	@Test
-	void soft_delete_user_when_nonexistent_user_then_return_status_404() {
+	void givenNonExistentUserId_whenSoftDeleteUser_thenReturn_404() {
 		User user = insertTestUser();
 		//given
 		UUID userId = user.getId();
