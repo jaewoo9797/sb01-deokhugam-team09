@@ -35,6 +35,7 @@ public enum ErrorCode {
 
 	// auth
 	UNAUTHORIZED("로그인을 해주세요."),
+	ACCESS_DENIED("접근 권한이 없습니다."),
 
 	//s3
 	S3_UPLOAD_ERROR("S3 업로드 중 오류가 발생했습니다."),
