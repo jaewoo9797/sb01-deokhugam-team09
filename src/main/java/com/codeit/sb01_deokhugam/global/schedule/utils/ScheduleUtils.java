@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 
-//TODO:(고민) 의존성이 없어 static으로 사용하고 있으나, Bean으로 등록할 필요가 있을까?
 public class ScheduleUtils {
 
 	/**

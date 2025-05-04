@@ -298,6 +298,10 @@ public class BookService {
 
 	}
 
+	/**
+	 * period에 대한 도서 랭킹 순위를 계산하고, 도서 랭킹 테이블에 저장합니다.
+	 * @param period
+	 */
 	//대시보드: 인기도서 순위 배치 연산
 	//논리삭제된 도서에 대해서도 계산함.
 	@Transactional
