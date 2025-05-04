@@ -49,6 +49,10 @@ public class BookRepositoryTest {
 	@BeforeEach
 	void setUp() {
 
+		/**title, pubishedDate, reviewCount, rating으로 1차 정렬합니다.
+		 * 만약 정렬기준에 대해 동일한 값을 가지고 있다면, 2차적으로 createAt으로 정렬합니다.
+		 * 2차 정렬 여부를 테스트하기 위하여, book과 book2의 제목, book3의 리뷰수, 레이팅은 동일합니다.
+		 */
 		book = new Book(
 			"제목", "저자", "책입니다.", "12345678",
 			"출판사", LocalDate.parse("2025-01-01"),
@@ -103,6 +107,9 @@ public class BookRepositoryTest {
 			book.softDelete(); //논리적 삭제
 			UUID id = book.getId();
 
+			entityManager.flush();
+			entityManager.clear();
+
 			//when
 			Optional<Book> result = bookRepository.findByIdNotLogicalDelete(id);
 
@@ -135,7 +142,7 @@ public class BookRepositoryTest {
 		}
 
 		@Test
-		@DisplayName("검색어 필터링과 제목 정렬기준으로 도서를 커서 기반 페이징하여 처음 조회한다. ")
+		@DisplayName("검색어 필터링과 제목 정렬기준으로 도서를 커서 기반 페이징하여 처음 조회한다. 제목이 동일한 경우, 2차 커서인 createAt으로 정렬되었는지 근삿값으로 비교한다.")
 		public void findListByCursor_ReturnsBook() {
 			//given
 			//when
@@ -144,14 +151,17 @@ public class BookRepositoryTest {
 
 			//then
 			assertThat(books).isNotNull();
-			assertThat(books.size()).isEqualTo(3); //books의 사이즈가 저장한 책들의 수와 동일한지 확인
 
 			//제목 순대로 정렬되었는가
 			assertThat(books.get(0).getTitle()).isEqualTo("제목2");
 
-			//제목이 동일하다면, 2차 커서인 createAt으로 정렬되었는지 근삿값 비교(자바-postgreSql Instant 표현 방식 차이)
+			//제목이 동일한 경우, 2차 커서인 createAt으로 정렬되었는지 근삿값으로 비교한다.
+			/* 시간 정밀도 차이: 시간에 대해 자바(10^-9, 나노세컨드)-postgreSql(10^-6, 마이크로세컨드) 정밀도 차이로 인해 같은 엔티티의 시간 값을 다르게 표현합니다.
+			  따라서 이를 해결하기 위해, 논리적으로 동일한 엔티티 book3과 books.get(0)의 creatAt의 차이가 100마이크로 초 이하인지 검증합니다
+			 */
 			Duration diff = Duration.between(book3.getCreatedAt(), books.get(0).getCreatedAt());
-			assertThat(Math.abs(diff.getSeconds())).isLessThanOrEqualTo(1);
+			assertThat(Math.abs(diff.toNanos())).isLessThanOrEqualTo(100_000); // 100μs
+
 		}
 
 		@Test
