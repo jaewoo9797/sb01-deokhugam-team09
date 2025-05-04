@@ -331,8 +331,9 @@ public class BookService {
 			.map(Map.Entry::getKey)
 			.toList();
 
-		// BookRanking 엔티티에 해당 정보들을 넣어 생성한다.
+		// 정보에 대한 BookRanking을 생성한다.
 		List<BookRanking> bookRankings = new ArrayList<>();
+		int rank = 0;
 		for (int i = 0; i < sortedBookIds.size(); i++) {
 			//스코어 내림차순 순으로 book 엔티티를 가져온다. 
 			UUID bookId = sortedBookIds.get(i);
@@ -340,9 +341,14 @@ public class BookService {
 
 			BookRankingCalculation calc = bookCalculations.get(bookId);
 
+			//동일 점수인 경우 동일 등수로 처리하는 로직
+			if (i == 0 || !bookRankings.get(i - 1).getScore().equals(calc.score())) {
+				rank = i + 1;
+			}
+
 			BookRanking ranking = new BookRanking(
 				period,
-				i + 1, // 1부터 랭크 시작
+				rank,
 				calc.score(),
 				calc.reviewCount(),
 				calc.avgRating(),
