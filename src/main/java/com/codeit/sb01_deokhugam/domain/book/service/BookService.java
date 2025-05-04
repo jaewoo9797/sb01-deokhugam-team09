@@ -287,6 +287,11 @@ public class BookService {
 
 	}
 
+	//랭킹 연산
+	public void calculateRanking(Period period) {
+
+	}
+
 	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )
 
 }
