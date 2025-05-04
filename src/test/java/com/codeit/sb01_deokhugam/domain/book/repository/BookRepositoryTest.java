@@ -157,10 +157,10 @@ public class BookRepositoryTest {
 
 			//제목이 동일한 경우, 2차 커서인 createAt으로 정렬되었는지 근삿값으로 비교한다.
 			/* 시간 정밀도 차이: 시간에 대해 자바(10^-9, 나노세컨드)-postgreSql(10^-6, 마이크로세컨드) 정밀도 차이로 인해 같은 엔티티의 시간 값을 다르게 표현합니다.
-			  따라서 이를 해결하기 위해, 논리적으로 동일한 엔티티 book3과 books.get(0)의 creatAt의 차이가 100마이크로 초 이하인지 검증합니다
+			  따라서 이를 해결하기 위해, 논리적으로 동일한 엔티티 book3과 books.get(0)의 creatAt의 차이가 1000나노초 이하인지 검증합니다
 			 */
 			Duration diff = Duration.between(book3.getCreatedAt(), books.get(0).getCreatedAt());
-			assertThat(Math.abs(diff.toNanos())).isLessThanOrEqualTo(100_000); // 100μs
+			assertThat(Math.abs(diff.toNanos())).isLessThanOrEqualTo(1000); // 1000ns(나노초)
 
 		}
 
