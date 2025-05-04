@@ -17,7 +17,7 @@ public class BookRankingScheduler {
 
 	// 매일 자정 배치 연산 수행
 	@Scheduled(cron = "0 0 0 * * *")
-	public void updateDailyRanking() {
+	public void updateRanking() {
 		//도서 랭킹 테이블을 비운다.
 		bookService.deleteBookRanking();
 
