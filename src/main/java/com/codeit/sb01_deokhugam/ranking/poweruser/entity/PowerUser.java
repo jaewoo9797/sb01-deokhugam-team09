@@ -21,30 +21,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PowerUser extends BaseEntity {
 
-	@Column(name = "user_id", nullable = false)
-	private UUID userId;
-
-	@Column(name = "nickname", nullable = false, length = 20)
-	private String nickname;
-
 	@Enumerated(EnumType.STRING)
 	@Column(name = "period", nullable = false)
 	Period period;
-
 	@Column(name = "rank", nullable = false)
 	int rank;
-
 	@Column(name = "score", precision = 2, scale = 1)
 	BigDecimal score;
-
 	@Column(name = "review_score_sum")
 	BigDecimal reviewScoreSum;
-
 	@Column(name = "like_count", nullable = false)
 	int likeCount;
-
 	@Column(name = "comment_count", nullable = false)
 	int commentCount;
+	@Column(name = "user_id", nullable = false)
+	private UUID userId;
+	@Column(name = "nickname", nullable = false, length = 20)
+	private String nickname;
 
 	//todo 소수점 1자리까지만 나타낼건데 테이블에 반올림한 데이터로 저장할지(정확성 내려감. 컬럼에 프리시전, 스케일 속성 추가하기) 데이터 제공시에 반올림처리해서 내보낼지 고민하기
 	public PowerUser(UUID userId, String nickname, Period period, int rank, BigDecimal score, BigDecimal reviewScoreSum,
@@ -64,5 +57,6 @@ public class PowerUser extends BaseEntity {
 		this.score = score;
 		this.reviewScoreSum = reviewScoreSum;
 		this.likeCount = likeCount;
+		this.commentCount = commentCount;
 	}
 }
