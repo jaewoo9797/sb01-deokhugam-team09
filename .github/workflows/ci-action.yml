@@ -71,8 +71,7 @@ jobs:
           title: 📝 테스트 커버리지 리포트
           paths: ${{ github.workspace }}/build/jacocoReport/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 0
-          min-coverage-changed-files: 80
+          min-coverage-overall: 80
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
