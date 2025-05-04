@@ -3,10 +3,20 @@ package com.codeit.sb01_deokhugam.domain.book.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -18,6 +28,7 @@ import net.sourceforge.tess4j.TesseractException;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.BookRankingCalculation;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.PopularBookDto;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
@@ -28,6 +39,8 @@ import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.mapper.PopularBookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.book.repository.PopularBookRepository;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 
@@ -46,6 +59,7 @@ public class BookService {
 	private final Tesseract tesseract;
 	private final PopularBookRepository popularBookRepository;
 	private final PopularBookMapper popularBookMapper;
+	private final ReviewRepository reviewRepository;
 
 	//TODO: 이미지 등록 관련 로직 필요
 	//private final S3Service s3Service;
@@ -287,9 +301,127 @@ public class BookService {
 
 	}
 
-	//랭킹 연산
+	//대시보드: 인기도서 순위 배치 연산
+	//논리삭제된 도서에 대해서도 계산함.
+	@Transactional
 	public void calculateRanking(Period period) {
 
+		//Period에 따라서, 조회할 리뷰의 시작과 끝 날짜를 계산한다.
+		Map.Entry<Instant, Instant> range = getStartAndEndByPeriod(period);
+		Instant start = range.getKey();
+		Instant end = range.getValue();
+		System.out.println(period.name());
+		System.out.println("Start: " + start);
+		System.out.println("End: " + end + "\n");
+
+		// 리뷰 테이블에서, 날짜 범위에 해당하는 필요한 리뷰리스트를 가져온다
+		// TODO: 리뷰 레포에 확실히 옮기는 리팩토링.
+		List<Review> reviews = reviewRepository.findByCreatedAtBetween(start, end);
+
+		// 도서 ID 별로 리뷰를 그룹화하고 계산한다.
+		Map<UUID, BookRankingCalculation> bookCalculations = calculateBookRankingByReviews(reviews);
+
+		// 계산된 도서 ID 목록을 이용해 도서 정보를 가져온다.
+		Map<UUID, Book> bookMap = bookRepository.findAllById(bookCalculations.keySet())
+			.stream()
+			.collect(Collectors.toMap(Book::getId, book -> book));
+
+		// Score 기준으로 내림차순 정렬한 도서 ID 리스트
+		List<UUID> sortedBookIds = bookCalculations.entrySet().stream()
+			.sorted(Map.Entry.comparingByValue(
+				Comparator.comparing(BookRankingCalculation::score).reversed()
+			))
+			.map(Map.Entry::getKey)
+			.toList();
+
+		// BookRanking 엔티티에 해당 정보들을 넣어 생성한다.
+		List<BookRanking> bookRankings = new ArrayList<>();
+		for (int i = 0; i < sortedBookIds.size(); i++) {
+			//스코어 내림차순 순으로 book 엔티티를 가져온다. 
+			UUID bookId = sortedBookIds.get(i);
+			Book book = bookMap.get(bookId);
+
+			BookRankingCalculation calc = bookCalculations.get(bookId);
+
+			BookRanking ranking = new BookRanking(
+				period,
+				i + 1, // 1부터 랭크 시작
+				calc.score(),
+				calc.reviewCount(),
+				calc.avgRating(),
+				book.getThumbnailUrl(),
+				book.getTitle(),
+				book.getAuthor(),
+				bookId
+			);
+
+			bookRankings.add(ranking);
+		}
+
+		// bookRanking테이블에 엔티티들을 저장한다.
+		popularBookRepository.saveAll(bookRankings);
+	}
+
+	//TODO:글로벌로 빼기
+	public static Map.Entry<Instant, Instant> getStartAndEndByPeriod(Period period) {
+		LocalDate today = LocalDate.now();
+		ZoneId koreaZone = ZoneOffset.UTC;
+
+		Instant start = null;
+		Instant end = null;
+
+		switch (period) {
+			case DAILY: //전날 00:00~ 전날 23:59:59.999
+				start = today.minusDays(1).atStartOfDay(koreaZone).toInstant();
+				end = today.minusDays(1).atTime(LocalTime.MAX).atZone(koreaZone).toInstant();
+				break;
+			case WEEKLY: // 7일 전 00:00 ~ 어제 23:59:59.999
+				start = today.minusDays(7).atStartOfDay(koreaZone).toInstant();
+				end = today.minusDays(1).atTime(LocalTime.MAX).atZone(koreaZone).toInstant();
+				break;
+			case MONTHLY: //한 달 전 날짜의 00:00 ~ 어제 23:59:59.999
+				start = today.minusMonths(1).atStartOfDay(koreaZone).toInstant();
+				end = today.minusDays(1).atTime(LocalTime.MAX).atZone(koreaZone).toInstant();
+				break;
+			case ALL_TIME: //2025년 1월 1일 00:00부터 어제 23:59:59.999까지.
+				start = LocalDate.of(2025, 1, 1).atStartOfDay(koreaZone).toInstant();
+				end = today.minusDays(1).atTime(LocalTime.MAX).atZone(koreaZone).toInstant();
+				break;
+		}
+
+		return new AbstractMap.SimpleEntry<>(start, end);
+	}
+
+	//리뷰 리스트에서 도서id에 대해 그룹화하고, 도서에 대한 리뷰수, 평점평균, 스코어를 계산한다.
+	private Map<UUID, BookRankingCalculation> calculateBookRankingByReviews(List<Review> reviews) {
+		return reviews.stream()
+			.collect(Collectors.groupingBy(
+				review -> review.getBook().getId(),
+				Collectors.collectingAndThen(
+					Collectors.toList(),
+					reviewList -> {
+						BigDecimal avgRating = reviewList.stream()
+							.map(Review::getRating)
+							.reduce(BigDecimal.ZERO, BigDecimal::add)
+							.divide(BigDecimal.valueOf(reviewList.size()), 2, RoundingMode.HALF_UP);
+
+						int reviewCount = reviewList.size();
+
+						// 점수 계산: (reviewCount * 0.4) + (avgRating * 0.6)
+						BigDecimal weightedCount = BigDecimal.valueOf(reviewCount).multiply(BigDecimal.valueOf(0.4));
+						BigDecimal weightedRating = avgRating.multiply(BigDecimal.valueOf(0.6));
+						BigDecimal score = weightedCount.add(weightedRating); //최종 도서 스코어
+
+						return new BookRankingCalculation(score, reviewCount, avgRating);
+					}
+				)
+			));
+	}
+
+	//도서랭킹 테이블을 모두삭제한다.
+	//배치작업시 수행된다.
+	public void deleteBookRanking() {
+		popularBookRepository.deleteAll();
 	}
 
 	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )
