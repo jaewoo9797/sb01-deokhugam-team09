@@ -4,10 +4,13 @@ package com.codeit.sb01_deokhugam.domain.comment.service;
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
 import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
+import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,28 +22,80 @@ import java.util.UUID;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
+    private final UserRepository userRepository;
 
-    public CommentDto create(UUID reviewId, UUID userId, String content, String userNickname) {
+    public CommentDto create(UUID reviewId, UUID userId, String content) {
         Comment comment = new Comment(reviewId, userId, content);
-        return commentRepository.save(comment).toDto(userNickname);
+        Comment saved = commentRepository.save(comment);
+
+        String nickname = userRepository.findById(userId)
+                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
+                .getNickname();
+
+        return commentMapper.toDto(saved, nickname);
     }
 
-    public List<CommentDto> getComments(UUID reviewId, Instant after, String userNickname) {
-        List<Comment> comments = (after != null) ?
-                commentRepository.findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAtAsc(reviewId, after) :
-                commentRepository.findByReviewIdAndDeletedFalseOrderByCreatedAtAsc(reviewId);
+    public List<CommentDto> getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
+        boolean isAsc = direction != null && direction.equalsIgnoreCase("ASC");
+        int pageSize = (limit != null) ? limit : 50;
+
+        List<Comment> comments;
+
+        if (after != null) {
+            comments = commentRepository.findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAt(
+                    reviewId,
+                    after,
+                    Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt")
+            );
+        } else {
+            comments = commentRepository.findByReviewIdAndDeletedFalse(
+                    reviewId,
+                    Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt")
+            );
+        }
+
+        if (comments.size() > pageSize) {
+            comments = comments.subList(0, pageSize);
+        }
 
         return comments.stream()
-                .map(comment -> comment.toDto(userNickname))
+                .map(comment -> {
+                    String nickname = userRepository.findById(comment.getUserId())
+                            .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
+                            .getNickname();
+                    return commentMapper.toDto(comment, nickname);
+                })
                 .toList();
     }
 
-    @Transactional
-    public CommentDto update(UUID commentId, UUID userId, String newContent, String userNickname) {
-        Comment comment = commentRepository.findByIdAndUserIdAndDeletedFalse(commentId, userId)
+    public CommentDto getCommentById(UUID commentId) {
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-        comment.updateContent(newContent);
-        return comment.toDto(userNickname);
+
+        String nickname = userRepository.findById(comment.getUserId())
+                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
+                .getNickname();
+
+        return commentMapper.toDto(comment, nickname);
+    }
+
+    @Transactional
+    public CommentDto updateComment(UUID commentId, UUID UserId, String content) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUserId().equals(UserId)) {
+            throw new CommentException(ErrorCode.INVALID_REQUEST); // 작성자와 요청자가 다름
+        }
+
+        comment.updateContent(content);
+
+        String nickname = userRepository.findById(UserId)
+                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
+                .getNickname();
+
+        return commentMapper.toDto(comment, nickname);
     }
 
     @Transactional
@@ -55,9 +110,4 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    public CommentDto getCommentById(UUID commentId, String userNickname) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-        return comment.toDto(userNickname);
-    }
 }

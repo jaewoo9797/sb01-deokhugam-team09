@@ -3,9 +3,8 @@ package com.codeit.sb01_deokhugam.domain.comment.entity;
 import java.util.UUID;
 
 import com.codeit.sb01_deokhugam.domain.base.BaseUpdatableEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +14,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseUpdatableEntity {
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @Column(name = "review_id", nullable = false)
     private UUID reviewId;
