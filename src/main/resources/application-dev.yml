@@ -1,4 +1,7 @@
 spring:
+  config:
+    import:
+      - classpath:/yaml/actuator/actuator.yml
   sql:
     init:
       mode: always       # 항상 schema.sql, data.sql 실행
