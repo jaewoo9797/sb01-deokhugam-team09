@@ -1,5 +1,6 @@
 package com.codeit.sb01_deokhugam.domain.notification.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,5 +27,9 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 	boolean existsByUserIdAndConfirmedFalse(UUID userId);
 
 	long countByUserIdAndConfirmedFalse(UUID userId);
+
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("DELETE FROM Notification n WHERE n.confirmed = true AND n.updatedAt < :cutOfDate")
+	int deleteConfirmedOlderThan(@Param("cutOfDate") Instant cutOfDate);
 
 }
