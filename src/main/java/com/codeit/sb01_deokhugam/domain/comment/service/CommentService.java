@@ -95,7 +95,7 @@ public class CommentService {
 
         comment.updateContent(content);
 
-        String nickname = comment.getUser().getNickname(); 
+        String nickname = comment.getUser().getNickname();
 
         return commentMapper.toDto(comment, nickname);
     }

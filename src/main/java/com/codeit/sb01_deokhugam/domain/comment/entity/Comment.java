@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Comment extends BaseUpdatableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "review_id", nullable = false)
