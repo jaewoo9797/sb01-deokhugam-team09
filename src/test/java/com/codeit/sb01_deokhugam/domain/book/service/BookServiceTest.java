@@ -1,4 +1,4 @@
-// package com.codeit.sb01_deokhugam.book;
+// package com.codeit.sb01_deokhugam.domain.book.service;
 //
 // import static org.junit.jupiter.api.Assertions.*;
 // import static org.mockito.BDDMockito.*;
@@ -28,9 +28,8 @@
 // import com.codeit.sb01_deokhugam.domain.book.exception.IsbnAlreadyExistsException;
 // import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 // import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
-// import com.codeit.sb01_deokhugam.domain.book.service.BookService;
-// import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
-// import com.codeit.sb01_deokhugam.global.infra.S3StorageService;
+// import com.codeit.sb01_deokhugam.global.naver.NaverBookClient;
+// import com.codeit.sb01_deokhugam.global.s3.S3Service;
 //
 // @ExtendWith(MockitoExtension.class)
 // public class BookServiceTest {
@@ -39,7 +38,7 @@
 // 	private BookRepository bookRepository;
 //
 // 	@Mock
-// 	private S3StorageService s3StorageService;
+// 	private S3Service s3SeService;
 //
 // 	@Mock
 // 	private BookMapper bookMapper;
@@ -101,7 +100,7 @@
 //
 // 			//given
 // 			given(bookRepository.existsByIsbn(eq(createdBook.getIsbn()))).willReturn(false);
-// 			given(s3StorageService.put(any())).willReturn("https://test.com");
+// 			//given(s3SeService.upload(any())).willReturn("https://test.com");
 // 			given(bookRepository.save(any(Book.class))).willReturn(createdBook);
 // 			given(bookMapper.toDto(any(Book.class))).willReturn(bookDto);
 //
@@ -111,7 +110,7 @@
 // 			//then
 // 			//s3에 이미지 저장
 // 			//리포에 북 정보 저장
-// 			verify(s3StorageService).put(any());
+// 			//verify(s3SeService).upload(any());
 // 			verify(bookRepository).save(any(Book.class));
 //
 // 			//assertEquals(bookDto, result);

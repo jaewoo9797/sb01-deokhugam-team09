@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codeit.sb01_deokhugam.auth.request.UserLoginRequest;
 import com.codeit.sb01_deokhugam.auth.service.AuthService;
+import com.codeit.sb01_deokhugam.domain.user.dto.ValidationSequence;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
-import com.codeit.sb01_deokhugam.domain.user.service.UserService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
 	private final AuthService authService;
-	private final UserService userService;
 
 	@PostMapping(path = "/login")
-	public ResponseEntity<UserDto> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+	public ResponseEntity<UserDto> login(
+		@RequestBody @Validated(ValidationSequence.class) UserLoginRequest userLoginRequest) {
 		log.info("로그인 요청: email={}", userLoginRequest.email());
 		UserDto user = authService.login(userLoginRequest);
 		log.debug("로그인 응답: {}", user);

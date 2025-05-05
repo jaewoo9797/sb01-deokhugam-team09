@@ -30,7 +30,6 @@ import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.book.repository.PopularBookRepository;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
-import com.codeit.sb01_deokhugam.global.s3.S3Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +48,7 @@ public class BookService {
 	private final PopularBookMapper popularBookMapper;
 
 	//TODO: 이미지 등록 관련 로직 필요
-	private final S3Service s3Service;
+	//private final S3Service s3Service;
 	//임시로 쓰던 건데 나중에 정리할게요
 	//private final ReviewService reviewService;
 
@@ -204,9 +203,9 @@ public class BookService {
 
 		// 이미지가 새로 들어온 경우에만 S3 업로드
 		String imageUrl = book.getThumbnailUrl();
-		if (thumnailImage != null) {
-			imageUrl = s3Service.upload(thumnailImage, "directory");
-		}
+		// if (thumnailImage != null) {
+		// 	imageUrl = s3Service.upload(thumnailImage, "directory");
+		// }
 
 		// 도서 정보 업데이트
 		book.update(
