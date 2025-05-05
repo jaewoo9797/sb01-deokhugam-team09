@@ -62,6 +62,10 @@ jobs:
       # Jacoco 설정
       # ✅ 커버리지 리포트 생성
       - name: Generate Jacoco Report
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
         run: ./gradlew jacocoTestReport
 
       # ✅  PR에 커버리지 코멘트 작성
