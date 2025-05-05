@@ -1,4 +1,11 @@
 management:
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+    env:
+      enabled: true
   endpoints:
     web:
       base-path: "/manage"
@@ -7,25 +14,17 @@ management:
           - health
           - info
           - metrics
+          - loggers
           - prometheus
         exclude:
           - env
           - beans
-          - threaddump
-          - heapdump
           - shutdown
-          - loggers
   endpoint:
     health:
-      show-details: always
-  info:
-    java:
-      enabled: true
-    os:
-      enabled: true
-  health:
-    db:
-      enabled: true
-    diskspace:
-      enabled: true
-      threshold: 10MB
+      show-components: always
+
+info:
+  app:
+    name: deokhugam
+    version: 1.0.0
