@@ -6,6 +6,7 @@ import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
 import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -26,12 +27,13 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public CommentDto create(UUID reviewId, UUID userId, String content) {
-        Comment comment = new Comment(reviewId, userId, content);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND));
+
+        Comment comment = new Comment(reviewId, user, content);
         Comment saved = commentRepository.save(comment);
 
-        String nickname = userRepository.findById(userId)
-                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
-                .getNickname();
+        String nickname = user.getNickname();
 
         return commentMapper.toDto(saved, nickname);
     }
@@ -53,7 +55,6 @@ public class CommentService {
         Instant afterTime = (after != null) ? after : Instant.EPOCH;
         Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.now();
 
-
         List<Comment> comments = commentRepository
                 .findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAt(
                         reviewId,
@@ -68,9 +69,7 @@ public class CommentService {
 
         return comments.stream()
                 .map(comment -> {
-                    String nickname = userRepository.findById(comment.getUserId())
-                            .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
-                            .getNickname();
+                    String nickname = comment.getUser().getNickname();
                     return commentMapper.toDto(comment, nickname);
                 })
                 .toList();
@@ -80,27 +79,23 @@ public class CommentService {
         Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
-        String nickname = userRepository.findById(comment.getUserId())
-                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
-                .getNickname();
+        String nickname = comment.getUser().getNickname();
 
         return commentMapper.toDto(comment, nickname);
     }
 
     @Transactional
-    public CommentDto updateComment(UUID commentId, UUID UserId, String content) {
+    public CommentDto updateComment(UUID commentId, UUID userId, String content) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if (!comment.getUserId().equals(UserId)) {
-            throw new CommentException(ErrorCode.INVALID_REQUEST); // 작성자와 요청자가 다름
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CommentException(ErrorCode.INVALID_REQUEST);
         }
 
         comment.updateContent(content);
 
-        String nickname = userRepository.findById(UserId)
-                .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND))
-                .getNickname();
+        String nickname = comment.getUser().getNickname(); 
 
         return commentMapper.toDto(comment, nickname);
     }
@@ -116,7 +111,8 @@ public class CommentService {
     public void hardDelete(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-        if (!comment.getUserId().equals(userId)) {
+
+        if (!comment.getUser().getId().equals(userId)) {
             throw new CommentException(ErrorCode.UNAUTHORIZED);
         }
 

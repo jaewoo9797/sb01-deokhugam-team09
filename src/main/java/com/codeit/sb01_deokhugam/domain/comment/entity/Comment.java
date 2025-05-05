@@ -22,18 +22,15 @@ public class Comment extends BaseUpdatableEntity {
     @Column(name = "review_id", nullable = false)
     private UUID reviewId;
 
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
-
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
-    public Comment(UUID reviewId, UUID userId, String content) {
+    public Comment(UUID reviewId, User user, String content) {
         this.reviewId = reviewId;
-        this.userId = userId;
+        this.user = user;
         this.content = content;
         this.deleted = false;
     }
