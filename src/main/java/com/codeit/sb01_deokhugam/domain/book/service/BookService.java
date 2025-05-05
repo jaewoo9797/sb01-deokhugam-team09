@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -315,13 +316,26 @@ public class BookService {
 		// 리뷰 테이블에서, 날짜 범위에 해당하는 필요한 리뷰리스트를 가져온다
 		List<Review> reviews = reviewRepository.findByCreatedAtBetween(start, end);
 
-		// 도서 ID 별로 리뷰를 그룹화하고 계산한다.
-		Map<UUID, BookRankingCalculation> bookCalculations = calculateBookRankingByReviews(reviews);
+		// 리뷰에 포함된 도서 ID 목록을 추출한다.
+		Set<UUID> bookIdsInReviews = reviews.stream()
+			.map(review -> review.getBook().getId())
+			.collect(Collectors.toSet());
 
-		// 계산된 도서 ID 목록을 이용해 도서 정보를 가져온다.
-		Map<UUID, Book> bookMap = bookRepository.findAllById(bookCalculations.keySet())
-			.stream()
-			.collect(Collectors.toMap(Book::getId, book -> book));
+		// 도서 정보 조회 (bookId 중 논리적 삭제되지 않은 도서만 필터링)
+		// Function.identity()는 객체 자신을 그대로 반환함.
+		Map<UUID, Book> bookMap = bookRepository.findAllById(bookIdsInReviews).stream()
+			.filter(Book::logicalExists)
+			.collect(Collectors.toMap(Book::getId, Function.identity()));
+		// bookId 셋 생성
+		Set<UUID> validBookIds = bookMap.keySet();
+
+		// validBookIds을 이용하여 논리적 삭제되지 않은 도서에 해당하는 리뷰만 필터링
+		List<Review> filteredReviews = reviews.stream()
+			.filter(review -> validBookIds.contains(review.getBook().getId()))
+			.collect(Collectors.toList());
+
+		// 도서 ID 별로 리뷰를 그룹화하고 스코어를 계산한다.
+		Map<UUID, BookRankingCalculation> bookCalculations = calculateBookRankingByReviews(filteredReviews);
 
 		// Score 기준으로 내림차순 정렬한 도서 ID 리스트
 		List<UUID> sortedBookIds = bookCalculations.entrySet().stream()
