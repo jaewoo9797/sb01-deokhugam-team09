@@ -304,7 +304,7 @@ public class BookService {
 	 * @param period
 	 */
 	//대시보드: 인기도서 순위 배치 연산
-	//논리삭제된 도서에 대해서도 계산함.
+	//논리삭제 되지 않은 도서에 대해서 연산함
 	@Transactional
 	public void calculateRanking(Period period) {
 
