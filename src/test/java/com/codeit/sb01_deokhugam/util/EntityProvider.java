@@ -11,7 +11,11 @@ import com.codeit.sb01_deokhugam.domain.user.entity.User;
 public class EntityProvider {
 
 	public static User createUser() {
-		return new User("test" + UUID.randomUUID() + "@email.com", "password", "test");
+		String randomString = UUID.randomUUID().toString().substring(0, 5);
+		return new User(
+			"test" + randomString + "@email.com",
+			"password486!!",
+			"nickname" + randomString);
 	}
 
 	public static Book createBook() {

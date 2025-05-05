@@ -28,7 +28,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MissingServletRequestParameterException.class)
-	protected ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+	protected ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+		MissingServletRequestParameterException exception) {
 		log.error("필수 요청 파라미터가 누락되었습니다:  message = {}", exception.getMessage());
 		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -36,7 +37,8 @@ public class GlobalExceptionHandler {
 
 	// 쿼리스트링/PathVariable → 타입 매핑 실패(enum, 숫자 등)
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+	protected ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+		MethodArgumentTypeMismatchException exception) {
 		log.error("Type Mapping Fail 잘못된 인수가 전달되었습니다:  message = {}", exception.getMessage());
 		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
@@ -44,7 +46,8 @@ public class GlobalExceptionHandler {
 
 	// 지원하지 않는 Content-Type
 	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-	protected ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exception) {
+	protected ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
+		HttpMediaTypeNotSupportedException exception) {
 		log.error("지원하지 않는 Content-Type 입니다:  message = {}", exception.getMessage());
 		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
 		return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(errorResponse);
@@ -52,7 +55,8 @@ public class GlobalExceptionHandler {
 
 	// 지원하지 않는 HTTP 메소드 요청 시
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+	protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+		HttpRequestMethodNotSupportedException exception) {
 		log.error("지원하지 않는 HTTP 메소드 요청입니다:  message = {}", exception.getMessage());
 		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.METHOD_NOT_ALLOWED.value());
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
@@ -96,10 +100,10 @@ public class GlobalExceptionHandler {
 		return switch (errorCode) {
 			case BOOK_NOT_FOUND, COMMENT_NOT_FOUND, NOTIFICATION_NOT_FOUND,
 				 REVIEW_NOT_FOUND, USER_NOT_FOUND, THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
+			case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
 			case INTERNAL_SERVER_ERROR, S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-			case DUPLICATE_ISBN, DUPLICATE_BOOK -> HttpStatus.CONFLICT;
+			case DUPLICATE_ISBN, DUPLICATE_BOOK, DUPLICATION_USER -> HttpStatus.CONFLICT;
 			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST, FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
-			case DUPLICATION_USER -> HttpStatus.CONFLICT;
 			case LOGIN_INPUT_INVALID, UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
 
 		};
