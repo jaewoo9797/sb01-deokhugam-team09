@@ -14,6 +14,9 @@ public interface CommentRepository extends JpaRepository <Comment, UUID> {
     // 삭제되지 않은 댓글 목록 조회 (리뷰 ID 기준, 생성일 오름차순 정렬)
     List<Comment> findByReviewIdAndDeletedFalseOrderByCreatedAtAsc(UUID reviewId);
 
+    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAt(
+            UUID reviewId, Instant after, Instant before, Sort sort);
+
     // 삭제되지 않은 댓글을 리뷰 ID로 조회
     List<Comment> findByReviewIdAndDeletedFalse(UUID reviewId);
 

@@ -37,23 +37,30 @@ public class CommentService {
     }
 
     public List<CommentDto> getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
-        boolean isAsc = direction != null && direction.equalsIgnoreCase("ASC");
+        boolean isAsc = "ASC".equalsIgnoreCase(direction);
         int pageSize = (limit != null) ? limit : 50;
 
-        List<Comment> comments;
+        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt", "id");
 
-        if (after != null) {
-            comments = commentRepository.findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAt(
-                    reviewId,
-                    after,
-                    Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt")
-            );
-        } else {
-            comments = commentRepository.findByReviewIdAndDeletedFalse(
-                    reviewId,
-                    Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt")
-            );
+        Instant cursorCreatedAt = null;
+        if (cursor != null) {
+            UUID commentId = UUID.fromString(cursor);
+            Comment cursorComment = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+            cursorCreatedAt = cursorComment.getCreatedAt();
         }
+
+        Instant afterTime = (after != null) ? after : Instant.EPOCH;
+        Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.now();
+
+
+        List<Comment> comments = commentRepository
+                .findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAt(
+                        reviewId,
+                        isAsc ? afterTime : beforeTime,
+                        isAsc ? beforeTime : afterTime,
+                        sort
+                );
 
         if (comments.size() > pageSize) {
             comments = comments.subList(0, pageSize);
@@ -106,7 +113,17 @@ public class CommentService {
     }
 
     @Transactional
-    public void hardDelete(UUID commentId) {
+    public void hardDelete(UUID commentId, UUID userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+        if (!comment.getUserId().equals(userId)) {
+            throw new CommentException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (comment.isDeleted()) {
+            throw new CommentException(ErrorCode.INVALID_REQUEST);
+        }
+
         commentRepository.deleteById(commentId);
     }
 

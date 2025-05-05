@@ -60,15 +60,22 @@ public class CommentController {
         return ResponseEntity.ok(updatedComment);
     }
 
-
     @DeleteMapping("/{commentId}")
-    public void delete(@PathVariable UUID commentId,
-                       @LoginUserId UUID userId,
-                       @RequestParam(defaultValue = "false") boolean hard) {
-        if (hard) {
-            commentService.hardDelete(commentId);
-        } else {
-            commentService.softDelete(commentId, userId);
-        }
+    public ResponseEntity<Void> softDelete(@PathVariable UUID commentId,
+                                           @LoginUserId UUID userId) {
+        log.info("논리 삭제 요청: commentId={}, userId={}", commentId, userId);
+        commentService.softDelete(commentId, userId);  // 논리 삭제
+        return ResponseEntity.noContent().build();
     }
+
+
+    @DeleteMapping("/{commentId}/hard")
+    public ResponseEntity<Void> hardDelete(@PathVariable UUID commentId,
+                                           @LoginUserId UUID userId) {
+        log.info("물리 삭제 요청: commentId={}", commentId);
+        commentService.hardDelete(commentId, userId);  // 물리 삭제
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
