@@ -62,3 +62,11 @@ VALUES
 ('88888888-abcd-1234-abcd-1234567890ab', '2024-03-01T08:00:00', '2024-03-01T08:00:00',
  '[테스터]님이 리뷰를 작성했습니다.', true,
  '54b78d8f-68fb-4c60-8f26-00bb1a5e219d', '22222222-3333-4444-5555-666666666666');
+
+
+INSERT INTO comments (id, created_at, updated_at, content, is_deleted, user_id, review_id)
+VALUES
+('c1111111-aaaa-bbbb-cccc-000000000001', now(), now(),
+ '감사합니다! 더 열심히 작성해볼게요.', false,
+ '54b78d8f-68fb-4c60-8f26-00bb1a5e219d',
+ '22222222-3333-4444-5555-666666666666')

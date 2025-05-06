@@ -53,13 +53,13 @@ public class CommentService {
         }
 
         Instant afterTime = (after != null) ? after : Instant.EPOCH;
-        Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.now();
+        Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
 
         List<Comment> comments = commentRepository
-                .findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAt(
+                .findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBefore(
                         reviewId,
-                        isAsc ? afterTime : beforeTime,
-                        isAsc ? beforeTime : afterTime,
+                        afterTime,
+                        beforeTime,
                         sort
                 );
 

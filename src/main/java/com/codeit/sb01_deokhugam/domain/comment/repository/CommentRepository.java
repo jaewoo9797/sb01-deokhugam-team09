@@ -11,24 +11,11 @@ import java.util.UUID;
 
 public interface CommentRepository extends JpaRepository <Comment, UUID> {
 
-    // 삭제되지 않은 댓글 목록 조회 (리뷰 ID 기준, 생성일 오름차순 정렬)
-    List<Comment> findByReviewIdAndDeletedFalseOrderByCreatedAtAsc(UUID reviewId);
-
-    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBeforeOrderByCreatedAt(
+    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBefore(
             UUID reviewId, Instant after, Instant before, Sort sort);
-
-    // 삭제되지 않은 댓글을 리뷰 ID로 조회
-    List<Comment> findByReviewIdAndDeletedFalse(UUID reviewId);
 
     // 삭제되지 않은 댓글을 ID로 조회
     Optional<Comment> findByIdAndDeletedFalse(UUID commentId);
-
-    // 특정 시간 이후 생성된 댓글만 조회
-    // List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAtAsc(UUID reviewId, Instant after);
-
-    List<Comment> findByReviewIdAndDeletedFalseAndCreatedAtAfterOrderByCreatedAt(UUID reviewId, Instant after, Sort sort);
-
-    List<Comment> findByReviewIdAndDeletedFalse(UUID reviewId, Sort sort);
 
     // 작성자가 본인인지 확인할 수 있도록
     Optional<Comment> findByIdAndUserIdAndDeletedFalse(UUID commentId, UUID userId);
