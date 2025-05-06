@@ -17,8 +17,6 @@ public interface UserService {
 
 	UserDto findUserIncludingDeleted(UUID id);
 
-	List<UserDto> findAllUsersIncludingDeleted();
-
 	UserDto update(UUID pathId, UUID headerId, UserUpdateRequest userUpdateRequest);
 
 	void softDelete(UUID id, UUID headerId);
