@@ -25,8 +25,6 @@ public class BasicPowerUserService implements PowerUserService {
 		//db접근
 		PageResponse<PowerUserDto> powerUsers = powerUserRepositoryCustom.findPowerUsers(getPowerUsersRequest);
 
-		//적절한 반환값 형태로 변환
-
-		return null;
+		return powerUsers;
 	}
 }

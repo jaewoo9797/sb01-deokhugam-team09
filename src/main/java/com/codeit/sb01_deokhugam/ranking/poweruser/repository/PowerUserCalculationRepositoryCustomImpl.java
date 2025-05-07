@@ -37,7 +37,7 @@ public class PowerUserCalculationRepositoryCustomImpl implements PowerUserCalcul
 			    FROM User u
 			    LEFT JOIN Review r ON r.author = u AND r.createdAt BETWEEN :start AND :end
 			    LEFT JOIN Comment c ON c.userId = u.id AND c.createdAt BETWEEN :start AND :end
-			    LEFT JOIN ReviewLike l ON l.user = u AND l.createdAt BETWEEN :start AND :end
+			    LEFT JOIN ReviewLike l ON l.userId = u AND l.createdAt BETWEEN :start AND :end
 			    GROUP BY u.id, u.nickname
 			    ORDER BY (COALESCE(SUM(r.likeCount), 0) * 0.5 + COUNT(DISTINCT l) * 0.2 + COUNT(DISTINCT c) * 0.3) DESC
 			""";
@@ -45,7 +45,7 @@ public class PowerUserCalculationRepositoryCustomImpl implements PowerUserCalcul
 		return em.createQuery(jpql, PowerUserDto.class)
 			.setParameter("start", start)
 			.setParameter("end", end)
-			.setParameter("period", Period.DAILY) // TODO: period 파라미터를 메서드 파라미터로 받아야 함
+			.setParameter("period", Period.DAILY)
 			.getResultList();
 	}
 }
