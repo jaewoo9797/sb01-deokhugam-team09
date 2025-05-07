@@ -298,20 +298,21 @@ public class BookServiceTest {
 		}
 	}
 
-	//OCR을 통한 ISBN 정보 입력하기 (심화)
-	@Nested
-	@DisplayName("이미지를 OCR로 읽어들여 isbn을 반환한다.")
-	class testExtractTextByOcr {
-		@Test
-		@DisplayName("이미지를 OCR로 읽어들여 isbn을 반환을 성공한다.")
-		void testExtractTextByOcr_returnsIsbn() {
-			//given
-
-			//when
-
-			//then
-		}
-	}
+	// @Nested
+	// @DisplayName("이미지를 OCR로 읽어들여 isbn을 반환한다.")
+	// class testExtractTextByOcr {
+	//
+	// 	@Test
+	// 	@DisplayName("이미지를 OCR로 읽어들여 isbn을 반환을 성공한다.")
+	// 	void testExtractTextByOcr_returnsIsbn() throws IOException {
+	// 		//given
+	// 		given(ImageIO.read(multipartFile.getInputStream())).willReturn(any(BufferedImage.class));
+	//
+	// 		//when
+	//
+	// 		//then
+	// 	}
+	// }
 
 	@Nested
 	@DisplayName("도서 배치 연산을 수행하여 인기 도서 랭킹을 생성한다.")
