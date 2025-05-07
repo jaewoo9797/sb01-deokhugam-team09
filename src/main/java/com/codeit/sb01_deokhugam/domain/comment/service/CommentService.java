@@ -42,8 +42,6 @@ public class CommentService {
         boolean isAsc = "ASC".equalsIgnoreCase(direction);
         int pageSize = (limit != null) ? limit : 50;
 
-        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt", "id");
-
         Instant cursorCreatedAt = null;
         if (cursor != null) {
             UUID commentId = UUID.fromString(cursor);

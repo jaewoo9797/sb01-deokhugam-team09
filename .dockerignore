@@ -3,4 +3,4 @@
 .dockerignore
 .gitignore
 *.log
-src/main/resources/.env
+.env
