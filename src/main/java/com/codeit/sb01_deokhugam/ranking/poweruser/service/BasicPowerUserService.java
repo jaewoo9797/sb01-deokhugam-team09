@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class BasicPowerUserService implements PowerUserService {
 
-	PowerUserRepositoryCustom powerUserRepositoryCustom;
+	private final PowerUserRepositoryCustom powerUserRepositoryCustom;
 
 	@Override
 	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest) {
