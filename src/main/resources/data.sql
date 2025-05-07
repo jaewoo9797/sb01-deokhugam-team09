@@ -1,7 +1,7 @@
 -- USERS
 INSERT INTO users (id, created_at, updated_at, email, nickname, password, is_deleted)
 VALUES ('54b78d8f-68fb-4c60-8f26-00bb1a5e219d', now(), now(),
-        'tester@example.com', '테스터', 'encoded-password', false);
+        'tester@example.com', '테스터', 'encoded-password486!', false);
 
 -- BOOKS
 INSERT INTO books (id, created_at, updated_at, title, author, description, publisher,

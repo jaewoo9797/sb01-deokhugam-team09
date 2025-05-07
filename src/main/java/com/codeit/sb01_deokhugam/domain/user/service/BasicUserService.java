@@ -72,6 +72,7 @@ public class BasicUserService implements UserService {
 	}
 
 	//논리삭제된 유저 포함하여 단건조회
+	//Dto에는 isDeleted 필드가 없어, 반환하는 userDto만 봐서는 논리삭제여부를 알 수 없다.
 	@Override
 	public UserDto findUserIncludingDeleted(UUID id) {
 		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: id={}", id);
@@ -82,17 +83,6 @@ public class BasicUserService implements UserService {
 
 		log.info("사용자 조회 완료: id={}", id);
 		return userDto;
-	}
-
-	//논리삭제된 유저 포함하여 전체조회
-	@Override
-	public List<UserDto> findAllUsersIncludingDeleted() {
-		log.debug("논리삭제 상태 포함하여 전체 사용자 조회 시작");
-
-		List<UserDto> userDtos = userRepository.findAll().stream().map(userMapper::toDto).toList();
-
-		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
-		return userDtos;
 	}
 
 	//유저 닉네임 변경
@@ -112,6 +102,7 @@ public class BasicUserService implements UserService {
 		return userMapper.toDto(user);
 	}
 
+	// todo 이미 논리삭제되어있는 유저의 경우, 다른 예외처리를 반환하는게 보기 좋을듯.
 	//유저 isDeleted 필드 false로 변경
 	@Override
 	@Transactional
