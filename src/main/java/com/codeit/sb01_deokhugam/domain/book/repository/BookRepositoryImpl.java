@@ -161,6 +161,9 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		QBook book = QBook.book;
 		BooleanBuilder predicate = new BooleanBuilder();
 
+		//논리적 삭제되지 않은 책 필터링
+		predicate.and(book.deleted.isFalse());
+
 		if (keyword != null && !keyword.isEmpty()) {
 			predicate.and(
 				book.title.containsIgnoreCase(keyword)
