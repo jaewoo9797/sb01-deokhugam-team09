@@ -17,7 +17,7 @@ build/
 # Environment variables
 .env
 *.env
-.env*
+.env
 
 # queryDsl 자동생성파일
 src/main/generated/
