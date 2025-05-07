@@ -6,10 +6,8 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
-import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.QPowerUser;
 import com.codeit.sb01_deokhugam.ranking.poweruser.mapper.PowerUserMapper;
@@ -29,7 +27,7 @@ public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom 
 	private final PowerUserRepository powerUserRepository;
 
 	@Override
-	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest request) {
+	public List<PowerUser> findPowerUsers(GetPowerUsersRequest request) {
 		Sort.Direction direction = request.direction();
 		int limitSize = request.limit();
 		Period period = request.period();
@@ -40,26 +38,10 @@ public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom 
 		JPAQuery<PowerUser> query = queryFactory.selectFrom(powerUser).where(builder);
 		//정렬 필드, 방향 설정
 		query.orderBy(getOrderSpecifier(direction, powerUser));
-		// 전체 항목 수 조회
-		long totalElements = powerUserRepository.countByPeriod(period);
 		// 페이지 요소 수 설정. hasNext 판별하기 위해 하나 더 가져옴
 		query.limit(limitSize + 1);
 		// 쿼리 실행
-		List<PowerUser> powerUsers = query.fetch();
-
-		//size+1 결과에 따라 다음페이지 존재여부 설정 후, 추가로 받아온 요소 하나 삭제
-		boolean hasNext = (powerUsers.size() > limitSize);
-		powerUsers = hasNext ? powerUsers.subList(0, limitSize) : powerUsers;
-		int size = powerUsers.size();
-
-		PowerUser lastUser = (powerUsers.isEmpty() ? null : powerUsers.get(powerUsers.size() - 1));
-		int nextCursor = (lastUser != null) ? lastUser.getRank() : 0;
-		Instant nextAfter = (lastUser != null) ? lastUser.getCreatedAt() : null;
-
-		List<PowerUserDto> powerUserDtoList = powerUserMapper.toDtoList(powerUsers);
-
-		return new PageResponse<>(powerUserDtoList, nextAfter, nextCursor,
-			size, hasNext, totalElements);
+		return query.fetch();
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(Sort.Direction direction, QPowerUser powerUser) {
