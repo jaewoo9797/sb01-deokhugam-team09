@@ -15,6 +15,8 @@ public interface CommentRepository extends JpaRepository <Comment, UUID>, Commen
 
     long countByReview_Id(UUID reviewId);
 
+    List<Comment> findByCreatedAtBetweenAndDeletedFalse(Instant start, Instant end);
+
     // 물리 삭제
     void deleteById(UUID commentId);
 }
