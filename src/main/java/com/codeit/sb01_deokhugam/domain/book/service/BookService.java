@@ -173,11 +173,11 @@ public class BookService {
 	@Transactional
 	//도서 상세 정보 조회
 	public BookDto findById(UUID bookId) {
-		log.debug("도서 조회 시작: id={}", bookId);
+		//log.debug("도서 조회 시작: id={}", bookId);
 		BookDto bookDto = bookMapper.toDto(bookRepository.findByIdNotLogicalDelete(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId)
 		));
-		log.info("도서 조회 완료: id={}", bookId);
+		//log.info("도서 조회 완료: id={}", bookId);
 		return bookDto;
 	}
 
@@ -187,11 +187,11 @@ public class BookService {
 	 */
 	@Transactional
 	public void delete(UUID bookId) {
-		log.debug("도서 논리 삭제 시작: id={}", bookId);
+		//log.debug("도서 논리 삭제 시작: id={}", bookId);
 		Book book = bookRepository.findByIdNotLogicalDelete(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
 		book.softDelete(); //엔티티의 deleted를 true로 변경
-		log.info("도서 논리 삭제 완료: id={}", bookId);
+		//log.info("도서 논리 삭제 완료: id={}", bookId);
 	}
 
 	/**
@@ -201,14 +201,14 @@ public class BookService {
 	 */
 	@Transactional
 	public void deletePhysical(UUID bookId) {
-		log.debug("도서 물리 삭제 시작: id={}", bookId);
+		//log.debug("도서 물리 삭제 시작: id={}", bookId);
 		bookRepository.findById(bookId).orElseThrow(
 			() -> new BookNotFoundException().withId(bookId));
-		log.debug("도서의 관련 리뷰 삭제 시작: id={}", bookId);
+		//log.debug("도서의 관련 리뷰 삭제 시작: id={}", bookId);
 		bookRepository.deleteById(bookId);
 		//TODO: 리뷰에서 물리삭제 확인 필요
 		//reviewService.deleteByBookPhysicalDelete(bookId);
-		log.info("도서 물리 삭제 완료: id={}", bookId);
+		//log.info("도서 물리 삭제 완료: id={}", bookId);
 	}
 
 	/**
