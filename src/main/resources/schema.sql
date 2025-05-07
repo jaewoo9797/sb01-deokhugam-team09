@@ -72,6 +72,7 @@ create table reviews
     content       varchar                  NOT NULL,
     rating        decimal(2, 1)            NOT NULL,
     like_count    integer                  NOT NULL default 0,
+    liked_by_me    BOOLEAN                  DEFAULT FALSE NOT NULL,
     comment_count integer                  NOT NULL default 0,
     is_deleted    BOOLEAN                           DEFAULT FALSE NOT NULL,
     user_id       uuid,

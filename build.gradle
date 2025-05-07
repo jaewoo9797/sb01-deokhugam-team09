@@ -112,6 +112,8 @@ def querydslDir = "build/generated/querydsl" //Q클래스 생성 위치
 
 tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslDir)
+    options.compilerArgs += ['-parameters']
+
 }
 
 clean {
