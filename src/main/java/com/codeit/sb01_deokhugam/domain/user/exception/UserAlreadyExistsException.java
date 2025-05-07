@@ -12,11 +12,4 @@ public class UserAlreadyExistsException extends UserException {
 		exception.addDetail("email", email);
 		return exception;
 	}
-
-	public static UserAlreadyExistsException withNickname(String nickname) {
-		UserAlreadyExistsException exception = new UserAlreadyExistsException();
-		exception.addDetail("nickname", nickname);
-		return exception;
-	}
-
 }

@@ -19,5 +19,4 @@ public record ReviewDto(
 	Instant createdAt,
 	Instant updatedAt
 ) {
-
 }

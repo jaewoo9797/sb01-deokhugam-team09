@@ -39,6 +39,9 @@ public class Review extends BaseUpdatableEntity {
 	@Column(name = "like_count", nullable = false)
 	private Integer likeCount = 0;
 
+	@Column(name = "liked_by_me", nullable = false)
+	private boolean likedByMe = false;
+
 	@Column(name = "comment_count", nullable = false)
 	private Integer commentCount = 0;
 
@@ -81,4 +84,7 @@ public class Review extends BaseUpdatableEntity {
 		this.rating = rating;
 	}
 
+	public void setLikedByMe(boolean likedByMe) {
+		this.likedByMe = likedByMe;
+	}
 }

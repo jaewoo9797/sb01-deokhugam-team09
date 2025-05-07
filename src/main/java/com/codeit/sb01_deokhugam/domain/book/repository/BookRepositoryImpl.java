@@ -91,54 +91,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		// 보조 정렬 조건으로 createdAt 추가 (항상 같은 방향으로 정렬)
 		secondaryOrderSpecifier = direction.equalsIgnoreCase("asc") ? book.createdAt.asc() : book.createdAt.desc();
 
-		//TODO: 메서드로 분리가능한가?
-
-		// 커서 기반 페이지네이션을 위한 조건 구성
-		// cursor와 after는 한 쌍으로 함께 사용됨 (커서값과 그 항목의 생성시간)
-		if (cursor != null && after != null) {
-			// 주 정렬 기준에 따라 커서 조건 적용
-			BooleanBuilder cursorPredicate = new BooleanBuilder();
-
-			if ("title".equals(orderBy)) {
-				if ("asc".equalsIgnoreCase(direction)) {
-					// 오름차순일 때: (title > cursor) OR (title = cursor AND createdAt > after)
-					cursorPredicate.or(book.title.gt(cursor));
-					cursorPredicate.or(book.title.eq(cursor).and(book.createdAt.gt(after)));
-				} else {
-					// 내림차순일 때: (title < cursor) OR (title = cursor AND createdAt < after)
-					cursorPredicate.or(book.title.lt(cursor));
-					cursorPredicate.or(book.title.eq(cursor).and(book.createdAt.lt(after)));
-				}
-			} else if ("publishedDate".equals(orderBy)) {
-				LocalDate date = LocalDate.parse(cursor);
-				if ("asc".equalsIgnoreCase(direction)) {
-					cursorPredicate.or(book.publishedDate.gt(date));
-					cursorPredicate.or(book.publishedDate.eq(date).and(book.createdAt.gt(after)));
-				} else {
-					cursorPredicate.or(book.publishedDate.lt(date));
-					cursorPredicate.or(book.publishedDate.eq(date).and(book.createdAt.lt(after)));
-				}
-			} else if ("rating".equals(orderBy)) {
-				BigDecimal rating = new BigDecimal(cursor);
-				if ("asc".equalsIgnoreCase(direction)) {
-					cursorPredicate.or(book.rating.gt(rating));
-					cursorPredicate.or(book.rating.eq(rating).and(book.createdAt.gt(after)));
-				} else {
-					cursorPredicate.or(book.rating.lt(rating));
-					cursorPredicate.or(book.rating.eq(rating).and(book.createdAt.lt(after)));
-				}
-			} else { // reviewCount
-				int reviewCount = Integer.parseInt(cursor);
-				if ("asc".equalsIgnoreCase(direction)) {
-					cursorPredicate.or(book.reviewCount.gt(reviewCount));
-					cursorPredicate.or(book.reviewCount.eq(reviewCount).and(book.createdAt.gt(after)));
-				} else {
-					cursorPredicate.or(book.reviewCount.lt(reviewCount));
-					cursorPredicate.or(book.reviewCount.eq(reviewCount).and(book.createdAt.lt(after)));
-				}
-			}
-			predicate.and(cursorPredicate);
-		}
+		// // 커서 기반 페이지네이션 조건 적용
+		predicate.and(buildCursorPredicate(book, orderBy, direction, cursor, after));
 
 		// 쿼리 실행
 		List<Book> books = queryFactory.selectFrom(book)
@@ -150,10 +104,65 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		return books;
 	}
 
+	//커서 기반 페이지네이션 정렬기준, 방향, 커서,after 적용
+	private BooleanBuilder buildCursorPredicate(QBook book, String orderBy, String direction, String cursor,
+		Instant after) {
+		BooleanBuilder cursorPredicate = new BooleanBuilder();
+		if (cursor == null || after == null)
+			return cursorPredicate;
+
+		switch (orderBy) {
+			case "title":
+				if ("asc".equalsIgnoreCase(direction)) {
+					cursorPredicate.or(book.title.gt(cursor))
+						.or(book.title.eq(cursor).and(book.createdAt.gt(after)));
+				} else {
+					cursorPredicate.or(book.title.lt(cursor))
+						.or(book.title.eq(cursor).and(book.createdAt.lt(after)));
+				}
+				break;
+			case "publishedDate":
+				LocalDate date = LocalDate.parse(cursor);
+				if ("asc".equalsIgnoreCase(direction)) {
+					cursorPredicate.or(book.publishedDate.gt(date))
+						.or(book.publishedDate.eq(date).and(book.createdAt.gt(after)));
+				} else {
+					cursorPredicate.or(book.publishedDate.lt(date))
+						.or(book.publishedDate.eq(date).and(book.createdAt.lt(after)));
+				}
+				break;
+			case "rating":
+				BigDecimal rating = new BigDecimal(cursor);
+				if ("asc".equalsIgnoreCase(direction)) {
+					cursorPredicate.or(book.rating.gt(rating))
+						.or(book.rating.eq(rating).and(book.createdAt.gt(after)));
+				} else {
+					cursorPredicate.or(book.rating.lt(rating))
+						.or(book.rating.eq(rating).and(book.createdAt.lt(after)));
+				}
+				break;
+			case "reviewCount":
+			default:
+				int reviewCount = Integer.parseInt(cursor);
+				if ("asc".equalsIgnoreCase(direction)) {
+					cursorPredicate.or(book.reviewCount.gt(reviewCount))
+						.or(book.reviewCount.eq(reviewCount).and(book.createdAt.gt(after)));
+				} else {
+					cursorPredicate.or(book.reviewCount.lt(reviewCount))
+						.or(book.reviewCount.eq(reviewCount).and(book.createdAt.lt(after)));
+				}
+		}
+
+		return cursorPredicate;
+	}
+
 	@Override
 	public Long getTotalElements(String keyword) {
 		QBook book = QBook.book;
 		BooleanBuilder predicate = new BooleanBuilder();
+
+		//논리적 삭제되지 않은 책 필터링
+		predicate.and(book.deleted.isFalse());
 
 		if (keyword != null && !keyword.isEmpty()) {
 			predicate.and(

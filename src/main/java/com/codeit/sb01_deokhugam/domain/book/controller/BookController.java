@@ -23,9 +23,10 @@ import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.NaverBookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.PopularBookDto;
 import com.codeit.sb01_deokhugam.domain.book.service.BookService;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
-import com.codeit.sb01_deokhugam.global.infra.NaverBookClient;
+import com.codeit.sb01_deokhugam.global.naver.NaverBookClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.validation.Valid;
@@ -44,12 +45,12 @@ public class BookController {
 	 * 도서를 등록합니다.
 	 * @param bookCreateRequest
 	 * @param file
-	 * @return 등록된 도서 정보 응댭
+	 * @return 등록된 도서 정보 응답
 	 */
 	@PostMapping
 	public ResponseEntity<BookDto> create(@RequestPart("bookData") @Valid BookCreateRequest bookCreateRequest,
 		@RequestPart(value = "thumbnailImage") MultipartFile file) {
-		log.info("도서 생성 요청");
+		//log.info("도서 생성 요청");
 		BookDto bookDto = bookService.create(bookCreateRequest, file);
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
 	}
@@ -58,7 +59,7 @@ public class BookController {
 	public ResponseEntity<String> extractTextByOcr(@RequestParam("image") MultipartFile image) throws
 		IOException,
 		TesseractException {
-		log.info("도서 이미지 OCR 처리 요청");
+		//log.info("도서 이미지 OCR 처리 요청");
 		String isbn = bookService.extractTextByOcr(image);
 		return ResponseEntity.ok(isbn);
 	}
@@ -72,7 +73,7 @@ public class BookController {
 	@GetMapping("/info")
 	public ResponseEntity<NaverBookDto> searchByIsbn(@RequestParam("isbn") String isbn) throws JsonProcessingException {
 
-		log.info("도서 ISBN 검색 요청 : {}", isbn);
+		//log.info("도서 ISBN 검색 요청 : {}", isbn);
 		NaverBookDto naverBookDto = naverBookClient.search(isbn);
 		return ResponseEntity.status(HttpStatus.OK).body(naverBookDto);
 	}
@@ -96,7 +97,7 @@ public class BookController {
 		@RequestParam(value = "direction", defaultValue = "DESC") String direction,
 		@RequestParam(value = "limit", defaultValue = "50") int limit
 	) {
-		log.info("도서 목록 조회 요청");
+		//log.info("도서 목록 조회 요청");
 		PageResponse<BookDto> result = bookService.findAllWithCursor(keyword, after, cursor, orderBy, direction, limit);
 		return ResponseEntity.ok(result);
 	}
@@ -108,7 +109,7 @@ public class BookController {
 	 */
 	@GetMapping("/{bookId}")
 	public ResponseEntity<BookDto> findById(@PathVariable("bookId") UUID bookId) {
-		log.info("도서 조회 요청 : {}", bookId);
+		//log.info("도서 조회 요청 : {}", bookId);
 		BookDto bookDto = bookService.findById(bookId);
 		return ResponseEntity.status(HttpStatus.OK).body(bookDto);
 	}
@@ -124,10 +125,23 @@ public class BookController {
 	public ResponseEntity<BookDto> update(@PathVariable("bookId") UUID bookId,
 		@RequestPart("bookData") @Valid BookUpdateRequest bookUpdateRequest,
 		@RequestPart(value = "thumbnailImage", required = false) MultipartFile file) {
-		log.info("도서 수정 요청 : {}", bookId);
+		//log.info("도서 수정 요청 : {}", bookId);
 		BookDto bookDto = bookService.update(bookId, bookUpdateRequest, file);
 		return ResponseEntity.status(HttpStatus.OK).body(bookDto);
 
+	}
+
+	@GetMapping("/popular")
+	public ResponseEntity<PageResponse<PopularBookDto>> findPopularBook(
+		@RequestParam(value = "period", defaultValue = "DAILY") String period,
+		@RequestParam(value = "direction", defaultValue = "ASC") String direction,
+		@RequestParam(value = "cursor", required = false) String cursor,
+		@RequestParam(value = "after", required = false) Instant after,
+		@RequestParam(value = "limit", defaultValue = "50") int limit
+	) {
+		//log.info("인기 도서 목록 조회 요청");
+		PageResponse<PopularBookDto> result = bookService.findPopularBook(period, after, cursor, direction, limit);
+		return ResponseEntity.ok(result);
 	}
 
 	/**
@@ -137,7 +151,8 @@ public class BookController {
 	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> delete(@PathVariable("bookId") UUID bookId) {
-		log.info("도서 논리 삭제 요청 : {}", bookId);
+
+		//log.info("도서 논리 삭제 요청 : {}", bookId);
 		bookService.delete(bookId);
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
@@ -151,7 +166,7 @@ public class BookController {
 	 */
 	@DeleteMapping("/{bookId}/hard")
 	public ResponseEntity<Void> deletePhysical(@PathVariable("bookId") UUID bookId) {
-		log.info("도서 물리 삭제 요청 : {}", bookId);
+		//log.info("도서 물리 삭제 요청 : {}", bookId);
 		bookService.deletePhysical(bookId);
 		return ResponseEntity
 			.status(HttpStatus.NO_CONTENT)
