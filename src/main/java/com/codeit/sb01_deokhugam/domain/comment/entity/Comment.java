@@ -49,5 +49,8 @@ public class Comment extends BaseUpdatableEntity {
     public void markDeleted() {
         this.deleted = true;
     }
+    public UUID getReviewId() {
+        return this.review.getId();
+    }
 
 }

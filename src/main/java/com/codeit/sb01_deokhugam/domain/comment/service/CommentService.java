@@ -84,7 +84,7 @@ public class CommentService {
                 })
                 .toList();
 
-        long totalElements = commentRepository.countByReviewId(reviewId);
+        long totalElements = commentRepository.countByReview_Id(reviewId);
 
         return new CommentResponse(content, nextCursor, nextAfter, pageSize, totalElements, hasNext);
     }
