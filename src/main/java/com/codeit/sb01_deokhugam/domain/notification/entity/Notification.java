@@ -5,6 +5,7 @@ import org.hibernate.annotations.ColumnDefault;
 import com.codeit.sb01_deokhugam.domain.base.BaseUpdatableEntity;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
+import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,6 +73,16 @@ public class Notification extends BaseUpdatableEntity {
 	public static Notification fromAllTimeRanking(User user, Review review) {
 		String content = "나의 리뷰가 역대 인기 리뷰에 선정되었습니다.";
 		return new Notification(user, content, review);
+	}
+
+	public static Notification ofPopularReview(User user, Review review, Period period, int rank) {
+		return switch (period) {
+			case DAILY -> fromDailyRanking(user, review, rank);
+			case WEEKLY -> fromWeeklyRanking(user, review, rank);
+			case MONTHLY -> fromMonthlyRanking(user, review, rank);
+			case ALL_TIME -> fromAllTimeRanking(user, review);
+			default -> throw new IllegalArgumentException("잘못된 기간 정보가 입력되었습니다. " + period);
+		};
 	}
 
 	public void markAsRead() {
