@@ -65,6 +65,9 @@ public class BookService {
 	//todo: 리뷰서비스 생기면 고치기
 	//private final ReviewService reviewService;
 
+	//S3이미지 저장 디렉토리
+	private final String directory = book.getClass().getSimpleName();
+
 	/**
 	 * 도서정보를 DB에 저장합니다.
 	 *
@@ -82,7 +85,7 @@ public class BookService {
 		}
 
 		//S3에 이미지를 저장하고, url을 가져온다.
-		String imageUrl = s3Service.upload(thumnailImage, book.getClass().getSimpleName());
+		String imageUrl = s3Service.upload(thumnailImage, directory);
 
 		//책 entity를 생성한다.
 		Book createdBook = new Book(
@@ -224,13 +227,11 @@ public class BookService {
 		Book book = bookRepository.findByIdNotLogicalDelete(bookId)
 			.orElseThrow(() -> new BookNotFoundException().withId(bookId));
 
-		//TODO: 이미지 로직 변경 필요
-
-		// 이미지가 새로 들어온 경우에만 S3 업로드
+		// 이미지가 새로 들어온 경우에 S3에 업로드
 		String imageUrl = book.getThumbnailUrl();
-		// if (thumnailImage != null) {
-		// 	imageUrl = s3Service.upload(thumnailImage, "directory");
-		// }
+		if (thumnailImage != null) {
+			imageUrl = s3Service.upload(thumnailImage, directory);
+		}
 
 		// 도서 정보 업데이트
 		book.update(
