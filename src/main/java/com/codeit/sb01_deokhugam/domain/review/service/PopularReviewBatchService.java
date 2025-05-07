@@ -179,10 +179,9 @@ public class PopularReviewBatchService {
 	}
 
 	private void sendPopularReviewNotification(Period period, Review rv, int ranking) {
-		Notification createdReviewRankingNotification = Notification.ofPopularReview(rv.getAuthor(), rv, period, ranking);
+		Notification createdReviewRankingNotification =
+			Notification.ofPopularReview(rv.getAuthor(), rv, period, ranking);
 		notificationRepository.save(createdReviewRankingNotification);
 	}
-
-	// 기간 별로 만들어져야 하는 알림이 다르다.
 
 }
