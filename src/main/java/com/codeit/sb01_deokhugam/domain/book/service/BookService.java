@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.book.service;
 
+import static com.codeit.sb01_deokhugam.domain.book.entity.QBook.*;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -59,7 +61,6 @@ public class BookService {
 	private final PopularBookMapper popularBookMapper;
 	private final ReviewRepository reviewRepository;
 
-	//TODO: 이미지 등록 관련 로직 필요
 	private final S3Service s3Service;
 	//todo: 리뷰서비스 생기면 고치기
 	//private final ReviewService reviewService;
@@ -80,11 +81,10 @@ public class BookService {
 			throw new IsbnAlreadyExistsException().withIsbn(bookCreateRequest.isbn());
 		}
 
-		//TODO: 이미지 S3 저장 로직 필요
-		//이미지 byte [] S3저장
-		String imageUrl = "test.com";
-		//s3Service.upload(thumnailImage, "directory");
+		//S3에 이미지를 저장하고, url을 가져온다.
+		String imageUrl = s3Service.upload(thumnailImage, book.getClass().getSimpleName());
 
+		//책 entity를 생성한다.
 		Book createdBook = new Book(
 			bookCreateRequest.title(),
 			bookCreateRequest.author(), bookCreateRequest.description(), bookCreateRequest.isbn(),
@@ -98,6 +98,15 @@ public class BookService {
 		return bookMapper.toDto(createdBook);
 	}
 
+	/** 도서 목록을 정렬기준과 필터링으로 커서 기반 페이지네이션으로 조회합니다.
+	 * @param keyword
+	 * @param after
+	 * @param cursor
+	 * @param orderBy
+	 * @param direction
+	 * @param limit
+	 * @return BookDto 페이지리스폰스
+	 */
 	@Transactional
 	//도서 목록 조회
 	public PageResponse<BookDto> findAllWithCursor(String keyword, Instant after, String cursor, String orderBy,
@@ -153,6 +162,11 @@ public class BookService {
 
 	}
 
+	/**
+	 * 도서 id에 대한 도서 정보를 상세 조회합니다.
+	 * @param bookId
+	 * @return 도서 상세 정보
+	 */
 	@Transactional
 	//도서 상세 정보 조회
 	public BookDto findById(UUID bookId) {
@@ -166,7 +180,6 @@ public class BookService {
 
 	/**
 	 * 도서를 논리 삭제합니다.(soft delete)
-	 *
 	 * @param bookId
 	 */
 	@Transactional
@@ -196,7 +209,7 @@ public class BookService {
 	}
 
 	/**
-	 * 도서 정보를 수정합니다.
+	 * 도서 id에 대한 도서 정보를 수정합니다.
 	 *
 	 * @param bookId
 	 * @param bookUpdateRequest
@@ -232,7 +245,13 @@ public class BookService {
 		return bookMapper.toDto(book);
 	}
 
-	//OCR 텍스트 추출
+	/**
+	 * 이미지에 있는 isbn을 읽어들여 isbn을 반환합니다.
+	 * @param image
+	 * @return isbn
+	 * @throws IOException
+	 * @throws TesseractException
+	 */
 	//TODO: 모든 예외를 도서 정보 등록 중 요류가.. 이거상속하게
 	public String extractTextByOcr(MultipartFile image) throws IOException, TesseractException {
 
@@ -258,7 +277,15 @@ public class BookService {
 		return isbn;
 	}
 
-	//인기 도서 목록 조회
+	/**
+	 * 인기 도서 목록을 조회 기간에 대해 조회합니다.
+	 * @param period
+	 * @param after
+	 * @param cursor
+	 * @param direction
+	 * @param limit
+	 * @return 인기 도서 정보 페이지리스폰스
+	 */
 	public PageResponse<PopularBookDto> findPopularBook(String period, Instant after, String cursor, String direction,
 		int limit) {
 
@@ -300,11 +327,9 @@ public class BookService {
 	}
 
 	/**
-	 * period에 대한 도서 랭킹 순위를 계산하고, 도서 랭킹 테이블에 저장합니다.
+	 * period에 대한 도서 랭킹 순위를 계산하고, 도서 랭킹 테이블에 저장합니다. 논리삭제 되지 않은 도서에 대해 연산합니다.
 	 * @param period
 	 */
-	//대시보드: 인기도서 순위 배치 연산
-	//논리삭제 되지 않은 도서에 대해서 연산함
 	@Transactional
 	public void calculateRanking(Period period) {
 
