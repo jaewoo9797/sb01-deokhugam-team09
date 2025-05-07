@@ -134,7 +134,7 @@ public class BookController {
 	@GetMapping("/popular")
 	public ResponseEntity<PageResponse<PopularBookDto>> findPopularBook(
 		@RequestParam(value = "period", defaultValue = "DAILY") String period,
-		@RequestParam(value = "direction", defaultValue = "DESC") String direction,
+		@RequestParam(value = "direction", defaultValue = "ASC") String direction,
 		@RequestParam(value = "cursor", required = false) String cursor,
 		@RequestParam(value = "after", required = false) Instant after,
 		@RequestParam(value = "limit", defaultValue = "50") int limit
