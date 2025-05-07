@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
 import com.codeit.sb01_deokhugam.domain.book.exception.BookNotFoundException;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.dto.CursorPageResponsePopularReviewDto;
 import com.codeit.sb01_deokhugam.domain.review.dto.PopularReviewDto;
 import com.codeit.sb01_deokhugam.domain.review.dto.ReviewCreateRequest;
@@ -50,6 +52,7 @@ public class ReviewService {
 	private final PopularReviewRepository popularReviewRepository;
 	private final ReviewMapper reviewMapper;
 	private final ReviewLikeMapper reviewLikeMapper;
+	private final NotificationRepository notificationRepository;
 
 	@Transactional
 	public ReviewDto createReview(ReviewCreateRequest request) {
@@ -241,8 +244,7 @@ public class ReviewService {
 			// → 신규 좋아요
 			rlEntity = reviewLikeRepository.save(new ReviewLike(reviewId, userId));
 			reviewRepository.incrementLikeCount(reviewId);
-			//TODO: 좋아요 찍으면 noti 날아가게 할 필요성 고려
-			//notificationService.createNotifyByLike(reviewId, userId);
+			createNewLikeNotification(userId, review);
 			likedAfter = true;
 		}
 
@@ -250,6 +252,12 @@ public class ReviewService {
 		review.setLikedByMe(likedAfter);
 
 		return reviewLikeMapper.toDto(rlEntity, likedAfter);
+	}
+
+	private void createNewLikeNotification(UUID userId, Review review) {
+		User findUser = userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.withId(userId));
+		Notification notification = Notification.fromLike(findUser, review);
+		notificationRepository.save(notification);
 	}
 
 	@Transactional(readOnly = true)

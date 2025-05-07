@@ -19,12 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.review.entity.ReviewLike;
 import com.codeit.sb01_deokhugam.domain.review.entity.ReviewRanking;
 import com.codeit.sb01_deokhugam.domain.review.repository.PopularReviewRepository;
 import com.codeit.sb01_deokhugam.domain.review.repository.ReviewLikeRepository;
 import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
+import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils;
 
@@ -40,6 +43,8 @@ public class PopularReviewBatchService {
 	private final ReviewLikeRepository likeRepository;
 	private final ReviewRepository reviewRepository;
 	private final PopularReviewRepository popularReviewRepository;
+	private final UserRepository userRepository;
+	private final NotificationRepository notificationRepository;
 
 	/**
 	 * 매일 자정(00:00)에 모든 기간(DAILY, WEEKLY, MONTHLY, ALL_TIME)에 대해
@@ -163,6 +168,7 @@ public class PopularReviewBatchService {
 				.rank(rank++)
 				.build();
 
+			sendPopularReviewNotification(period, rv, rank);
 			populars.add(ranking);
 		}
 
@@ -171,4 +177,12 @@ public class PopularReviewBatchService {
 		popularReviewRepository.saveAll(populars);
 		log.info("기간 {}: 인기 리뷰 {}건 저장 완료", period, populars.size());
 	}
+
+	private void sendPopularReviewNotification(Period period, Review rv, int ranking) {
+		Notification createdReviewRankingNotification = Notification.ofPopularReview(rv.getAuthor(), rv, period, ranking);
+		notificationRepository.save(createdReviewRankingNotification);
+	}
+
+	// 기간 별로 만들어져야 하는 알림이 다르다.
+
 }
