@@ -3,10 +3,16 @@ package com.codeit.sb01_deokhugam.domain.book.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -18,6 +24,7 @@ import net.sourceforge.tess4j.TesseractException;
 
 import com.codeit.sb01_deokhugam.domain.book.dto.BookCreateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookDto;
+import com.codeit.sb01_deokhugam.domain.book.dto.BookRankingCalculation;
 import com.codeit.sb01_deokhugam.domain.book.dto.BookUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.book.dto.PopularBookDto;
 import com.codeit.sb01_deokhugam.domain.book.entity.Book;
@@ -28,8 +35,12 @@ import com.codeit.sb01_deokhugam.domain.book.mapper.BookMapper;
 import com.codeit.sb01_deokhugam.domain.book.mapper.PopularBookMapper;
 import com.codeit.sb01_deokhugam.domain.book.repository.BookRepository;
 import com.codeit.sb01_deokhugam.domain.book.repository.PopularBookRepository;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
+import com.codeit.sb01_deokhugam.global.s3.S3Service;
+import com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +57,11 @@ public class BookService {
 	private final Tesseract tesseract;
 	private final PopularBookRepository popularBookRepository;
 	private final PopularBookMapper popularBookMapper;
+	private final ReviewRepository reviewRepository;
 
 	//TODO: 이미지 등록 관련 로직 필요
-	//private final S3Service s3Service;
-	//임시로 쓰던 건데 나중에 정리할게요
+	private final S3Service s3Service;
+	//todo: 리뷰서비스 생기면 고치기
 	//private final ReviewService reviewService;
 
 	/**
@@ -285,6 +297,118 @@ public class BookService {
 
 		return new PageResponse<>(popularBookDtos, nextAfter, nextCursor, size, hasNext, totalElements);
 
+	}
+
+	/**
+	 * period에 대한 도서 랭킹 순위를 계산하고, 도서 랭킹 테이블에 저장합니다.
+	 * @param period
+	 */
+	//대시보드: 인기도서 순위 배치 연산
+	//논리삭제 되지 않은 도서에 대해서 연산함
+	@Transactional
+	public void calculateRanking(Period period) {
+
+		//Period에 따라서, 조회할 리뷰의 시작과 끝 날짜를 계산한다.
+		Map.Entry<Instant, Instant> range = ScheduleUtils.getStartAndEndByPeriod(period);
+		Instant start = range.getKey();
+		Instant end = range.getValue();
+
+		// 리뷰 테이블에서, 날짜 범위에 해당하는 필요한 리뷰리스트를 가져온다
+		List<Review> reviews = reviewRepository.findByCreatedAtBetween(start, end);
+
+		// 리뷰에 포함된 도서 ID 목록을 추출한다.
+		Set<UUID> bookIdsInReviews = reviews.stream()
+			.map(review -> review.getBook().getId())
+			.collect(Collectors.toSet());
+
+		// 도서 정보 조회 (bookId 중 논리적 삭제되지 않은 도서만 필터링)
+		// Function.identity()는 객체 자신을 그대로 반환함.
+		Map<UUID, Book> bookMap = bookRepository.findAllById(bookIdsInReviews).stream()
+			.filter(Book::logicalExists)
+			.collect(Collectors.toMap(Book::getId, Function.identity()));
+		// bookId 셋 생성
+		Set<UUID> validBookIds = bookMap.keySet();
+
+		// validBookIds을 이용하여 논리적 삭제되지 않은 도서에 해당하는 리뷰만 필터링
+		List<Review> filteredReviews = reviews.stream()
+			.filter(review -> validBookIds.contains(review.getBook().getId()))
+			.collect(Collectors.toList());
+
+		// 도서 ID 별로 리뷰를 그룹화하고 스코어를 계산한다.
+		Map<UUID, BookRankingCalculation> bookCalculations = calculateBookRankingByReviews(filteredReviews);
+
+		// Score 기준으로 내림차순 정렬한 도서 ID 리스트
+		List<UUID> sortedBookIds = bookCalculations.entrySet().stream()
+			.sorted(Map.Entry.comparingByValue(
+				Comparator.comparing(BookRankingCalculation::score).reversed()
+			))
+			.map(Map.Entry::getKey)
+			.toList();
+
+		// 정보에 대한 BookRanking을 생성한다.
+		List<BookRanking> bookRankings = new ArrayList<>();
+		int rank = 0;
+		for (int i = 0; i < sortedBookIds.size(); i++) {
+			//스코어 내림차순 순으로 book 엔티티를 가져온다. 
+			UUID bookId = sortedBookIds.get(i);
+			Book book = bookMap.get(bookId);
+
+			BookRankingCalculation calc = bookCalculations.get(bookId);
+
+			//동일 점수인 경우 동일 등수로 처리하는 로직
+			if (i == 0 || !bookRankings.get(i - 1).getScore().equals(calc.score())) {
+				rank = i + 1;
+			}
+
+			BookRanking ranking = new BookRanking(
+				period,
+				rank,
+				calc.score(),
+				calc.reviewCount(),
+				calc.avgRating(),
+				book.getThumbnailUrl(),
+				book.getTitle(),
+				book.getAuthor(),
+				bookId
+			);
+
+			bookRankings.add(ranking);
+		}
+
+		// bookRanking테이블에 엔티티들을 저장한다.
+		popularBookRepository.saveAll(bookRankings);
+	}
+
+	//리뷰 리스트에서 도서id에 대해 그룹화하고, 도서에 대한 리뷰수, 평점평균, 스코어를 계산한다.
+	private Map<UUID, BookRankingCalculation> calculateBookRankingByReviews(List<Review> reviews) {
+		return reviews.stream()
+			.collect(Collectors.groupingBy(
+				review -> review.getBook().getId(),
+				Collectors.collectingAndThen(
+					Collectors.toList(),
+					reviewList -> {
+						BigDecimal avgRating = reviewList.stream()
+							.map(Review::getRating)
+							.reduce(BigDecimal.ZERO, BigDecimal::add)
+							.divide(BigDecimal.valueOf(reviewList.size()), 2, RoundingMode.HALF_UP);
+
+						int reviewCount = reviewList.size();
+
+						// 점수 계산: (reviewCount * 0.4) + (avgRating * 0.6)
+						BigDecimal weightedCount = BigDecimal.valueOf(reviewCount).multiply(BigDecimal.valueOf(0.4));
+						BigDecimal weightedRating = avgRating.multiply(BigDecimal.valueOf(0.6));
+						BigDecimal score = weightedCount.add(weightedRating); //최종 도서 스코어
+
+						return new BookRankingCalculation(score, reviewCount, avgRating);
+					}
+				)
+			));
+	}
+
+	//도서랭킹 테이블을 모두삭제한다.
+	//배치작업시 수행된다.
+	public void deleteBookRanking() {
+		popularBookRepository.deleteAll();
 	}
 
 	//TODO: 도서 리뷰 업데이트(리뷰서비스에서 호출? )

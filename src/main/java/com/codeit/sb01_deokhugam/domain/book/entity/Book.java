@@ -86,4 +86,9 @@ public class Book extends BaseUpdatableEntity {
 		this.deleted = true;
 	}
 
+	//논리적 삭제에 따른 존재 여부를 반환합니다.
+	public boolean logicalExists() {
+		return !deleted;
+	}
+
 }
