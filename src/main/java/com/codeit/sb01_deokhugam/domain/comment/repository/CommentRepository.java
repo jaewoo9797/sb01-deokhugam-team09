@@ -1,11 +1,6 @@
 package com.codeit.sb01_deokhugam.domain.comment.repository;
-
 import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
