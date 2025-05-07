@@ -319,11 +319,21 @@ public class BookRepositoryTest {
 		@DisplayName("필터링된 도서 목록의 총 개수 조회를 성공한다.")
 		public void getTotalElements_returnsTotalElemets() {
 			//given
+			//DB 데이터 지우기
+			bookRepository.deleteAll();
+
+			//저장.
+			bookRepository.save(book);
+			bookRepository.save(book2);
+
+			//영속성 컨텍스트 1차 캐시 지우기
+			entityManager.flush();
+			entityManager.clear();
 
 			//when
 			Long totalElements = bookRepository.getTotalElements(keyword);
 
-			assertThat(totalElements).isEqualTo(3);
+			assertThat(totalElements).isEqualTo(2);
 		}
 
 	}
