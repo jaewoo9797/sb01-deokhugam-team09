@@ -30,7 +30,6 @@ public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom 
 
 	@Override
 	public PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest request) {
-
 		Sort.Direction direction = request.direction();
 		int limitSize = request.limit();
 		Period period = request.period();
@@ -50,7 +49,7 @@ public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom 
 
 		//size+1 결과에 따라 다음페이지 존재여부 설정 후, 추가로 받아온 요소 하나 삭제
 		boolean hasNext = (powerUsers.size() > limitSize);
-		powerUsers = hasNext ? powerUsers.subList(0, limitSize - 1) : powerUsers;
+		powerUsers = hasNext ? powerUsers.subList(0, limitSize) : powerUsers;
 		int size = powerUsers.size();
 
 		PowerUser lastUser = (powerUsers.isEmpty() ? null : powerUsers.get(powerUsers.size() - 1));
@@ -76,7 +75,6 @@ public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom 
 	}
 
 	private BooleanBuilder buildSearchCondition(GetPowerUsersRequest getPowerUsersRequest, QPowerUser powerUser) {
-
 		BooleanBuilder builder = new BooleanBuilder();
 
 		Period period = getPowerUsersRequest.period();
