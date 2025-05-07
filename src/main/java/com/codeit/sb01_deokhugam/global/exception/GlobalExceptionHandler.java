@@ -98,14 +98,36 @@ public class GlobalExceptionHandler {
 	private HttpStatus detemineHttpStatus(DeokhugamException exception) {
 		ErrorCode errorCode = exception.getErrorCode();
 		return switch (errorCode) {
-			case BOOK_NOT_FOUND, COMMENT_NOT_FOUND, NOTIFICATION_NOT_FOUND,
-				 REVIEW_NOT_FOUND, USER_NOT_FOUND, THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
-			case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
-			case INTERNAL_SERVER_ERROR, S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-			case DUPLICATE_ISBN, DUPLICATE_BOOK, DUPLICATION_USER -> HttpStatus.CONFLICT;
-			case ILLEGAL_ARGUMENT_ERROR, INVALID_REQUEST, FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
-			case LOGIN_INPUT_INVALID, UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+			// 404 Not Found
+			case BOOK_NOT_FOUND,
+				COMMENT_NOT_FOUND,
+				NOTIFICATION_NOT_FOUND,
+				REVIEW_NOT_FOUND,
+				REVIEW_ALREADY_DELETED,
+				USER_NOT_FOUND,
+				THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
 
+			// 403 Forbidden
+			case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
+
+			// 409 Conflict
+			case DUPLICATE_ISBN,
+				DUPLICATE_BOOK,
+				DUPLICATION_USER -> HttpStatus.CONFLICT;
+
+			// 400 Bad Request
+			case ILLEGAL_ARGUMENT_ERROR,
+				INVALID_REQUEST,
+				FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
+
+			// 401 Unauthorized
+			case LOGIN_INPUT_INVALID,
+				UNAUTHORIZED,
+				NOT_AUTHORITY -> HttpStatus.UNAUTHORIZED;
+
+			// 500 Internal Server Error
+			case INTERNAL_SERVER_ERROR,
+				S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
 		};
 	}
 }

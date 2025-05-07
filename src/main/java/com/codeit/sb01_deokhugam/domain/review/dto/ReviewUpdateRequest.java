@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.review.dto;
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +15,6 @@ public record ReviewUpdateRequest(
 	@NotNull(message = "rating은 필수입니다")
 	@Min(value = 0, message = "rating은 최소 0이어야 합니다")
 	@Max(value = 5, message = "rating은 최대 5이어야 합니다")
-	Integer rating
+	BigDecimal rating
 ) {
-
 }
