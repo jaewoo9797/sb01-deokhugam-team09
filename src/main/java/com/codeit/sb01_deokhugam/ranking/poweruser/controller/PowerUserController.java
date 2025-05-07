@@ -34,7 +34,7 @@ public class PowerUserController {
 		// 값이 들어왔는데 변환할 타입과 맞지않을경우(ex. period에 지정한 상수 외 다른 문자 들어옴) 스프링이 400 반환)
 		@RequestParam(value = "period", defaultValue = "DAILY") Period period,
 		@RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction,
-		@RequestParam(value = "cursor", required = false) int cursor, //조회된 페이지 마지막 등수
+		@RequestParam(value = "cursor", defaultValue = "0") int cursor, //조회된 페이지 마지막 등수
 		@RequestParam(value = "after", required = false) Instant after, //조회된 페이지 마지막 생성일
 		@RequestParam(value = "limit", defaultValue = "50") @Positive int limit) {
 		GetPowerUsersRequest getPowerUsersRequest = new GetPowerUsersRequest(period, direction, cursor, after, limit);
