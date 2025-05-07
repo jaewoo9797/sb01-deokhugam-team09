@@ -114,6 +114,7 @@ public class NaverBookClient {
 		String title = stripTags(item.get("title").asText());
 		String author = item.get("author").asText();
 		String description = item.get("description").asText();
+		String publisher = item.get("publisher").asText();
 		String pubDateStr = item.get("pubdate").asText(); // e.g. "20060320"
 		String isbn = item.get("isbn").asText();
 		String imageUrl = item.get("image").asText();
@@ -126,7 +127,7 @@ public class NaverBookClient {
 		byte[] imageBytes = downloadImage(imageUrl);
 		String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-		return new NaverBookDto(title, author, description, publishedDate, isbn, imageBase64);
+		return new NaverBookDto(title, author, description, publisher, publishedDate, isbn, imageBase64);
 	}
 
 	private byte[] downloadImage(String imageUrl) {
