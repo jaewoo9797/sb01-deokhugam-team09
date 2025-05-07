@@ -1,0 +1,35 @@
+management:
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+    env:
+      enabled: true
+  endpoints:
+    web:
+      base-path: "/manage"
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - loggers
+          - prometheus
+        exclude:
+          - env
+          - beans
+          - shutdown
+  endpoint:
+    health:
+      show-components: always
+
+info:
+  app:
+    name: deokhugam
+    version: 1.0.0
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true

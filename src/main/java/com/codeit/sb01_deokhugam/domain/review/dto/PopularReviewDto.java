@@ -4,19 +4,22 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public record ReviewDto(
+import com.codeit.sb01_deokhugam.global.enumType.Period;
+
+public record PopularReviewDto(
 	UUID id,
+	UUID reviewId,
 	UUID bookId,
 	String bookTitle,
 	String bookThumbnailUrl,
 	UUID userId,
 	String userNickname,
-	String content,
-	BigDecimal rating,
+	BigDecimal reviewRating,
+	Period period,
+	int rank,
+	BigDecimal score,
 	int likeCount,
 	int commentCount,
-	boolean likedByMe,
-	Instant createdAt,
-	Instant updatedAt
+	Instant createdAt
 ) {
 }
