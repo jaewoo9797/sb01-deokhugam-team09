@@ -23,5 +23,4 @@ public record ReviewCreateRequest(
 	@DecimalMax(value = "5.0", inclusive = true, message = "rating은 최대 5.0이어야 합니다")
 	BigDecimal rating
 ) {
-
 }
