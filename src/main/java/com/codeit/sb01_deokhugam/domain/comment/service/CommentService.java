@@ -2,16 +2,18 @@ package com.codeit.sb01_deokhugam.domain.comment.service;
 
 
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
+import com.codeit.sb01_deokhugam.domain.comment.dto.CommentResponse;
 import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
 import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,12 +27,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     public CommentDto create(UUID reviewId, UUID userId, String content) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND));
-
-        Comment comment = new Comment(reviewId, user, content);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CommentException(ErrorCode.REVIEW_NOT_FOUND));
+        Comment comment = new Comment(review, user, content);
         Comment saved = commentRepository.save(comment);
 
         String nickname = user.getNickname();
@@ -38,11 +42,13 @@ public class CommentService {
         return commentMapper.toDto(saved, nickname);
     }
 
-    public List<CommentDto> getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
+    public CommentResponse getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new CommentException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+
         boolean isAsc = "ASC".equalsIgnoreCase(direction);
         int pageSize = (limit != null) ? limit : 50;
-
-        Sort sort = Sort.by(isAsc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt", "id");
 
         Instant cursorCreatedAt = null;
         if (cursor != null) {
@@ -55,24 +61,32 @@ public class CommentService {
         Instant afterTime = (after != null) ? after : Instant.EPOCH;
         Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
 
-        List<Comment> comments = commentRepository
-                .findByReviewIdAndDeletedFalseAndCreatedAtAfterAndCreatedAtBefore(
-                        reviewId,
-                        afterTime,
-                        beforeTime,
-                        sort
-                );
+        List<Comment> comments = commentRepository.findComments(
+                reviewId,
+                afterTime,
+                beforeTime,
+                isAsc,
+                pageSize + 1
+        );
 
-        if (comments.size() > pageSize) {
+        boolean hasNext = comments.size() > pageSize;
+        if (hasNext) {
             comments = comments.subList(0, pageSize);
         }
 
-        return comments.stream()
+        String nextCursor = hasNext ? comments.get(comments.size() - 1).getId().toString() : null;
+        Instant nextAfter = hasNext ? comments.get(comments.size() - 1).getCreatedAt() : null;
+
+        List<CommentDto> content = comments.stream()
                 .map(comment -> {
                     String nickname = comment.getUser().getNickname();
                     return commentMapper.toDto(comment, nickname);
                 })
                 .toList();
+
+        long totalElements = commentRepository.countByReviewId(reviewId);
+
+        return new CommentResponse(content, nextCursor, nextAfter, pageSize, totalElements, hasNext);
     }
 
     public CommentDto getCommentById(UUID commentId) {

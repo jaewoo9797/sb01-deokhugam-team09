@@ -3,6 +3,7 @@ package com.codeit.sb01_deokhugam.domain.comment.entity;
 import java.util.UUID;
 
 import com.codeit.sb01_deokhugam.domain.base.BaseUpdatableEntity;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,8 +25,9 @@ public class Comment extends BaseUpdatableEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "review_id", nullable = false)
-    private UUID reviewId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -33,8 +35,8 @@ public class Comment extends BaseUpdatableEntity {
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
-    public Comment(UUID reviewId, User user, String content) {
-        this.reviewId = reviewId;
+    public Comment(Review review, User user, String content) {
+        this.review = review;
         this.user = user;
         this.content = content;
         this.deleted = false;
