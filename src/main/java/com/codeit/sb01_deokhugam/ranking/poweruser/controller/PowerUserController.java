@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
+import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.ranking.poweruser.service.PowerUserService;
 
 import jakarta.validation.constraints.Positive;
@@ -37,7 +38,8 @@ public class PowerUserController {
 		@RequestParam(value = "after", required = false) Instant after, //조회된 페이지 마지막 생성일
 		@RequestParam(value = "limit", defaultValue = "50") @Positive int limit) {
 		GetPowerUsersRequest getPowerUsersRequest = new GetPowerUsersRequest(period, direction, cursor, after, limit);
-		PageResponse powerUsers = powerUserService.findPowerUsers(getPowerUsersRequest);
+		// todo 반환값이거아니에요!!!!!!!!!!!!! 우선 임시로 올림!!!!!!!!!!! 지금 파워유저관련기능 제정신아님주의
+		PageResponse<PowerUserDto> powerUsers = powerUserService.findPowerUsers(getPowerUsersRequest);
 		return ResponseEntity
 			.status(HttpStatus.OK)
 			.body(powerUsers);
