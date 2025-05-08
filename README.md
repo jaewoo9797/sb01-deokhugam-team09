@@ -40,12 +40,15 @@
 <div align=center> 
 
 📌 **Backend**
+
 <p>
 <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=springboot&logoColor=white"/>
 <img src="https://img.shields.io/badge/QueryDSL-000000?style=flat-square"/>
 <img src="https://img.shields.io/badge/Scheduler-6DB33F?style=flat-square&logo=spring&logoColor=white"/>
 </p>
+
 🗄️ **Database & Infrastructure**
+
 <p>
 <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
 <img src="https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white"/>
@@ -56,12 +59,16 @@
 <img src="https://img.shields.io/badge/Secrets_Manager-FF9900?style=flat-square&logo=amazonaws&logoColor=white"/>
 <img src="https://img.shields.io/badge/Systems Manager-FF9900?style=flat-square&logo=amazonaws&logoColor=white"/>
 </p>
+
 ⚙️ **CI/CD & 테스트**
+
 <p>
 <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white"/>
 <img src="https://img.shields.io/badge/Jacoco-C71A36?style=flat-square"/>
 </p>
+
 📊 **모니터링**
+
 <p>
 <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white"/> 
 <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white"/>
