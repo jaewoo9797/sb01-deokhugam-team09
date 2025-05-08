@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
+import com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 import com.codeit.sb01_deokhugam.ranking.poweruser.mapper.PowerUserMapper;
+import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRankingRepository;
 import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserSearchRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BasicPowerUserService implements PowerUserService {
 
 	private final PowerUserSearchRepository powerUserSearchRepository;
+	private final PowerUserRankingRepository powerUserRankingRepository;
 	private final PowerUserMapper powerUserMapper;
 
 	private Map<Period, Long> userNumberForPeriod;
@@ -50,6 +53,38 @@ public class BasicPowerUserService implements PowerUserService {
 
 		return new PageResponse<>(powerUserDtoList, nextAfter, nextCursor,
 			size, hasNext, totalElements);
+	}
+
+	@Transactional
+	@Override
+	public void calculateAllPeriodRankings() {
+		//log.info("유저 랭킹 계산 시작");
+
+		// 매일 기존 랭킹 데이터 삭제 후 기간별로 새로 계산한 데이터들을 저장한다.
+		powerUserRankingRepository.deleteAll();
+
+		calculateRankingsForPeriod(Period.DAILY);
+		calculateRankingsForPeriod(Period.WEEKLY);
+		calculateRankingsForPeriod(Period.MONTHLY);
+		calculateRankingsForPeriod(Period.ALL_TIME);
+
+		//log.info("유저 랭킹 계산 성공");
+	}
+
+	private void calculateRankingsForPeriod(Period period) {
+		//log.info("유저 랭킹 계산 기간: {}", period);
+
+		// Period에 따라 계산을 시작할 범위의 시작과 끝 일자를 받아온다.
+		Map.Entry<Instant, Instant> startAndEndTime = ScheduleUtils.getStartAndEndByPeriod(period);
+
+		// DB에서 계산하여 반환한 파워유저 엔티티들을 저장한다.
+		List<PowerUser> powerUsers = powerUserRankingRepository.calculatePowerUserRank(
+			startAndEndTime.getKey(), startAndEndTime.getValue(), period);
+		powerUserRankingRepository.saveAll(powerUsers);
+
+		// 조회된 유저의 수를 저장해놓는다.
+		updateUserCountForPeriod(period, (long)powerUsers.size());
+
 	}
 
 	public void updateUserCountForPeriod(Period period, Long userNumber) {
