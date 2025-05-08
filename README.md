@@ -88,7 +88,7 @@
 🧠 **기타 기술**
 
 <p> 
-<img src="https://img.shields.io/badge/OCR-FFB400?style=flat-square"/> 
+<img src="https://img.shields.io/badge/Tesseract-FFB400?style=flat-square"/> 
 </p>
 
 </div>
