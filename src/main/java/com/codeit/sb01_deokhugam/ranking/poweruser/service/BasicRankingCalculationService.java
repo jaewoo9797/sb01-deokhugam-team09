@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Order(2) // PopularReviewBatchService의 runBatch()가 먼저 실행된 후 실행
 @RequiredArgsConstructor
 public class BasicRankingCalculationService implements RankingCalculationService {
 	private final PowerUserRankingRepository powerUserRepository;
