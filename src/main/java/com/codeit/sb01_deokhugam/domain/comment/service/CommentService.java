@@ -104,7 +104,7 @@ public class CommentService {
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CommentException(ErrorCode.INVALID_REQUEST);
+            throw new CommentException(ErrorCode.ACCESS_DENIED);
         }
 
         comment.updateContent(content);
@@ -116,8 +116,13 @@ public class CommentService {
 
     @Transactional
     public void softDelete(UUID commentId, UUID userId) {
-        Comment comment = commentRepository.findByIdAndUserIdAndDeletedFalse(commentId, userId)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CommentException(ErrorCode.ACCESS_DENIED);
+        }
+
         comment.markDeleted();
     }
 
@@ -127,7 +132,7 @@ public class CommentService {
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CommentException(ErrorCode.UNAUTHORIZED);
+            throw new CommentException(ErrorCode.ACCESS_DENIED);
         }
 
         if (comment.isDeleted()) {
