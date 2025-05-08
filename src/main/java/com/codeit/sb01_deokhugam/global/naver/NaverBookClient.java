@@ -54,7 +54,7 @@ public class NaverBookClient {
 	}
 
 	private String get(String apiUrl, Map<String, String> requestHeaders) {
-		log.debug("apiUrl = {} 주소와 연결 시도", apiUrl);
+		//log.debug("apiUrl = {} 주소와 연결 시도", apiUrl);
 		HttpURLConnection con = connect(apiUrl);
 		try {
 			con.setRequestMethod("GET");
@@ -64,10 +64,10 @@ public class NaverBookClient {
 
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
-				log.info("api = {} 가 정상 호출 되었습니다.", apiUrl);
+				//log.info("api = {} 가 정상 호출 되었습니다.", apiUrl);
 				return readBody(con.getInputStream());
 			} else { // 오류 발생
-				log.error("api = {} 오류 발생", apiUrl);
+				//log.error("api = {} 오류 발생", apiUrl);
 				return readBody(con.getErrorStream());
 			}
 		} catch (IOException e) {
@@ -114,6 +114,7 @@ public class NaverBookClient {
 		String title = stripTags(item.get("title").asText());
 		String author = item.get("author").asText();
 		String description = item.get("description").asText();
+		String publisher = item.get("publisher").asText();
 		String pubDateStr = item.get("pubdate").asText(); // e.g. "20060320"
 		String isbn = item.get("isbn").asText();
 		String imageUrl = item.get("image").asText();
@@ -126,7 +127,7 @@ public class NaverBookClient {
 		byte[] imageBytes = downloadImage(imageUrl);
 		String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-		return new NaverBookDto(title, author, description, publishedDate, isbn, imageBase64);
+		return new NaverBookDto(title, author, description, publisher, publishedDate, isbn, imageBase64);
 	}
 
 	private byte[] downloadImage(String imageUrl) {

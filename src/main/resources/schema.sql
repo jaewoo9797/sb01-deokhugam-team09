@@ -60,7 +60,7 @@ create table books
     thumbnail_url  varchar                  NOT NULL,
     review_count   integer                  NOT NULL default 0,
     rating         decimal(2, 1)            NOT NULL,
-    is_deleted     BOOLEAN                           DEFAULT false NOT NULL
+    is_deleted     BOOLEAN                  NOT NULL default false
 );
 
 -- review
@@ -72,9 +72,9 @@ create table reviews
     content       varchar                  NOT NULL,
     rating        decimal(2, 1)            NOT NULL,
     like_count    integer                  NOT NULL default 0,
-    liked_by_me    BOOLEAN                  DEFAULT FALSE NOT NULL,
+    liked_by_me   BOOLEAN                  NOT NULL default FALSE,
     comment_count integer                  NOT NULL default 0,
-    is_deleted    BOOLEAN                           DEFAULT FALSE NOT NULL,
+    is_deleted    BOOLEAN                  NOT NULL default FALSE,
     user_id       uuid,
     book_id       uuid
 );
@@ -94,7 +94,7 @@ create table book_rankings
 (
     id            uuid PRIMARY KEY,
     created_at    timestamp with time zone NOT NULL,
-    period varchar (20) NOT NULL,
+    period        varchar(20)              NOT NULL,
     rank          integer                  NOT NULL,
     score         decimal(10, 2)           NOT NULL,
     review_count  integer                  NOT NULL,
@@ -110,7 +110,7 @@ create table user_rankings
 (
     id               uuid PRIMARY KEY,
     created_at       timestamp with time zone NOT NULL,
-    period varchar (20) NOT NULL,
+    period           varchar(20)              NOT NULL,
     rank             integer                  NOT NULL,
     score            decimal(10, 2)           NOT NULL,
     like_count       integer                  NOT NULL,
@@ -131,7 +131,7 @@ create table review_rankings
     user_id            uuid                     NOT NULL,
     user_nickname      varchar                  NOT NULL,
     review_rating      decimal(2, 1)            NOT NULL,
-    period varchar NOT NULL,
+    period             varchar                  NOT NULL,
     created_at         timestamp with time zone NOT NULL,
     rank               integer                  NOT NULL,
     score              decimal(2, 1)            NOT NULL,
@@ -139,7 +139,11 @@ create table review_rankings
     comment_count      integer                  NOT NULL
 );
 
+CREATE INDEX idx_review_rankings_period_rank
+    ON review_rankings (period, rank);
 
+CREATE INDEX idx_review_rankings_period_created_at
+    ON review_rankings (period, created_at);
 
 -- 제약 조건
 -- Foreign key
@@ -200,4 +204,3 @@ ALTER TABLE review_likes
         FOREIGN KEY (review_id)
             REFERENCES reviews (id)
             ON DELETE CASCADE;
-
