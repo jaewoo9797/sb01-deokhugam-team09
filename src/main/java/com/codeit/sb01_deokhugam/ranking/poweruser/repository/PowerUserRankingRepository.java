@@ -31,7 +31,7 @@ public interface PowerUserRankingRepository extends JpaRepository<PowerUser, UUI
 					(COALESCE(SUM(r.like_count), 0) * 0.5
 					 + COUNT(DISTINCT l.id) * 0.2
 					 + COUNT(DISTINCT c.id) * 0.3) AS score,
-					COALESCE(SUM(r.like_count), 0) AS review_score_sum, -- 여기 변경해야 함!!!!!!!!!!!
+					COALESCE(SUM(rr.score), 0) AS review_score_sum,
 					COALESCE(SUM(r.like_count), 0) AS like_count,
 					COUNT(DISTINCT c.id) AS comment_count,
 					u.id AS user_id,
@@ -40,6 +40,8 @@ public interface PowerUserRankingRepository extends JpaRepository<PowerUser, UUI
 				FROM users u
 				LEFT JOIN reviews r
 					ON r.user_id = u.id AND r.created_at BETWEEN :start AND :end
+				LEFT JOIN review_rankings rr
+					ON rr.user_id = u.id AND rr.period = :period
 				LEFT JOIN comments c
 					ON c.user_id = u.id AND c.created_at BETWEEN :start AND :end
 				LEFT JOIN review_likes l
