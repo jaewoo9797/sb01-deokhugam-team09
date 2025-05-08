@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +30,13 @@ import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils;
+import com.codeit.sb01_deokhugam.ranking.poweruser.service.PowerUserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Order(1)
 @RequiredArgsConstructor
 public class PopularReviewBatchService {
 
@@ -47,6 +46,7 @@ public class PopularReviewBatchService {
 	private final PopularReviewRepository popularReviewRepository;
 	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
+	private final PowerUserService powerUserService;
 
 	/**
 	 * 매일 자정(00:00)에 모든 기간(DAILY, WEEKLY, MONTHLY, ALL_TIME)에 대해
@@ -62,6 +62,10 @@ public class PopularReviewBatchService {
 			log.info("Period={} 인기 리뷰 계산 완료", period);
 		}
 		log.info("===== 인기 리뷰 배치 종료 =====");
+
+		log.info("===== 파워유저 배치 시작 =====");
+		powerUserService.calculateAllPeriodRankings();
+		log.info("===== 파워유저 배치 종료 =====");
 	}
 
 	/**
