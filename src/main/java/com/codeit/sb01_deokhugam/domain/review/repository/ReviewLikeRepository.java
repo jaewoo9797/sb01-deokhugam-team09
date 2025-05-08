@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.ReviewLike;
 
 public interface ReviewLikeRepository
-	extends JpaRepository<ReviewLike, Long> {
+	extends JpaRepository<ReviewLike, UUID> {
 
 	Optional<ReviewLike> findByReviewIdAndUserId(UUID reviewId, UUID userId);
 
@@ -18,4 +18,7 @@ public interface ReviewLikeRepository
 	void deleteByReviewIdAndUserId(UUID reviewId, UUID userId);
 
 	List<ReviewLike> findByCreatedAtBetween(Instant start, Instant end);
+
+	void deleteByUserId(UUID userId);
+
 }

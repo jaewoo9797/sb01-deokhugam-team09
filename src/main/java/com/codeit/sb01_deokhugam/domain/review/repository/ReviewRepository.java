@@ -35,4 +35,6 @@ public interface ReviewRepository
 		WHERE r.id = :id
 		""")
 	void decrementLikeCount(@Param("id") UUID id);
+
+	void deleteByUserId(UUID pathId);
 }

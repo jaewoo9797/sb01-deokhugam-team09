@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.sb01_deokhugam.auth.exception.AccessDeniedException;
+import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewLikeRepository;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -26,12 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 public class BasicUserService implements UserService {
 
 	private final UserRepository userRepository;
+	private final ReviewRepository reviewRepository;
+	private final CommentRepository commentRepository;
+	private final NotificationRepository notificationRepository;
+	private final ReviewLikeRepository reviewLikeRepository;
 	private final UserMapper userMapper;
 
 	@Transactional
 	@Override
 	public UserDto create(RegisterRequest userRegisterRequest) {
-		log.debug("사용자 생성 시작: request={}", userRegisterRequest);
+		//log.debug("사용자 생성 시작: request={}", userRegisterRequest);
 
 		String email = userRegisterRequest.email();
 		String nickname = userRegisterRequest.nickname();
@@ -44,30 +52,30 @@ public class BasicUserService implements UserService {
 		User user = new User(email, password, nickname);
 
 		userRepository.save(user);
-		log.info("사용자 생성 완료: id={}, email={}, nickname={}", user.getId(), user.getEmail(), user.getNickname());
+		//log.info("사용자 생성 완료: id={}, email={}, nickname={}", user.getId(), user.getEmail(), user.getNickname());
 		return userMapper.toDto(user);
 	}
 
 	//논리 삭제되지 않은 유저 단건조회
 	@Override
 	public UserDto findActiveUser(UUID id) {
-		log.debug("사용자 조회 시작: id={}", id);
+		//log.debug("사용자 조회 시작: id={}", id);
 
 		UserDto userDto = userRepository.findByIdAndIsDeletedFalse(id)
 			.map(userMapper::toDto)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
-		log.info("사용자 조회 완료: id={}", id);
+		//log.info("사용자 조회 완료: id={}", id);
 		return userDto;
 	}
 
 	//논리 삭제되지 않은 유저 전체조회
 	@Override
 	public List<UserDto> findAllActiveUsers() {
-		log.debug("전체 사용자 조회 시작");
+		//log.debug("전체 사용자 조회 시작");
 
 		List<UserDto> userDtos = userRepository.findAllByIsDeletedFalse().stream().map(userMapper::toDto).toList();
 
-		log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
+		//log.info("전체 사용자 조회 완료: 총 {}명", userDtos.size());
 		return userDtos;
 	}
 
@@ -75,13 +83,13 @@ public class BasicUserService implements UserService {
 	//Dto에는 isDeleted 필드가 없어, 반환하는 userDto만 봐서는 논리삭제여부를 알 수 없다.
 	@Override
 	public UserDto findUserIncludingDeleted(UUID id) {
-		log.debug("논리삭제 상태 포함하여 사용자 조회 시작: id={}", id);
+		//log.debug("논리삭제 상태 포함하여 사용자 조회 시작: id={}", id);
 
 		UserDto userDto = userRepository.findById(id)
 			.map(userMapper::toDto)
 			.orElseThrow(() -> UserNotFoundException.withId(id));
 
-		log.info("사용자 조회 완료: id={}", id);
+		//log.info("사용자 조회 완료: id={}", id);
 		return userDto;
 	}
 
@@ -89,7 +97,7 @@ public class BasicUserService implements UserService {
 	@Override
 	@Transactional
 	public UserDto update(UUID pathId, UUID headerId, UserUpdateRequest userUpdateRequest) {
-		log.debug("사용자 닉네임 변경 시작: pathId={}, request={}", pathId, userUpdateRequest);
+		//log.debug("사용자 닉네임 변경 시작: pathId={}, request={}", pathId, userUpdateRequest);
 
 		User user = userRepository.findByIdAndIsDeletedFalse(pathId).orElseThrow(() -> UserNotFoundException.withId(
 			pathId));
@@ -98,7 +106,7 @@ public class BasicUserService implements UserService {
 		String newNickname = userUpdateRequest.nickname();
 		user.update(newNickname);
 
-		log.info("사용자 닉네임 수정 완료: pathId={}, nickname={}", pathId, user.getNickname());
+		//log.info("사용자 닉네임 수정 완료: pathId={}, nickname={}", pathId, user.getNickname());
 		return userMapper.toDto(user);
 	}
 
@@ -107,29 +115,33 @@ public class BasicUserService implements UserService {
 	@Override
 	@Transactional
 	public void softDelete(UUID pathId, UUID headerId) {
-		log.debug("사용자 논리삭제 시작: id={}", pathId);
+		//log.debug("사용자 논리삭제 시작: id={}", pathId);
 
 		User user = userRepository.findByIdAndIsDeletedFalse(pathId)
 			.orElseThrow(() -> UserNotFoundException.withId(pathId));
 		verifyUserMatch(pathId, headerId);
 		user.softDelete();
 
-		log.info("사용자 논리삭제 완료: id={}", pathId);
+		//log.info("사용자 논리삭제 완료: id={}", pathId);
 	}
 
-	// todo 물리 삭제 제대로 구현
 	@Override
 	@Transactional
 	public void hardDelete(UUID pathId, UUID headerId) {
-		log.debug("사용자 물리삭제 시작: id={}", pathId);
+		//log.debug("사용자 물리삭제 시작: id={}", pathId);
 
 		if (!userRepository.existsById(pathId)) {
 			throw UserNotFoundException.withId(pathId);
 		}
 		verifyUserMatch(pathId, headerId);
+
+		reviewLikeRepository.deleteByUserId(pathId);
+		reviewRepository.deleteByUserId(pathId);
+		commentRepository.deleteByUserId(pathId);
+		notificationRepository.deleteByUserId(pathId);
 		userRepository.deleteById(pathId);
 
-		log.info("사용자 물리삭제 완료: id={}", pathId);
+		//log.info("사용자 물리삭제 완료: id={}", pathId);
 	}
 
 	// 경로변수와 헤더에 기재된 id의 일치여부 비교
