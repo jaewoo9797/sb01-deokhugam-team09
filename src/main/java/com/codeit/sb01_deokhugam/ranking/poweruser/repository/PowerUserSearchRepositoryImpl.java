@@ -57,6 +57,7 @@ public class PowerUserSearchRepositoryImpl implements PowerUserSearchRepository 
 		BooleanBuilder builder = new BooleanBuilder();
 
 		Period period = getPowerUsersRequest.period();
+		Sort.Direction direction = getPowerUsersRequest.direction();
 		builder.and(powerUser.period.eq(period));
 
 		//첫번째 커서(등수)가 0이 아니라면 해당 등수보다 큰 값만 반환
@@ -64,9 +65,12 @@ public class PowerUserSearchRepositoryImpl implements PowerUserSearchRepository 
 		//두번째 커서가 현재로써 쓸모 없으나, 확장가능성을 고려하여 남겨둠. 
 		int cursor = getPowerUsersRequest.cursor();
 		Instant after = getPowerUsersRequest.after();
-		if (cursor > 0) {
+		if (cursor > 0 && direction.equals(Sort.Direction.ASC)) {
 			builder.and(powerUser.rank.gt(cursor));
 			//.or(powerUser.rank.eq(cursor).and(powerUser.createdAt.gt(after))
+		} else if (cursor > 0 && direction.equals(Sort.Direction.DESC)) {
+			builder.and(powerUser.rank.lt(cursor));
+			//.or(powerUser.rank.eq(cursor).and(powerUser.createdAt.lt(after))
 		}
 		return builder;
 	}
