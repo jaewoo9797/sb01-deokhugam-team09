@@ -74,6 +74,25 @@
 <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white"/>
 </p>
 
+
+🔐 **인증 & 보안**
+
+<p> 
+<img src="https://img.shields.io/badge/OIDC-4A90E2?style=flat-square&logo=openid&logoColor=white"/> 
+</p>
+
+> 🔑 OIDC 기반 소셜 로그인 (Google, Kakao 등) 구현   
+> 🔒 AWS OIDC 연동을 통한 GitHub Actions 권한 제어
+
+🧠 **기타 기술**
+
+<p> 
+<img src="https://img.shields.io/badge/OCR-FFB400?style=flat-square"/> 
+</p>
+
+> 📸 OCR을 통한 도서 이미지 인식 및 ISBN 추출
+
+
 </div>
 
 ## 아키텍처
