@@ -68,6 +68,7 @@
 <p>
 <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white"/>
 <img src="https://img.shields.io/badge/Jacoco-C71A36?style=flat-square"/>
+<img src="https://img.shields.io/badge/RestAssured-52B54B?style=flat-square"/> 
 </p>
 
 📊 **모니터링**
