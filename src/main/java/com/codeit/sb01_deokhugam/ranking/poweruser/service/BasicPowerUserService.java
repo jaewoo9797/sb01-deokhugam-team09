@@ -13,7 +13,7 @@ import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequ
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.response.PowerUserDto;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 import com.codeit.sb01_deokhugam.ranking.poweruser.mapper.PowerUserMapper;
-import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRepositoryCustom;
+import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserSearchRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class BasicPowerUserService implements PowerUserService {
 
-	private final PowerUserRepositoryCustom powerUserRepository;
-	private final RankingCalculationService rankingCalculationService;
+	private final PowerUserSearchRepository powerUserSearchRepository;
 	private final PowerUserMapper powerUserMapper;
 
 	private Map<Period, Long> userNumberForPeriod;
@@ -35,7 +34,7 @@ public class BasicPowerUserService implements PowerUserService {
 		int limitSize = getPowerUsersRequest.limit();
 		Period period = getPowerUsersRequest.period();
 
-		List<PowerUser> powerUsers = powerUserRepository.findPowerUsers(getPowerUsersRequest);
+		List<PowerUser> powerUsers = powerUserSearchRepository.findPowerUsers(getPowerUsersRequest);
 
 		//size+1 결과에 따라 다음페이지 존재여부 설정 후, 추가로 받아온 요소 하나 삭제
 		boolean hasNext = (powerUsers.size() > limitSize);

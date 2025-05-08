@@ -10,7 +10,6 @@ import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.QPowerUser;
-import com.codeit.sb01_deokhugam.ranking.poweruser.mapper.PowerUserMapper;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -20,11 +19,9 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class PowerUserRepositoryCustomImpl implements PowerUserRepositoryCustom {
+public class PowerUserSearchRepositoryImpl implements PowerUserSearchRepository {
 
 	private final JPAQueryFactory queryFactory;
-	private final PowerUserMapper powerUserMapper;
-	private final PowerUserRepository powerUserRepository;
 
 	@Override
 	public List<PowerUser> findPowerUsers(GetPowerUsersRequest request) {

@@ -12,7 +12,7 @@ import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 
 //todo 리뷰스코어썸 값 변경
-public interface PowerUserRepository extends JpaRepository<PowerUser, UUID> {
+public interface PowerUserRankingRepository extends JpaRepository<PowerUser, UUID> {
 	@Query(value = """
 			SELECT
 				:period,

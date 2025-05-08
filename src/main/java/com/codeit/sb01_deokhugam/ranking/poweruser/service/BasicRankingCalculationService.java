@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
-import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRepository;
+import com.codeit.sb01_deokhugam.ranking.poweruser.repository.PowerUserRankingRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class BasicRankingCalculationService implements RankingCalculationService {
-	private final PowerUserRepository powerUserRepository;
+	private final PowerUserRankingRepository powerUserRepository;
 	private final PowerUserService powerUserService;
 
 	@Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
