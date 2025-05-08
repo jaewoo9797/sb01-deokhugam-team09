@@ -7,6 +7,8 @@ import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
 import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
@@ -28,6 +30,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final NotificationRepository notificationRepository;
 
     public CommentDto create(UUID reviewId, UUID userId, String content) {
         User user = userRepository.findById(userId)
@@ -37,6 +40,9 @@ public class CommentService {
         Comment comment = new Comment(review, user, content);
         Comment saved = commentRepository.save(comment);
 
+        Notification notification = Notification.fromComment(user, content, review);
+        notificationRepository.save(notification);
+        
         String nickname = user.getNickname();
 
         return commentMapper.toDto(saved, nickname);
