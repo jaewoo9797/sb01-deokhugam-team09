@@ -65,15 +65,15 @@ public class NotificationService {
 		return new PageResponse<>(content, nextCursor, nextCursor, size, hasNext, totalCount);
 	}
 
-	@Scheduled(cron = "0 0 3 * * *")
-	public void deleteConfirmedOlderThanAWeek() {
-		notificationRepository.deleteConfirmedOlderThan(ONE_WEEK_AGO);
-	}
-
 	private Instant getNextCursor(boolean hasNext, List<Notification> notifications) {
 		if (hasNext) {
 			return notifications.get(notifications.size() - 1).getCreatedAt();
 		}
 		return null;
+	}
+
+	@Scheduled(cron = "0 0 3 * * *")
+	public void deleteConfirmedOlderThanAWeek() {
+		notificationRepository.deleteConfirmedOlderThan(ONE_WEEK_AGO);
 	}
 }
