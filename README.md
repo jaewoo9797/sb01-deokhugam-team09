@@ -5,8 +5,11 @@
 <div>
     <h3><b>📚책 읽는 즐거움을 공유하고, 지식과 감상을 나누는 책 덕후들의 커뮤니티 서비스</b></h3>
 </div>
+<br/>
 코드잇 중급 프로젝트-덕후감   
-도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축   
+
+도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축
+
 개발기간: 2025.04.16 ~ 2025.05.12
 
 > 📚 책 덕후들을 위한 특별한 공간, 덕후감에 오신 걸 환영합니다!
@@ -15,7 +18,6 @@
 
 ## 배포 주소
 
-모든 팀원이 취업을 완료할 때까지 배포 주소를 유지합니다.
 👉 [덕후감 방문하기](http://deokhugam-alb-696781456.ap-northeast-2.elb.amazonaws.com)
 
 ## <span id="2">🏃팀원 소개</span>
@@ -26,21 +28,25 @@
 
 <div align="center">
 
-|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />              |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Tema_Member-6DB33F" />               |
+|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />              |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |
 |:---------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
 | <img src="https://avatars.githubusercontent.com/u/90863663?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/92302468?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/101076275?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/132568348?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/157946706?v=4" width="120px;" alt=""/> |
 |                           [김상호](https://github.com/ghtkdrla)                            |                        [김희수](https://github.com/kaya-frog-ramer)                        |                            [김효정](https://github.com/hyojKim2)                            |                          [공병열](https://github.com/byeongyeol12)                          |                           [백재우](https://github.com/jaewoo9797)                           |
 
 </div>
 
-## 기술 스택
+## 🛠️기술 스택
 
 <div align=center> 
 
-<p>
-  <img src="https://img.shields.io/badge/Backend_Dev-6DB33F?style=flat-square&logo=spring&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
-</p>
+📌 Backend
+<p> <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=springboot&logoColor=white"/> <img src="https://img.shields.io/badge/QueryDSL-000000?style=flat-square"/> <img src="https://img.shields.io/badge/Scheduler-6DB33F?style=flat-square&logo=spring&logoColor=white"/></p>
+🗄️ Database & Infrastructure
+<p> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/> <img src="https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white"/> <img src="https://img.shields.io/badge/RDS-527FFF?style=flat-square&logo=amazonrds&logoColor=white"/> <img src="https://img.shields.io/badge/ECS-FF9900?style=flat-square&logo=amazonecs&logoColor=white"/> <img src="https://img.shields.io/badge/ECR-FF9900?style=flat-square&logo=amazonaws&logoColor=white"/> <img src="https://img.shields.io/badge/Secrets_Manager-FF9900?style=flat-square&logo=amazonaws&logoColor=white"/> </p>
+⚙️ CI/CD & 테스트
+<p> <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white"/> <img src="https://img.shields.io/badge/Jacoco-C71A36?style=flat-square"/> </p>
+📊 모니터링
+<p> <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white"/> <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white"/> </p>
 
 </div>
 
