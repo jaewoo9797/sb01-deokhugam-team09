@@ -104,7 +104,7 @@ public class CommentService {
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CommentException(ErrorCode.ACCESS_DENIED);
+            throw new CommentException(ErrorCode.NOT_AUTHORITY);
         }
 
         comment.updateContent(content);
