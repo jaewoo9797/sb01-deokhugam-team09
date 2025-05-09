@@ -422,10 +422,61 @@ public class UserControllerTest {
 		);
 	}
 
-	//todo 하드삭제 메서드 구현 후 테스트
-	@DisplayName("유저 하드 삭제 테스트")
+	@DisplayName("유저 하드 삭제 성공 테스트 - 완전 삭제")
 	@Test
-	void hardDelete() {
+	void givenValidRequest_whenHardDeleteUser_thenReturn204() {
+		User user = insertTestUser();
+		UUID userId = user.getId();
+
+		// when & then
+		given().log().all()
+			.header("deokhugam-request-user-id", userId)
+			.when().delete("/api/users/" + userId + "/hard")
+			.then().log().all()
+			.statusCode(HttpStatus.NO_CONTENT.value());
+
+		// DB에서 완전히 삭제되었는지 확인
+		assertThat(userRepository.findById(userId)).isNotPresent();
+	}
+
+	@DisplayName("유저 하드 삭제 실패 테스트 - 헤더와 경로 id 불일치")
+	@Test
+	void givenMismatchedHeaderIdAndPathId_whenHardDeleteUser_thenReturn403() {
+		User user = insertTestUser();
+		UUID userId = user.getId();
+		UUID wrongUserId = UUID.randomUUID();
+
+		ExtractableResponse<Response> response = given().log().all()
+			.header("deokhugam-request-user-id", wrongUserId)
+			.when().delete("/api/users/" + userId + "/hard")
+			.then().log().all()
+			.statusCode(HttpStatus.FORBIDDEN.value())
+			.extract();
+
+		JsonPath result = response.jsonPath();
+		assertThat(result.getString("message")).isEqualTo("접근 권한이 없습니다.");
+		assertThat(result.getString("code")).isEqualTo("ACCESS_DENIED");
+		assertThat(result.getString("timestamp")).isNotNull();
+	}
+
+	@DisplayName("유저 하드 삭제 실패 테스트 - 존재하지 않는 유저")
+	@Test
+	void givenNonExistentUserId_whenHardDeleteUser_thenReturn404() {
+		User user = insertTestUser();
+		UUID userId = user.getId();
+		UUID nonExistentId = UUID.randomUUID();
+
+		ExtractableResponse<Response> response = given().log().all()
+			.header("deokhugam-request-user-id", userId)
+			.when().delete("/api/users/" + nonExistentId + "/hard")
+			.then().log().all()
+			.statusCode(HttpStatus.NOT_FOUND.value())
+			.extract();
+
+		JsonPath result = response.jsonPath();
+		assertThat(result.getString("message")).isEqualTo("사용자를 찾을 수 없습니다.");
+		assertThat(result.getString("code")).isEqualTo("USER_NOT_FOUND");
+		assertThat(result.getString("timestamp")).isNotNull();
 	}
 
 	User insertTestUser() {

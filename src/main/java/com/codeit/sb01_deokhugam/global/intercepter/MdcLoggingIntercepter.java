@@ -14,13 +14,15 @@ public class MdcLoggingIntercepter implements HandlerInterceptor {
 	//컨트롤러 호출전
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-		// 요청 id와 IP 추출
+		// 요청 id와 IP, uri 추출
 		String requestId = request.getHeader("Deokhugam-request-user-id");  // 요청 헤더에서 가져오기
 		String clientIp = getClientIp(request);
+		String requestUri = request.getRequestURI();
 
 		// MDC에 추가
 		MDC.put("requestId", requestId);
 		MDC.put("clientIp", clientIp);
+		MDC.put("requestUri", requestUri);
 
 		// 응답 헤더에 추가
 		response.setHeader("Deokhugam-request-user-id", requestId);
@@ -40,9 +42,28 @@ public class MdcLoggingIntercepter implements HandlerInterceptor {
 		MDC.clear(); // clear하여 메모리 누수 방지
 	}
 
-	// TODO: IP 추출 로직 구현
 	private String getClientIp(HttpServletRequest request) {
 		String ip = request.getHeader("X-Forwarded-For");
-		return (ip != null && !ip.isEmpty()) ? ip.split(",")[0] : request.getRemoteAddr();
+
+		// 실제클라이언트 IP추출한다.
+		// OSI 계층에 따라 IP가 변조된 경우에서도 정확한 IP를 추출한다.
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+
+		return ip;
 	}
+
 }

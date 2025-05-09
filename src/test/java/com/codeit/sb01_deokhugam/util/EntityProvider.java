@@ -36,4 +36,8 @@ public class EntityProvider {
 	public static Review createReview(User user, Book book) {
 		return new Review(user, book, "좋은 책입니다.", new BigDecimal("4.5"));
 	}
+
+	public static Review createReviewByRating(User user, Book book, BigDecimal rating) {
+		return new Review(user, book, "좋은 책입니다.", rating);
+	}
 }

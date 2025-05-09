@@ -1,5 +1,12 @@
 package com.codeit.sb01_deokhugam.domain.comment.service;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentResponse;
@@ -7,18 +14,16 @@ import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
 import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final NotificationRepository notificationRepository;
 
     public CommentDto create(UUID reviewId, UUID userId, String content) {
         User user = userRepository.findById(userId)
@@ -37,7 +43,12 @@ public class CommentService {
         Comment comment = new Comment(review, user, content);
         Comment saved = commentRepository.save(comment);
 
+        Notification notification = Notification.fromComment(user, content, review);
+        notificationRepository.save(notification);
+        
         String nickname = user.getNickname();
+      	review.incrementCommentCount();
+
 
         return commentMapper.toDto(saved, nickname);
     }
@@ -104,7 +115,7 @@ public class CommentService {
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CommentException(ErrorCode.INVALID_REQUEST);
+            throw new CommentException(ErrorCode.NOT_AUTHORITY);
         }
 
         comment.updateContent(content);
@@ -116,8 +127,14 @@ public class CommentService {
 
     @Transactional
     public void softDelete(UUID commentId, UUID userId) {
-        Comment comment = commentRepository.findByIdAndUserIdAndDeletedFalse(commentId, userId)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CommentException(ErrorCode.ACCESS_DENIED);
+        }
+      	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();
         comment.markDeleted();
     }
 
@@ -127,15 +144,14 @@ public class CommentService {
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new CommentException(ErrorCode.UNAUTHORIZED);
+            throw new CommentException(ErrorCode.ACCESS_DENIED);
         }
 
         if (comment.isDeleted()) {
             throw new CommentException(ErrorCode.INVALID_REQUEST);
         }
-
+	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();	    
         commentRepository.deleteById(commentId);
     }
-
 }
-

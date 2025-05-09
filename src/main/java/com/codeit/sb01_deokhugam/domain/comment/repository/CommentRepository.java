@@ -1,22 +1,26 @@
 package com.codeit.sb01_deokhugam.domain.comment.repository;
-import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CommentRepository extends JpaRepository <Comment, UUID>, CommentRepositoryCustom {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    Optional<Comment> findByIdAndDeletedFalse(UUID commentId);
+import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 
-    Optional<Comment> findByIdAndUserIdAndDeletedFalse(UUID commentId, UUID userId);
+public interface CommentRepository extends JpaRepository<Comment, UUID>, CommentRepositoryCustom {
 
-    long countByReview_Id(UUID reviewId);
+	Optional<Comment> findByIdAndDeletedFalse(UUID commentId);
 
-    List<Comment> findByCreatedAtBetweenAndDeletedFalse(Instant start, Instant end);
+	Optional<Comment> findByIdAndUserIdAndDeletedFalse(UUID commentId, UUID userId);
 
-    // 물리 삭제
-    void deleteById(UUID commentId);
+	long countByReview_Id(UUID reviewId);
+
+	List<Comment> findByCreatedAtBetweenAndDeletedFalse(Instant start, Instant end);
+
+	// 물리 삭제
+	void deleteById(UUID commentId);
+
+	void deleteByUserId(UUID pathId);
 }
