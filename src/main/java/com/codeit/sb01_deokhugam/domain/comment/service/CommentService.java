@@ -13,6 +13,8 @@ import com.codeit.sb01_deokhugam.domain.comment.entity.Comment;
 import com.codeit.sb01_deokhugam.domain.comment.exception.CommentException;
 import com.codeit.sb01_deokhugam.domain.comment.mapper.CommentMapper;
 import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.entity.Notification;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
@@ -29,8 +31,9 @@ public class CommentService {
 	private final CommentMapper commentMapper;
 	private final UserRepository userRepository;
 	private final ReviewRepository reviewRepository;
-
-	@Transactional
+	private final NotificationRepository notificationRepository;
+  
+  @Transactional
 	public CommentDto create(UUID reviewId, UUID userId, String content) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND));
@@ -41,6 +44,8 @@ public class CommentService {
 
 		String nickname = user.getNickname();
 		review.incrementCommentCount();
+		Notification notification = Notification.fromComment(user, content, review);
+		notificationRepository.save(notification);
 
 		return commentMapper.toDto(saved, nickname);
 	}
@@ -62,8 +67,8 @@ public class CommentService {
 		}
 
 		Instant afterTime = (after != null) ? after : Instant.EPOCH;
-		Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt :
-			Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
+
+		Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
 
 		List<Comment> comments = commentRepository.findComments(
 			reviewId,
@@ -145,4 +150,3 @@ public class CommentService {
 	}
 
 }
-

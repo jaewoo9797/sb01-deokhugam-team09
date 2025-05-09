@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import com.codeit.sb01_deokhugam.domain.review.entity.ReviewLike;
 
 public interface ReviewLikeRepository
-	extends JpaRepository<ReviewLike, Long> {
+	extends JpaRepository<ReviewLike, UUID> {
 
 	Optional<ReviewLike> findByReviewIdAndUserId(UUID reviewId, UUID userId);
 
@@ -27,4 +27,6 @@ public interface ReviewLikeRepository
 		@Param("userId") UUID userId,
 		@Param("reviewIds") List<UUID> reviewIds
 	);
+  
+	void deleteByUserId(UUID userId);
 }
