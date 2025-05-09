@@ -1,5 +1,12 @@
 package com.codeit.sb01_deokhugam.domain.comment.service;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentDto;
 import com.codeit.sb01_deokhugam.domain.comment.dto.CommentResponse;
@@ -14,13 +21,9 @@ import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.entity.User;
 import com.codeit.sb01_deokhugam.domain.user.repository.UserRepository;
 import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,8 @@ public class CommentService {
         notificationRepository.save(notification);
         
         String nickname = user.getNickname();
+      	review.incrementCommentCount();
+
 
         return commentMapper.toDto(saved, nickname);
     }
@@ -128,7 +133,8 @@ public class CommentService {
         if (!comment.getUser().getId().equals(userId)) {
             throw new CommentException(ErrorCode.ACCESS_DENIED);
         }
-
+      	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();
         comment.markDeleted();
     }
 
@@ -144,8 +150,8 @@ public class CommentService {
         if (comment.isDeleted()) {
             throw new CommentException(ErrorCode.INVALID_REQUEST);
         }
-
+	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();	    
         commentRepository.deleteById(commentId);
     }
-
 }
