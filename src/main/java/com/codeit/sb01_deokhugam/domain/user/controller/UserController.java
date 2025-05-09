@@ -68,7 +68,7 @@ public class UserController {
 
 	@DeleteMapping(path = "{pathId}")
 	public ResponseEntity<Void> softDelete(@RequestHeader("deokhugam-request-user-id") UUID headerId,
-		@PathVariable UUID pathId) {
+		@PathVariable("pathId") UUID pathId) {
 		log.info("사용자 논리 삭제 요청: pathId={}", pathId);
 		userService.softDelete(pathId, headerId);
 		log.debug("사용자 논리 삭제 성공");
@@ -77,9 +77,9 @@ public class UserController {
 			.build();
 	}
 
-	@DeleteMapping(path = "{id}/hard")
+	@DeleteMapping(path = "{pathId}/hard")
 	public ResponseEntity<Void> hardDelete(@RequestHeader("deokhugam-request-user-id") UUID headerId,
-		@PathVariable UUID pathId) {
+		@PathVariable("pathId") UUID pathId) {
 		log.info("사용자 물리 삭제 요청: pathId={}", pathId);
 		userService.hardDelete(pathId, headerId);
 		log.debug("사용자 물리 삭제 성공");
