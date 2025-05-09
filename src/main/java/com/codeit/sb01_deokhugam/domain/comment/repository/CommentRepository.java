@@ -22,5 +22,5 @@ public interface CommentRepository extends JpaRepository<Comment, UUID>, Comment
 	// 물리 삭제
 	void deleteById(UUID commentId);
 
-	//void deleteByUserId(UUID pathId);
+	void deleteByUserId(UUID pathId);
 }

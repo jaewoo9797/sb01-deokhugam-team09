@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.codeit.sb01_deokhugam.domain.review.entity.Review;
+import com.codeit.sb01_deokhugam.domain.user.entity.User;
 
 @Repository
 public interface ReviewRepository
@@ -36,5 +37,5 @@ public interface ReviewRepository
 		""")
 	void decrementLikeCount(@Param("id") UUID id);
 
-	//void deleteByUserId(UUID pathId);
+	void deleteByAuthor(User author);
 }

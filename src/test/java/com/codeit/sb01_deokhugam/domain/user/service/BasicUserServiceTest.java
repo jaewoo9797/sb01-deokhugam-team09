@@ -21,6 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.codeit.sb01_deokhugam.auth.exception.AccessDeniedException;
+import com.codeit.sb01_deokhugam.domain.comment.repository.CommentRepository;
+import com.codeit.sb01_deokhugam.domain.notification.repository.NotificationRepository;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewLikeRepository;
+import com.codeit.sb01_deokhugam.domain.review.repository.ReviewRepository;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
@@ -40,6 +44,14 @@ class BasicUserServiceTest {
 	private BasicUserService userService;
 	@Mock
 	private UserRepository userRepository;
+	@Mock
+	private ReviewRepository reviewRepository;
+	@Mock
+	private ReviewLikeRepository reviewLikeRepository;
+	@Mock
+	private CommentRepository commentRepository;
+	@Mock
+	private NotificationRepository notificationRepository;
 
 	private UUID userId;
 	private String email;
@@ -330,10 +342,28 @@ class BasicUserServiceTest {
 			.isInstanceOf(UserNotFoundException.class);
 	}
 
-	// todo 물리삭제 구현하고 테스트 추가
 	@Test
-	void hardDelete() {
+	@DisplayName("유저 물리삭제 성공 - 연관 데이터 모두 삭제")
+	void hardDelete_Success_AllRelatedDataDeleted() {
+		// given
+		UUID pathId = userId;
+		UUID headerId = userId;
+		user = EntityProvider.createUser();
+		given(userRepository.findByIdAndIsDeletedFalse(pathId)).willReturn(Optional.of(user));
+
+		// when
+		userService.hardDelete(pathId, headerId);
+
+		// then
+		verify(userRepository).findByIdAndIsDeletedFalse(pathId);
+		verify(userRepository).deleteById(pathId);
+		verify(reviewLikeRepository).deleteByUserId(pathId);
+		verify(reviewRepository).deleteByAuthor(user);
+		verify(commentRepository).deleteByUserId(pathId);
+		verify(notificationRepository).deleteByUserId(pathId);
 	}
+
+	//todo 물리삭제 관련 테스트 추가
 
 	List<User> userListMaker(int size) {
 		return IntStream.range(0, size)

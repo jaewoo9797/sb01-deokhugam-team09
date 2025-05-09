@@ -19,6 +19,6 @@ public interface ReviewLikeRepository
 
 	List<ReviewLike> findByCreatedAtBetween(Instant start, Instant end);
 
-	//void deleteByUserId(UUID userId);
+	void deleteByUserId(UUID userId);
 
 }
