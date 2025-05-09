@@ -46,8 +46,8 @@ public class BasicPowerUserService implements PowerUserService {
 		int size = powerUsers.size();
 
 		PowerUser lastUser = (powerUsers.isEmpty() ? null : powerUsers.get(powerUsers.size() - 1));
-		int nextCursor = (lastUser != null) ? lastUser.getRank() : 0;
-		Instant nextAfter = (lastUser != null) ? lastUser.getCreatedAt() : null;
+		int nextCursor = (lastUser != null) && hasNext ? lastUser.getRank() : 0;
+		Instant nextAfter = (lastUser != null) && hasNext ? lastUser.getCreatedAt() : null;
 		Long totalElements = this.userNumberForPeriod.get(period);
 
 		List<PowerUserDto> powerUserDtoList = powerUserMapper.toDtoList(powerUsers);

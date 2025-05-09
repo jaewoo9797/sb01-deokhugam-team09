@@ -25,10 +25,10 @@ public class BasicPowerUserCalculationService implements PowerUserCalculationSer
 	@Transactional
 	@Override
 	public long calculateRankingsForPeriod(Period period) {
-		log.info("유저 랭킹 계산 기간: {}", period);
+		//log.info("유저 랭킹 계산 기간: {}", period);
 
 		Map.Entry<Instant, Instant> startAndEndTime = ScheduleUtils.getStartAndEndByPeriod(period);
-		log.info("계산 기간: {} ~ {}", startAndEndTime.getKey(), startAndEndTime.getValue());
+		//log.info("계산 기간: {} ~ {}", startAndEndTime.getKey(), startAndEndTime.getValue());
 
 		List<PowerUser> powerUsers;
 		try {
@@ -52,18 +52,17 @@ public class BasicPowerUserCalculationService implements PowerUserCalculationSer
 
 			try {
 				powerUserRankingRepository.saveAll(target);
-				log.info("saveAll 호출 완료");
+				//log.info("saveAll 호출 완료");
 			} catch (Exception e) {
-				log.error("saveAll 중 예외 발생: {}", e.getMessage(), e);
+				//log.error("유저랭킹 생성 후 saveAll 중 예외 발생: {}", e.getMessage(), e);
 				throw e;
 			}
-
 			// 저장 후 데이터 확인
 			List<PowerUser> savedUsers = powerUserRankingRepository.findAll();
 			log.info("저장된 총 파워유저 수: {}", savedUsers.size());
 
 		} catch (Exception e) {
-			log.error("파워유저 랭킹 계산 중 오류 발생: {}", e.getMessage(), e);
+			//log.error("파워유저 랭킹 계산 중 오류 발생: {}", e.getMessage(), e);
 			throw new RuntimeException("파워유저 랭킹 계산 실패", e);
 		}
 
