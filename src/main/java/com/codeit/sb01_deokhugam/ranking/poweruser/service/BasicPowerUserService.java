@@ -72,8 +72,4 @@ public class BasicPowerUserService implements PowerUserService {
 
 		//log.info("유저 랭킹 계산 성공");
 	}
-
-	public void updateUserCountForPeriod(Period period, Long userNumber) {
-		this.userNumberForPeriod.put(period, userNumber);
-	}
 }
