@@ -36,5 +36,5 @@ public interface ReviewRepository
 		""")
 	void decrementLikeCount(@Param("id") UUID id);
 
-	void deleteByUserId(UUID pathId);
+	//void deleteByUserId(UUID pathId);
 }

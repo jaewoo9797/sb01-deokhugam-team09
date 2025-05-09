@@ -32,5 +32,5 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 	@Query("DELETE FROM Notification n WHERE n.confirmed = true AND n.updatedAt < :cutOfDate")
 	int deleteConfirmedOlderThan(@Param("cutOfDate") Instant cutOfDate);
 
-	void deleteByUserId(UUID pathId);
+	//void deleteByUserId(UUID pathId);
 }
