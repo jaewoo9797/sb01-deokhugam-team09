@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.entity.PowerUser;
 
 public interface PowerUserRankingRepository extends JpaRepository<PowerUser, UUID> {
@@ -58,6 +57,6 @@ public interface PowerUserRankingRepository extends JpaRepository<PowerUser, UUI
 	List<PowerUser> calculatePowerUserRank(
 		@Param("start") Instant start,
 		@Param("end") Instant end,
-		@Param("period") Period period
+		@Param("period") String period
 	);
 }

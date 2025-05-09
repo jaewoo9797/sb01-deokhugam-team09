@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeit.sb01_deokhugam.domain.review.service.PopularReviewBatchService;
 import com.codeit.sb01_deokhugam.global.dto.response.PageResponse;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 import com.codeit.sb01_deokhugam.ranking.poweruser.dto.request.GetPowerUsersRequest;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PowerUserController {
 
 	private final PowerUserService powerUserService;
+	private final PopularReviewBatchService reviewService;//todo 지우기
 
 	// 파워유저 목록조회
 	@GetMapping
@@ -37,6 +39,7 @@ public class PowerUserController {
 		@RequestParam(value = "cursor", defaultValue = "0") int cursor, //조회된 페이지 마지막 등수
 		@RequestParam(value = "after", required = false) Instant after, //조회된 페이지 마지막 생성일
 		@RequestParam(value = "limit", defaultValue = "50") @Positive int limit) {
+		reviewService.runBatch(); //todo 지우기
 		GetPowerUsersRequest getPowerUsersRequest = new GetPowerUsersRequest(period, direction, cursor, after, limit);
 		PageResponse<PowerUserDto> powerUsers = powerUserService.findPowerUsers(getPowerUsersRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(powerUsers);

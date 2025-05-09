@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +51,8 @@ public class PopularReviewBatchService {
 	 * 매일 자정(00:00)에 모든 기간(DAILY, WEEKLY, MONTHLY, ALL_TIME)에 대해
 	 * 인기 리뷰 점수 계산 & 저장을 순차적으로 실행합니다.
 	 */
-	@Transactional
-	@Scheduled(cron = "0 0 0 * * *")
+	@Transactional//todo 주석해제
+	//@Scheduled(cron = "0 0 0 * * *")
 	public void runBatch() {
 		log.info("===== 인기 리뷰 배치 시작: {} =====", Instant.now());
 		for (Period period : Period.values()) {

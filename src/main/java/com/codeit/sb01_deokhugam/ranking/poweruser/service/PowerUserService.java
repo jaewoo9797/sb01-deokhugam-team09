@@ -12,4 +12,5 @@ public interface PowerUserService {
 	void calculateAllPeriodRankings();
 
 	void updateUserCountForPeriod(Period period, Long userNumber);
+
 }
