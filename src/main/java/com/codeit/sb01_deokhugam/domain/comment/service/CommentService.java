@@ -133,7 +133,8 @@ public class CommentService {
         if (!comment.getUser().getId().equals(userId)) {
             throw new CommentException(ErrorCode.ACCESS_DENIED);
         }
-      	review.decrementCommentCount();
+      	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();
         comment.markDeleted();
     }
 
@@ -149,7 +150,8 @@ public class CommentService {
         if (comment.isDeleted()) {
             throw new CommentException(ErrorCode.INVALID_REQUEST);
         }
-		    review.decrementCommentCount();
+	Review review = reviewRepository.findById(comment.getReviewId()).get();
+	review.decrementCommentCount();	    
         commentRepository.deleteById(commentId);
     }
 }
