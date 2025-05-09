@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.codeit.sb01_deokhugam.domain.base.BaseEntity;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 import jakarta.persistence.Column;
@@ -42,7 +43,7 @@ public class ReviewRanking extends BaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(name = "fk_review_ranking_review")
 	)
-	private com.codeit.sb01_deokhugam.domain.review.entity.Review review;
+	private Review review;
 
 	@Column(name = "book_id", nullable = false, columnDefinition = "uuid")
 	private UUID bookId;
