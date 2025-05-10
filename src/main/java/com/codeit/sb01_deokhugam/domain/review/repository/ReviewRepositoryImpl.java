@@ -1,6 +1,8 @@
 package com.codeit.sb01_deokhugam.domain.review.repository;
 
+import static com.codeit.sb01_deokhugam.domain.book.entity.QBook.*;
 import static com.codeit.sb01_deokhugam.domain.review.entity.QReview.*;
+import static com.codeit.sb01_deokhugam.domain.user.entity.QUser.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -104,6 +106,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
 		return queryFactory
 			.selectFrom(review)
+			.join(review.author, user).fetchJoin()
+			.join(review.book, book).fetchJoin()
 			.where(builder)
 			.orderBy(primary, secondary)
 			.limit(limit)

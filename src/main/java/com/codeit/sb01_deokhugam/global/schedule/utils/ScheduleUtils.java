@@ -12,6 +12,9 @@ import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 public class ScheduleUtils {
 
+	//한국 시간 자정
+	public static final String BATCH_START_TIME = "0 0 15 * * *";
+
 	/**
 	 * Period에 대해 연산 기준 시작과 끝 날자를 반환합니다. 배치 연산시 사용할 수 있습니다.
 	 * @param period

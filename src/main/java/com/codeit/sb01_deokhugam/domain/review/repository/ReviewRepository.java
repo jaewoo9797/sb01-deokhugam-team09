@@ -17,7 +17,6 @@ import com.codeit.sb01_deokhugam.domain.user.entity.User;
 @Repository
 public interface ReviewRepository
 	extends JpaRepository<Review, UUID>, ReviewRepositoryCustom {
-
 	List<Review> findByCreatedAtBetween(Instant start, Instant end);
 
 	Optional<Review> findByAuthorIdAndBookIdAndDeletedFalse(

@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.review.repository;
 
+import static com.codeit.sb01_deokhugam.domain.review.entity.QReview.*;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class PopularReviewRepositoryImpl implements PopularReviewRepositoryCusto
 
 		return queryFactory
 			.selectFrom(qRanking)
+			.join(qRanking.review, review).fetchJoin()
 			.where(where)
 			.orderBy(orderByRank, orderByCreatedAt)
 			.limit(limit)
