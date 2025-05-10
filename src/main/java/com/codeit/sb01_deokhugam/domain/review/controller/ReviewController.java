@@ -76,7 +76,7 @@ public class ReviewController {
 		@RequestParam(name = "limit", defaultValue = "50") int limit,
 		@LoginUserId UUID loginUserId
 	) {
-		log.info("리뷰 목록 조회 요청 : {}, {}, {}", keyword, orderBy, direction);
+		//log.info("리뷰 목록 조회 요청 : {}, {}, {}", keyword, orderBy, direction);
 		PageResponse<ReviewDto> page = reviewService.searchReviews(
 			userId,
 			bookId,

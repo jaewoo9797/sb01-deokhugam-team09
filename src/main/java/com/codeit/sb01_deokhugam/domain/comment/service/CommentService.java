@@ -29,13 +29,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
-    private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
-    private final NotificationRepository notificationRepository;
+	private final CommentRepository commentRepository;
+	private final CommentMapper commentMapper;
+	private final UserRepository userRepository;
+	private final ReviewRepository reviewRepository;
+  private final NotificationRepository notificationRepository;
 
-    public CommentDto create(UUID reviewId, UUID userId, String content) {
+
+	@Transactional
+	public CommentDto create(UUID reviewId, UUID userId, String content) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CommentException(ErrorCode.USER_NOT_FOUND));
         Review review = reviewRepository.findById(reviewId)
@@ -53,63 +55,66 @@ public class CommentService {
         return commentMapper.toDto(saved, nickname);
     }
 
-    public CommentResponse getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
-        if (!reviewRepository.existsById(reviewId)) {
-            throw new CommentException(ErrorCode.REVIEW_NOT_FOUND);
-        }
+	@Transactional(readOnly = true)
+	public CommentResponse getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
+		if (!reviewRepository.existsById(reviewId)) {
+			throw new CommentException(ErrorCode.REVIEW_NOT_FOUND);
+		}
 
-        boolean isAsc = "ASC".equalsIgnoreCase(direction);
-        int pageSize = (limit != null) ? limit : 50;
+		boolean isAsc = "ASC".equalsIgnoreCase(direction);
+		int pageSize = (limit != null) ? limit : 50;
 
-        Instant cursorCreatedAt = null;
-        if (cursor != null) {
-            UUID commentId = UUID.fromString(cursor);
-            Comment cursorComment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-            cursorCreatedAt = cursorComment.getCreatedAt();
-        }
+		Instant cursorCreatedAt = null;
+		if (cursor != null) {
+			UUID commentId = UUID.fromString(cursor);
+			Comment cursorComment = commentRepository.findById(commentId)
+				.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+			cursorCreatedAt = cursorComment.getCreatedAt();
+		}
 
-        Instant afterTime = (after != null) ? after : Instant.EPOCH;
-        Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt : Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
+		Instant afterTime = (after != null) ? after : Instant.EPOCH;
+		Instant beforeTime = (cursorCreatedAt != null) ? cursorCreatedAt :
+			Instant.parse("9999-12-31T23:59:59Z"); // Java와 PostgreSQL 모두 허용하는 법위
 
-        List<Comment> comments = commentRepository.findComments(
-                reviewId,
-                afterTime,
-                beforeTime,
-                isAsc,
-                pageSize + 1
-        );
+		List<Comment> comments = commentRepository.findComments(
+			reviewId,
+			afterTime,
+			beforeTime,
+			isAsc,
+			pageSize + 1
+		);
 
-        boolean hasNext = comments.size() > pageSize;
-        if (hasNext) {
-            comments = comments.subList(0, pageSize);
-        }
+		boolean hasNext = comments.size() > pageSize;
+		if (hasNext) {
+			comments = comments.subList(0, pageSize);
+		}
 
-        String nextCursor = hasNext ? comments.get(comments.size() - 1).getId().toString() : null;
-        Instant nextAfter = hasNext ? comments.get(comments.size() - 1).getCreatedAt() : null;
+		String nextCursor = hasNext ? comments.get(comments.size() - 1).getId().toString() : null;
+		Instant nextAfter = hasNext ? comments.get(comments.size() - 1).getCreatedAt() : null;
 
-        List<CommentDto> content = comments.stream()
-                .map(comment -> {
-                    String nickname = comment.getUser().getNickname();
-                    return commentMapper.toDto(comment, nickname);
-                })
-                .toList();
+		List<CommentDto> content = comments.stream()
+			.map(comment -> {
+				String nickname = comment.getUser().getNickname();
+				return commentMapper.toDto(comment, nickname);
+			})
+			.toList();
 
-        long totalElements = commentRepository.countByReview_Id(reviewId);
+		long totalElements = commentRepository.countByReview_Id(reviewId);
 
-        return new CommentResponse(content, nextCursor, nextAfter, pageSize, totalElements, hasNext);
-    }
+		return new CommentResponse(content, nextCursor, nextAfter, pageSize, totalElements, hasNext);
+	}
 
-    public CommentDto getCommentById(UUID commentId) {
-        Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
-                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+	@Transactional(readOnly = true)
+	public CommentDto getCommentById(UUID commentId) {
+		Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
+			.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
-        String nickname = comment.getUser().getNickname();
+		String nickname = comment.getUser().getNickname();
 
-        return commentMapper.toDto(comment, nickname);
-    }
+		return commentMapper.toDto(comment, nickname);
+	}
 
-    @Transactional
+	@Transactional
     public CommentDto updateComment(UUID commentId, UUID userId, String content) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
@@ -125,7 +130,7 @@ public class CommentService {
         return commentMapper.toDto(comment, nickname);
     }
 
-    @Transactional
+	@Transactional
     public void softDelete(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
@@ -138,7 +143,7 @@ public class CommentService {
         comment.markDeleted();
     }
 
-    @Transactional
+	@Transactional
     public void hardDelete(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
