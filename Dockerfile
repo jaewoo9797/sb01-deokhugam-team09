@@ -17,6 +17,8 @@ FROM amazoncorretto:17-alpine-jdk
 
 WORKDIR /app
 
+RUN apk add --no-cache tesseract-ocr
+
 ENV JVM_OPTS="-Xms512m -Xmx1024m"
 
 COPY --from=builder /app/build/libs/deokhugam.jar deokhugam.jar

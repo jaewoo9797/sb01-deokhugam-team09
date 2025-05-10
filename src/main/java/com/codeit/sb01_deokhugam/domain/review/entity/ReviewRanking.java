@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.codeit.sb01_deokhugam.domain.base.BaseEntity;
+import com.codeit.sb01_deokhugam.domain.review.entity.Review;
 import com.codeit.sb01_deokhugam.global.enumType.Period;
 
 import jakarta.persistence.Column;

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,6 +41,15 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 		MethodArgumentTypeMismatchException exception) {
 		log.error("Type Mapping Fail 잘못된 인수가 전달되었습니다:  message = {}", exception.getMessage());
+		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+	}
+
+	// Spring Validation 유효성 검증 실패 시
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotValidatedException(
+		ConstraintViolationException exception) {
+		log.error("경로변수 유효성 검증에 실패하였습니다: message = {}", exception.getMessage());
 		ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.BAD_REQUEST.value());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
@@ -100,34 +110,34 @@ public class GlobalExceptionHandler {
 		return switch (errorCode) {
 			// 404 Not Found
 			case BOOK_NOT_FOUND,
-				COMMENT_NOT_FOUND,
-				NOTIFICATION_NOT_FOUND,
-				REVIEW_NOT_FOUND,
-				REVIEW_ALREADY_DELETED,
-				USER_NOT_FOUND,
-				THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
+				 COMMENT_NOT_FOUND,
+				 NOTIFICATION_NOT_FOUND,
+				 REVIEW_NOT_FOUND,
+				 REVIEW_ALREADY_DELETED,
+				 USER_NOT_FOUND,
+				 THUMBNAIL_NOT_FOUND -> HttpStatus.NOT_FOUND;
 
 			// 403 Forbidden
 			case ACCESS_DENIED -> HttpStatus.FORBIDDEN;
 
 			// 409 Conflict
 			case DUPLICATE_ISBN,
-				DUPLICATE_BOOK,
-				DUPLICATION_USER -> HttpStatus.CONFLICT;
+				 DUPLICATE_BOOK,
+				 DUPLICATION_USER -> HttpStatus.CONFLICT;
 
 			// 400 Bad Request
 			case ILLEGAL_ARGUMENT_ERROR,
-				INVALID_REQUEST,
-				FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
+				 INVALID_REQUEST,
+				 FILE_NAME_MISSING -> HttpStatus.BAD_REQUEST;
 
 			// 401 Unauthorized
 			case LOGIN_INPUT_INVALID,
-				UNAUTHORIZED,
-				NOT_AUTHORITY -> HttpStatus.UNAUTHORIZED;
+				 UNAUTHORIZED,
+				 NOT_AUTHORITY -> HttpStatus.UNAUTHORIZED;
 
 			// 500 Internal Server Error
 			case INTERNAL_SERVER_ERROR,
-				S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+				 S3_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
 		};
 	}
 }

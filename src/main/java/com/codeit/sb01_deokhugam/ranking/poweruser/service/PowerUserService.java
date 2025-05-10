@@ -8,4 +8,5 @@ public interface PowerUserService {
 
 	PageResponse<PowerUserDto> findPowerUsers(GetPowerUsersRequest getPowerUsersRequest);
 
+	void calculateAllPeriodRankings();
 }
