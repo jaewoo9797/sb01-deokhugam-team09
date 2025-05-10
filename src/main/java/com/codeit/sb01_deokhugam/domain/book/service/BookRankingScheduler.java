@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.book.service;
 
+import static com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils.*;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,7 @@ public class BookRankingScheduler {
 	private final BookService bookService;
 
 	// 매일 자정 배치 연산 수행
-	@Scheduled(cron = "0 0 0 * * *")
+	@Scheduled(cron = BATCH_START_TIME)
 	public void updateRanking() {
 		bookService.deleteBookRanking();
 		//log.info("도서 랭킹 테이블 기존 데이터 삭제");
