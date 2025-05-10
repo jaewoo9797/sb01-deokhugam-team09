@@ -1,5 +1,7 @@
 package com.codeit.sb01_deokhugam.domain.review.service;
 
+import static com.codeit.sb01_deokhugam.global.schedule.utils.ScheduleUtils.*;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -53,7 +55,7 @@ public class PopularReviewBatchService {
 	 * 인기 리뷰 점수 계산 & 저장을 순차적으로 실행합니다.
 	 */
 	@Transactional
-	@Scheduled(cron = "0 0 0 * * *")
+	@Scheduled(cron = BATCH_START_TIME)
 	public void runBatch() {
 		log.info("===== 인기 리뷰 배치 시작: {} =====", Instant.now());
 		for (Period period : Period.values()) {
