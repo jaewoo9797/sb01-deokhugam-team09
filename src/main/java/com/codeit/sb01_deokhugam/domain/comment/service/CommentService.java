@@ -45,6 +45,7 @@ public class CommentService {
 		return commentMapper.toDto(saved, nickname);
 	}
 
+	@Transactional(readOnly = true)
 	public CommentResponse getComments(UUID reviewId, Instant after, String direction, String cursor, Integer limit) {
 		if (!reviewRepository.existsById(reviewId)) {
 			throw new CommentException(ErrorCode.REVIEW_NOT_FOUND);
@@ -93,6 +94,7 @@ public class CommentService {
 		return new CommentResponse(content, nextCursor, nextAfter, pageSize, totalElements, hasNext);
 	}
 
+	@Transactional(readOnly = true)
 	public CommentDto getCommentById(UUID commentId) {
 		Comment comment = commentRepository.findByIdAndDeletedFalse(commentId)
 			.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));

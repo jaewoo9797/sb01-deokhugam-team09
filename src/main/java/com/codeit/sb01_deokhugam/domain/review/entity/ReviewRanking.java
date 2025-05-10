@@ -42,7 +42,7 @@ public class ReviewRanking extends BaseEntity {
 		nullable = false,
 		foreignKey = @ForeignKey(name = "fk_review_ranking_review")
 	)
-	private com.codeit.sb01_deokhugam.domain.review.entity.Review review;
+	private Review review;
 
 	@Column(name = "book_id", nullable = false, columnDefinition = "uuid")
 	private UUID bookId;

@@ -58,13 +58,11 @@ public class ReviewService {
 
 	@Transactional
 	public ReviewDto createReview(ReviewCreateRequest request) {
-		// 1) 작성자, 도서 조회
 		User author = userRepository.findByIdAndIsDeletedFalse(request.userId())
 			.orElseThrow(() -> UserNotFoundException.withId(request.userId()));
 		Book book = bookRepository.findByIdNotLogicalDelete(request.bookId())
 			.orElseThrow(() -> new BookNotFoundException().withId(request.bookId()));
 
-		// 2) 활성 리뷰가 이미 있는지 확인 → 있으면 에러
 		reviewRepository
 			.findByAuthorIdAndBookIdAndDeletedFalse(request.userId(), request.bookId())
 			.ifPresent(r -> {
@@ -72,7 +70,6 @@ public class ReviewService {
 				throw new ReviewAlreadyExistsException();
 			});
 
-		// 4) 새 리뷰 생성
 		Review review = new Review(
 			author,
 			book,
@@ -80,11 +77,7 @@ public class ReviewService {
 			request.rating()
 		);
 		review = reviewRepository.save(review);
-
-		// 5) atomic recalc: COUNT/AVG 재계산
 		bookRepository.recalcStats(book.getId());
-
-		// 5) DTO 변환 및 반환
 		return reviewMapper.toDto(review);
 	}
 
@@ -164,7 +157,7 @@ public class ReviewService {
 			Review last = page.get(page.size() - 1);
 			nextCursor = "rating".equals(orderBy)
 				? last.getRating().toString()
-				: last.getId().toString();
+				: last.getCreatedAt().toString();
 			nextAfter = last.getCreatedAt();
 		}
 
@@ -190,7 +183,7 @@ public class ReviewService {
 			throw new ReviewAuthorityException();
 		}
 		review.updateReview(req.content(), req.rating());
-		log.info("리뷰 업데이트 성공, ID: {}", review.getId());
+		//log.info("리뷰 업데이트 성공, ID: {}", review.getId());
 		bookRepository.recalcStats(review.getBook().getId());
 		return reviewMapper.toDto(review);
 	}
@@ -232,13 +225,12 @@ public class ReviewService {
 			log.debug("리뷰 논리 삭제 권한 없습니다. - 사용자 ID: {}", userId);
 			throw new ReviewAuthorityException();
 		}
-		review.delete(); //delete field를 true로
+		review.delete();
 		bookRepository.recalcStats(review.getBook().getId());
 	}
 
 	@Transactional
 	public ReviewLikeDto likeReview(UUID reviewId, UUID userId) {
-		// ── 1) 리뷰 / 유저 검사
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewNotFoundException());
 		if (review.isDeleted()) {
@@ -247,30 +239,22 @@ public class ReviewService {
 		if (!userRepository.existsById(userId)) {
 			throw new ReviewAuthorityException();
 		}
-
-		// ── 2) 기존 좋아요 여부 확인
 		Optional<ReviewLike> existing =
 			reviewLikeRepository.findByReviewIdAndUserId(reviewId, userId);
 
 		boolean likedAfter;
 		ReviewLike rlEntity = null;
 		if (existing.isPresent()) {
-			// → 이미 좋아요 → 취소
 			reviewLikeRepository.deleteByReviewIdAndUserId(reviewId, userId);
 			reviewRepository.decrementLikeCount(reviewId);
 			likedAfter = false;
 			rlEntity = new ReviewLike(reviewId, userId);
 		} else {
-			// → 신규 좋아요
 			rlEntity = reviewLikeRepository.save(new ReviewLike(reviewId, userId));
 			reviewRepository.incrementLikeCount(reviewId);
 			createNewLikeNotification(userId, review);
 			likedAfter = true;
 		}
-
-		// ── 3) likedByMe 토글
-		//review.setLikedByMe(likedAfter);
-
 		return reviewLikeMapper.toDto(rlEntity, likedAfter);
 	}
 
@@ -290,7 +274,6 @@ public class ReviewService {
 	) {
 		int pageSize = (limit != null && limit > 0) ? limit : 20;
 
-		// 1) limit+1 개를 가져와서 hasNext 판단
 		List<ReviewRanking> fetched = popularReviewRepository
 			.findByPeriodWithCursor(period, cursor, after, pageSize + 1);
 		boolean hasNext = fetched.size() > pageSize;
@@ -298,10 +281,8 @@ public class ReviewService {
 			? fetched.subList(0, pageSize)
 			: fetched;
 
-		// 2) 전체 카운트 (페이징 UI 용)
 		long total = popularReviewRepository.countByPeriod(period);
 
-		// 3) 엔티티 → DTO 변환
 		List<PopularReviewDto> dtos = page.stream().map(r -> new PopularReviewDto(
 			r.getId(),
 			r.getReview().getId(),
@@ -319,7 +300,6 @@ public class ReviewService {
 			r.getCreatedAt()
 		)).toList();
 
-		// 4) nextCursor/nextAfter
 		String nextCursorRes = null;
 		Instant nextAfterRes = null;
 		if (hasNext && !page.isEmpty()) {
@@ -328,7 +308,6 @@ public class ReviewService {
 			nextAfterRes = last.getCreatedAt();
 		}
 
-		// 5) 커서페이지 형식으로 반환
 		return new CursorPageResponsePopularReviewDto(
 			dtos,
 			nextCursorRes,
