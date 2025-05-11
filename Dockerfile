@@ -23,6 +23,6 @@ ENV JVM_OPTS="-Xms512m -Xmx1024m"
 
 COPY --from=builder /app/build/libs/deokhugam.jar deokhugam.jar
 COPY --from=builder /app/src/main/resources/ocr/tessdata ./tessdata
-ENV TESSDATA_PREFIX=/app/
+ENV TESSDATA_PREFIX=/app/tessdata/
 
 ENTRYPOINT sh -c "java ${JVM_OPTS} -jar deokhugam.jar"
