@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -55,10 +56,13 @@ public class BookController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
 	}
 
+	//CORS 적용
+	@CrossOrigin(origins = "*")
 	@PostMapping("/isbn/ocr")
 	public ResponseEntity<String> extractTextByOcr(@RequestParam("image") MultipartFile image) throws
 		IOException,
 		TesseractException {
+
 		//log.info("도서 이미지 OCR 처리 요청");
 		String isbn = bookService.extractTextByOcr(image);
 		return ResponseEntity.ok(isbn);
