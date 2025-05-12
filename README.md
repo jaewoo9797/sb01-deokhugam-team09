@@ -101,7 +101,7 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 <div align="center">
 <h3>Architecture</h3>
 <p>
-<img src="https://github.com/user-attachments/assets/f6e3ed20-80f5-4c4a-a215-5c1f4f8f7b84" >
+<img src="https://github.com/user-attachments/assets/c736f6b1-8491-4b12-a56f-1c03b80125ae" >
 </p>
 <h3>ERD</h3>
 <p>
