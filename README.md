@@ -8,21 +8,25 @@
 
 <br/>
 
-코드잇 중급 프로젝트-덕후감
+## 📖 프로젝트 개요
 
-도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축
+**📚 책 읽는 즐거움을 공유하고, 지식과 감상을 나누는 책 덕후들의 커뮤니티 서비스**
 
-개발기간: 2025.04.16 ~ 2025.05.12
+> 코드잇 중급 프로젝트 - 덕후감  
+> 도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축  
+> **개발 기간:** 2025.04.16 ~ 2025.05.12
 
-> 📚 책 덕후들을 위한 특별한 공간, 덕후감에 오신 걸 환영합니다!
-> 덕후감은 ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감상을 나눌 수 있는 책 커뮤니티 플랫폼입니다.
-> 덕후감은 독서를 혼자만의 취미가 아닌, 함께 나누는 즐거움으로 확장하는 경험을 제공합니다. ✨📘
+<br/>
 
-## 배포 주소
+**📘 덕후감은...**  
+ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감상을 나눌 수 있는 책 커뮤니티 플랫폼입니다.  
+독서를 혼자만의 취미가 아닌, 함께 나누는 즐거움으로 확장하는 경험을 제공합니다. ✨
+
+## 🌐 배포 주소
 
 👉 [덕후감 방문하기](http://deokhugam-alb-696781456.ap-northeast-2.elb.amazonaws.com)
 
-## <span id="2">🏃팀원 소개</span>
+## <span id="2">👥팀원 소개</span>
 
 - 팀원 : 5명
 - 팀장 : 김상호
@@ -41,7 +45,7 @@
 
 <div align=center> 
 
-📌 **Backend**
+### ⚙️ Backend
 
 <p>
 <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=springboot&logoColor=white"/>
@@ -50,7 +54,7 @@
 <img src="https://img.shields.io/badge/Scheduler-6DB33F?style=flat-square&logo=spring&logoColor=white"/>
 </p>
 
-🗄️ **Database & Infrastructure**
+### 🗄️ Database & Infrastructure
 
 <p>
 <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
@@ -63,7 +67,7 @@
 <img src="https://img.shields.io/badge/Systems Manager-FF9900?style=flat-square&logo=amazonaws&logoColor=white"/>
 </p>
 
-⚙️ **CI/CD & 테스트**
+### 🔁 CI/CD & 테스트
 
 <p>
 <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white"/>
@@ -71,21 +75,20 @@
 <img src="https://img.shields.io/badge/RestAssured-52B54B?style=flat-square"/> 
 </p>
 
-📊 **모니터링**
+### 📊 모니터링
 
 <p>
 <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white"/> 
 <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white"/>
 </p>
 
-
-🔐 **인증 & 보안**
+### 🔐 인증 & 보안
 
 <p> 
 <img src="https://img.shields.io/badge/OIDC-4A90E2?style=flat-square&logo=openid&logoColor=white"/> 
 </p>
 
-🧠 **기타 기술**
+### 🧠 기타 기술
 
 <p> 
 <img src="https://img.shields.io/badge/Tesseract-FFB400?style=flat-square"/> 
@@ -93,7 +96,7 @@
 
 </div>
 
-## 아키텍처 & ERD
+## 🗂 아키텍처 & ERD
 
 <div align="center">
 <h3>Architecture</h3>
