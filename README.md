@@ -100,6 +100,6 @@
 <img src="https://github.com/user-attachments/assets/f6e3ed20-80f5-4c4a-a215-5c1f4f8f7b84" >
 </p>
 <p>
-<img src="https://github.com/user-attachments/assets/4ffaf03d-1cc4-4c70-a616-fb5202e8c590" width="800px" >
+<img src="https://github.com/user-attachments/assets/4ffaf03d-1cc4-4c70-a616-fb5202e8c590" width="500px" >
 </p>
 </div>
