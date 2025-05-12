@@ -94,3 +94,9 @@
 </div>
 
 ## 아키텍처
+
+<div align="center">
+<p>
+<img src="https://github.com/user-attachments/assets/f6e3ed20-80f5-4c4a-a215-5c1f4f8f7b84" >
+</p>
+</div>
