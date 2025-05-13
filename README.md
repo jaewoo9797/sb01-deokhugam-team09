@@ -63,7 +63,7 @@
 ## 🧠기억에 남는 PR 및 이슈
 
 - Resolver, Interceptor를 이용하여 로그인 유저 관리 한 곳으로 응집
-- PR에 사용 방법과 설명 포함이 되어있습니다.
+- PR에 사용 방법과 설명 포함을 포함시켜 가져다 사용하기 쉽게 하였습니다.
 - 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78 - 로그인 유저 주입 기능 리팩토링 </a>
 
 <div align="center">
