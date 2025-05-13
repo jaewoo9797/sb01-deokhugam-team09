@@ -64,22 +64,20 @@
 
 - Resolver, Interceptor를 이용하여 로그인 유저 관리 한 곳으로 응집
 - PR에 사용 방법과 설명 포함이 되어있습니다.
- 
+- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78 - 로그인 유저 주입 기능 리팩토링 </a>
+
 <div align="center">
   <img src="https://github.com/user-attachments/assets/67f25c4b-493f-4b52-83c5-fc617d90cbda" alt="로그인 유저 리졸버 흐름도" width="700"/>
 </div>
 
 <br/>
 
-🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78 - 로그인 유저 주입 기능 리팩토링 </a>
-
 팀원들이 쉽게 이용할 수 있도록 사용 방법에 대해서 설명해두었고 실제로 팀원들이 각자 필요한 곳에서 사용하였습니다. 
 
 <br/>
 
-- 내가 잘 못 알고 있었던 HTTP status 에 대해서 이야기하며 새로운 사실을 알게되었다.
-
-🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR#53 - User</a>
+- 내가 잘 못 알고 있었던 HTTP status 에 대해서 이야기하며 다시 한 번 정리할 수 있었습니다.
+- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR#53 - User</a>
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/b34dab6e-6211-4699-9634-13539ac8c6f9" alt="PR 리뷰" width="600"/>
@@ -89,7 +87,7 @@
 
 - 예상되는 예외에 대해서 코멘트를 남기고 소통
 
-🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR#53 - 유저 관련 컨트롤러</a>
+- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR#53 - 유저 관련 컨트롤러</a>
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/96a18d59-284c-46b2-84c0-710757855d2c" alt="PR 리뷰" width="600"/>
