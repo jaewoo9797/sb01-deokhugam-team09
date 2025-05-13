@@ -60,7 +60,7 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 
 👉 자세한 회고는 블로그에서 확인하실 수 있습니다!  
 
-🔗[2025 코드잇 중급 프로젝트 회고](https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+<a href="https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0" target="_blank">🔗 2025 코드잇 중급 프로젝트 회고</a>
 
 <br/>
 
