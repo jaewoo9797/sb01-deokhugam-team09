@@ -57,13 +57,26 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 ## 🔍프로젝트 회고
 프로젝트를 진행한 후 회고를 작성하였습니다. 
 
+### 🧩회고 요약
+이번 프로젝트에서는 개발, 배포, 운영 모니터링까지 전 과정을 경험했습니다.
+처음 시도해본 것은  `AWS ECS Fargate` 기반 배포, `Spring Metric`, `Prometheus + Grafana` 를 활용한 모니터링이 있었습니다.
+
+특히 Docker 이미지 최적화, AWS 서비스를 이용해서 키 관련 보안 강화 (실제 코드 상에 들어나는 키 값 노출 X) 등을 집중했습니다.
+
+기술의 사용방법만 익히기 보다, 관련 개념 학습과 성과 비교를 해보며 몰입할 수 있었습니다.
+
+<br/>
+
 <div align=center>
+    <p>실제 Docker 최적화 관련 적용을 통한 최적화 결과 분석</p>
     <img src="https://github.com/user-attachments/assets/a5b94d0e-e197-4529-af23-1571ffb46f5b" alt="docker image optimization" width="700">
 </div>
 
-관련 포스트 링크를 참고해주세요!
+<br/>
 
-👉 포스팅: [2025 코드잇 중급 프로젝트 회고](https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+👉 자세한 회고는 블로그에서 확인하실 수 있습니다!  
+
+🔗[2025 코드잇 중급 프로젝트 회고](https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
 
 <br/>
 
