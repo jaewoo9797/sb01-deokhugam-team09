@@ -1,7 +1,5 @@
 # deokhugam Project 🚀
 
-## Overview
-
 <div>
     <h3><b>📚책 읽는 즐거움을 공유하고, 지식과 감상을 나누는 책 덕후들의 커뮤니티 서비스</b></h3>
 </div>
@@ -15,12 +13,6 @@
 > 코드잇 중급 프로젝트 - 덕후감  
 > 도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축  
 > **개발 기간:** 2025.04.16 ~ 2025.05.12
-
-<br/>
-
-**📘 덕후감은...**  
-ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감상을 나눌 수 있는 책 커뮤니티 플랫폼입니다.  
-독서를 혼자만의 취미가 아닌, 함께 나누는 즐거움으로 확장하는 경험을 제공합니다. ✨
 
 <br/>
 
@@ -68,6 +60,18 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 
 <br/>
 
+## 🧠기억에 남는 PR 및 이슈
+
+- Resolver, Interceptor를 이용하여 로그인 유저 관리 한 곳으로 응집
+- PR에 사용 방법과 설명 포함이 되어있습니다.
+ 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/67f25c4b-493f-4b52-83c5-fc617d90cbda" alt="로그인 유저 리졸버 흐름도" width="700"/>
+</div>
+
+<br/>
+
+🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78 - 로그인 유저 주입 기능 리팩토링 (새 창)</a>
 
 ## <span id="2">👥팀원 소개</span>
 
