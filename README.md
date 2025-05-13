@@ -22,22 +22,6 @@
 ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감상을 나눌 수 있는 책 커뮤니티 플랫폼입니다.  
 독서를 혼자만의 취미가 아닌, 함께 나누는 즐거움으로 확장하는 경험을 제공합니다. ✨
 
-
-## <span id="2">👥팀원 소개</span>
-
-- 팀원 : 5명
-- 팀장 : 김상호
-- 팀원 : 김희수, 김효정, 공병열, 백재우
-
-<div align="center">
-
-|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />              |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |
-|:---------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
-| <img src="https://avatars.githubusercontent.com/u/90863663?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/92302468?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/101076275?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/132568348?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/157946706?v=4" width="120px;" alt=""/> |
-|                           [김상호](https://github.com/ghtkdrla)                            |                        [김희수](https://github.com/kaya-frog-ramer)                        |                            [김효정](https://github.com/hyojKim2)                            |                          [공병열](https://github.com/byeongyeol12)                          |                           [백재우](https://github.com/jaewoo9797)                           |
-
-</div>
-
 <br/>
 
 ## 🧑‍💻나의 담당 역할
@@ -80,6 +64,23 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 
 <br/>
 
+
+## <span id="2">👥팀원 소개</span>
+
+- 팀원 : 5명
+- 팀장 : 김상호
+- 팀원 : 김희수, 김효정, 공병열, 백재우
+
+<div align="center">
+
+|            <img src="https://img.shields.io/badge/Project_Leader-FF5733" />             |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />              |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |              <img src="https://img.shields.io/badge/Team_Member-6DB33F" />               |
+|:---------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
+| <img src="https://avatars.githubusercontent.com/u/90863663?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/92302468?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/101076275?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/132568348?v=4" width="120px;" alt=""/> | <img src="https://avatars.githubusercontent.com/u/157946706?v=4" width="120px;" alt=""/> |
+|                           [김상호](https://github.com/ghtkdrla)                            |                        [김희수](https://github.com/kaya-frog-ramer)                        |                            [김효정](https://github.com/hyojKim2)                            |                          [공병열](https://github.com/byeongyeol12)                          |                           [백재우](https://github.com/jaewoo9797)                           |
+
+</div>
+
+<br/>
 ## 🛠️기술 스택
 
 <div align=center> 
