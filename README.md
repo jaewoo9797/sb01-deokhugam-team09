@@ -38,6 +38,29 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 
 </div>
 
+<br/>
+
+## 🧑‍💻나의 담당 역할
+<div align=center>
+    
+| 분야        | 상세 내용                              |
+| --------- | ---------------------------------- |
+| 백엔드 개발    | Spring Boot 기반 API 개발 - 알림 도메인 구현 |
+| 인프라 & 배포  | AWS ECS, RDS, S3 환경 구성 및 CI/CD 설정, Secret Manager와 IAM 정책 커스텀, OIDC 인증  |
+| 모니터링 구축   | Prometheus + Grafana 활용 서버 모니터링    |
+| 테스트 코드 작성 | RestAssured, H2 DB 기반 통합, 단위 테스트 구현    |
+
+</div>
+
+<br/>
+
+## 🔍프로젝트 회고
+프로젝트를 진행한 후 회고를 작성하였습니다. 관련 포스트 링크를 참고해주세요!
+
+👉 포스팅: [2025 코드잇 중급 프로젝트 회고](https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
+
+<br/>
+
 ## 🛠️기술 스택
 
 <div align=center> 
@@ -104,4 +127,15 @@ ISBN 정보를 기반으로 책 정보를 자동으로 불러와 리뷰와 감�
 <p>
 <img src="https://github.com/user-attachments/assets/4ffaf03d-1cc4-4c70-a616-fb5202e8c590" width="500px" >
 </p>
+</div>
+
+<br/>
+
+## 🚀CI / CD Flow
+
+<div align="center"> 
+    <img src="https://github.com/user-attachments/assets/edcb1418-6d79-46be-b110-390e873ee400" alt="CI/CD 전체 흐름도" width="700"/> 
+    <br/>
+    <br/> 
+    <img src="https://github.com/user-attachments/assets/ff337d3b-6541-41aa-be0e-4a89cc5fbe25" alt="ECS 세부 구성도" width="700"/> 
 </div>
