@@ -79,25 +79,25 @@
 
 - 내가 잘 못 알고 있었던 HTTP status 에 대해서 이야기하며 새로운 사실을 알게되었다.
 
+🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR#53 - User</a>
+
 <div align="center">
     <img src="https://github.com/user-attachments/assets/b34dab6e-6211-4699-9634-13539ac8c6f9" alt="PR 리뷰" width="600"/>
 </div>
 
 <br/>
 
-🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR#53 - User</a>
-
-<br/>
-
 - 예상되는 예외에 대해서 코멘트를 남기고 소통
-  
+
+🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR#53 - 유저 관련 컨트롤러</a>
+
 <div align="center">
     <img src="https://github.com/user-attachments/assets/96a18d59-284c-46b2-84c0-710757855d2c" alt="PR 리뷰" width="600"/>
 </div>
 
 <br/>
 
-🔗 <a href="[https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70](https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91)" target="_blank">PR#53 - 유저 관련 컨트롤러</a>
+
 
 ## <span id="2">👥팀원 소개</span>
 
