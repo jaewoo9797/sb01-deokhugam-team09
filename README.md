@@ -1,18 +1,16 @@
 # deokhugam Project 🚀
 
+## 📖 프로젝트 소개
+
 <div>
     <h3><b>📚책 읽는 즐거움을 공유하고, 지식과 감상을 나누는 책 덕후들의 커뮤니티 서비스</b></h3>
 </div>
 
 <br/>
 
-## 📖 프로젝트 개요
-
-**📚 책 읽는 즐거움을 공유하고, 지식과 감상을 나누는 책 덕후들의 커뮤니티 서비스**
-
-> 코드잇 중급 프로젝트 - 덕후감  
-> 도서 이미지 OCR 및 ISBN 매칭 서비스 SPRING 백엔드 구축  
-> **개발 기간:** 2025.04.16 ~ 2025.05.12
+> 코드잇 중급 프로젝트명: 덕후감(deokhugam)  
+> 진행 기간: 2025.04.16 ~ 2025.05.12
+> 주요 기능: 도서 이미지 OCR 및 ISBN 매칭 기능을 포함한 Spring 기반 백엔드 구축
 
 <br/>
 
@@ -34,16 +32,18 @@
 프로젝트를 진행한 후 회고를 정리하여 문서화했습니다.
 
 ### 🧩성과 및 회고 요약
-이번 프로젝트에서는 개발, 배포, 운영 모니터링까지 전 과정을 경험했습니다.   
-처음 시도해본 것은  `AWS ECS Fargate` 기반 배포, `Spring Metric`, `Prometheus + Grafana` 를 활용한 모니터링이 있었습니다.
+본 프로젝트를 통해 개발, 배포, 운영 모니터링 등 전체 개발 프로세스를 경험하였습니다.   
+특히, 다음과 같은 기술을 처음으로 적용하였습니다.
 
-- Docker 이미지 최적화
-- AWS 서비스를 이용해서 키 관련 보안 강화 (실제 코드 상에 들어나는 키 값 노출 X)
-- Spring Metric에 대한 정리 + 모니터링 툴
-    - 실제 모니터링을 하면서 `스프링 톰캣이 어떻게 동시에 여러 요청을 처리할 수 있는가`에 대해 관심
-    - 스레드에 관해 기본 개념부터 학습 중
+- AWS ECS Fargate를 활용한 컨테이너 기반 배포
+- Spring Metrics, Prometheus, Grafana를 활용한 모니터링 시스템 구축
 
-단순히 기술 사용법을 익히는 데 그치지 않고, 관련 개념을 학습하고 성과를 비교 분석하며 집중도 있는 학습을 진행했습니다.
+이외에도 다음과 같은 성과를 달성했습니다.
+- Docker 이미지 최적화를 통한 빌드 효율성 향상
+- AWS 서비스를 활용하여 보안 강화를 위한 키 관리 및 노출 방지
+- Spring Metrics를 활용한 모니터링 도구 구성 및 스레드 처리 방식에 대한 학습
+
+기술의 단순한 사용법을 익히는 것을 넘어, 관련 개념을 심도 있게 학습하고 성과를 비교 분석함으로써 개발 역량을 향상 시킬 수 있었습니다.
 
 <br/>
 
@@ -62,9 +62,9 @@
 
 ## 🧠기억에 남는 PR 및 이슈
 
-- Resolver, Interceptor를 이용하여 로그인 유저 관리 한 곳으로 응집
+### 로그인 유저 주입 기능 리팩토링
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78: Resolver와 Interceptor를 활용하여 로그인 유저 관리를 중앙 집중화하였습니다.
 - PR에 사용 방법과 설명을 포함시켜 팀원들이 각자 필요한 곳에서 사용하였습니다.
-- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78 - 로그인 유저 주입 기능 리팩토링 </a>
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/67f25c4b-493f-4b52-83c5-fc617d90cbda" alt="로그인 유저 리졸버 흐름도" width="700"/>
@@ -76,8 +76,8 @@
 
 <br/>
 
-- 정확히 이해하지 못했던 HTTP 상태 코드에 대해 논의하며 다시 정리할 수 있는 기회가 되었습니다.
-- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR#53 - User</a>
+### HTTP 상태 코드에 대한 이해 개선
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR #70: HTTP 상태 코드에 대한 잘못된 이해를 팀원들과 논의하며, 정확한 개념을 정리했습니다.
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/b34dab6e-6211-4699-9634-13539ac8c6f9" alt="PR 리뷰" width="600"/>
@@ -85,9 +85,8 @@
 
 <br/>
 
-- 예상되는 예외에 대해서 코멘트를 남기고 소통
-
-- 🔗 <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR#53 - 유저 관련 컨트롤러</a>
+### 예외 처리에 대한 논의
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR #91: 예상되는 예외 상황에 대해 코멘트를 남기고 팀원들과 소통함으로써, 보다 견고한 예외 처리를 구현하였습니다.
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/96a18d59-284c-46b2-84c0-710757855d2c" alt="PR 리뷰" width="600"/>
