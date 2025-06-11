@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +20,7 @@ import com.codeit.sb01_deokhugam.domain.user.dto.request.RegisterRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.request.UserUpdateRequest;
 import com.codeit.sb01_deokhugam.domain.user.dto.response.UserDto;
 import com.codeit.sb01_deokhugam.domain.user.service.UserService;
+import com.codeit.sb01_deokhugam.global.resolver.annotation.LoginUserId;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class UserController {
 
 	// todo 헤더가 없을 시 예외처리 나중에 추가
 	@PatchMapping(path = "{pathId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserDto> update(@RequestHeader("deokhugam-request-user-id") UUID headerId,
+	public ResponseEntity<UserDto> update(@LoginUserId UUID headerId,
 		@PathVariable UUID pathId,
 		@Valid @RequestBody UserUpdateRequest userUpdateRequest) {
 		log.info("사용자 닉네임 변경 요청: pathId={}, nickname={}", pathId, userUpdateRequest.nickname());
@@ -67,7 +67,7 @@ public class UserController {
 	}
 
 	@DeleteMapping(path = "{pathId}")
-	public ResponseEntity<Void> softDelete(@RequestHeader("deokhugam-request-user-id") UUID headerId,
+	public ResponseEntity<Void> softDelete(@LoginUserId UUID headerId,
 		@PathVariable("pathId") UUID pathId) {
 		log.info("사용자 논리 삭제 요청: pathId={}", pathId);
 		userService.softDelete(pathId, headerId);
@@ -78,7 +78,7 @@ public class UserController {
 	}
 
 	@DeleteMapping(path = "{pathId}/hard")
-	public ResponseEntity<Void> hardDelete(@RequestHeader("deokhugam-request-user-id") UUID headerId,
+	public ResponseEntity<Void> hardDelete(@LoginUserId UUID headerId,
 		@PathVariable("pathId") UUID pathId) {
 		log.info("사용자 물리 삭제 요청: pathId={}", pathId);
 		userService.hardDelete(pathId, headerId);
