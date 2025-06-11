@@ -119,32 +119,6 @@
 
 </div>
 
-## Scheduler & Async
-
-### 특정 시간대에 실행되는 스케줄러 플로우 차트
-
-<div style="zoom: 0.7; /* 70% 크기 */; margin-left: 10%;">
-
-```mermaid
-flowchart TD
-  A[앱 구동] --> B[EnableScheduling 활성화]
-  B --> C[ScheduledTaskRegistrar 등록]
-  C --> D[스레드풀 초기화]
-  D --> E{트리거 시간 도달?}
-  E -- 아니오 --> D
-  E -- 예 --> F[Runnable 생성]
-  F --> G[ThreadPoolTaskScheduler submit]
-  G --> H[메서드 로직 수행]
-  H --> I{예외 발생?}
-  I -- 예 --> J[AsyncUncaughtExceptionHandler 호출]
-  I -- 아니오 --> K[정상 종료]
-  J --> L[예외 로깅 및 알림]
-  L --> D
-  K --> D
-```
-
-</div>
-
 <br/>
 
 ## 🛠️기술 스택
