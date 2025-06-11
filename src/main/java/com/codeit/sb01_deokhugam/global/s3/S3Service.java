@@ -3,6 +3,7 @@ package com.codeit.sb01_deokhugam.global.s3;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,20 +31,24 @@ public class S3Service {
 
 	public String upload(MultipartFile file, String directory) {
 		String s3ObjectKey = generateS3ObjectKey(file, directory);
+		String url = resolveS3ObjectUrl(s3ObjectKey);
+		uploadAsync(file, s3ObjectKey);
+		return url;
+	}
 
+	@Async("io-async-")
+	public void uploadAsync(MultipartFile file, String s3ObjectKey) {
 		try {
-			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+			PutObjectRequest req = PutObjectRequest.builder()
 				.bucket(s3BucketName)
 				.key(s3ObjectKey)
 				.contentType(file.getContentType())
 				.build();
-
-			s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
-		} catch (IOException | SdkException exception) {
-			throw new S3UploadException(ErrorCode.S3_UPLOAD_ERROR, exception);
+			s3Client.putObject(req, RequestBody.fromBytes(file.getBytes()));
+		} catch (IOException | SdkException ex) {
+			// 업로드 실패 시 로깅/재시도/알림 등 처리
+			throw new S3UploadException(ErrorCode.S3_UPLOAD_ERROR, ex);
 		}
-
-		return resolveS3ObjectUrl(s3ObjectKey);
 	}
 
 	private String generateS3ObjectKey(MultipartFile file, String directory) {
