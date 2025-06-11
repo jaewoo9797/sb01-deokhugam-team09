@@ -1,6 +1,7 @@
 package com.codeit.sb01_deokhugam.config;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ public class AsyncConfig implements AsyncConfigurer {
 		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 		scheduler.setPoolSize(10);
 		scheduler.setThreadNamePrefix("sched-");
+		scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 		scheduler.initialize();
 		return scheduler;
 	}

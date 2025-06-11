@@ -15,23 +15,26 @@
 <br/>
 
 ## 🧑‍💻나의 담당 역할
+
 <div align=center>
-    
-| 분야        | 상세 내용                              |
-| --------- | ---------------------------------- |
-| 백엔드 개발    | Spring Boot 기반 API 개발 - 알림 도메인 구현 |
-| 인프라 & 배포  | AWS ECS, RDS, S3 환경 구성 및 CI/CD 설정, Secret Manager와 IAM 정책 커스텀, OIDC 인증  |
-| 모니터링 구축   | Prometheus + Grafana 활용 서버 모니터링    |
-| 테스트 코드 작성 | RestAssured, H2 DB 기반 통합, 단위 테스트 구현    |
+
+| 분야        | 상세 내용                                                                  |
+|-----------|------------------------------------------------------------------------|
+| 백엔드 개발    | Spring Boot 기반 API 개발 - 알림 도메인 구현                                      |
+| 인프라 & 배포  | AWS ECS, RDS, S3 환경 구성 및 CI/CD 설정, Secret Manager와 IAM 정책 커스텀, OIDC 인증 |
+| 모니터링 구축   | Prometheus + Grafana 활용 서버 모니터링                                        |
+| 테스트 코드 작성 | RestAssured, H2 DB 기반 통합, 단위 테스트 구현                                    |
 
 </div>
 
 <br/>
 
 ## 🔍프로젝트 성과 및 회고
+
 프로젝트를 진행한 후 회고를 정리하여 문서화했습니다.
 
 ### 🧩성과 및 회고 요약
+
 본 프로젝트를 통해 개발, 배포, 운영 모니터링 등 전체 개발 프로세스를 경험하였습니다.   
 특히, 다음과 같은 기술을 처음으로 적용하였습니다.
 
@@ -39,6 +42,7 @@
 - Spring Metrics, Prometheus, Grafana를 활용한 모니터링 시스템 구축
 
 이외에도 다음과 같은 성과를 달성했습니다.
+
 - Docker 이미지 최적화를 통한 빌드 효율성 향상
 - AWS 서비스를 활용하여 보안 강화를 위한 키 관리 및 노출 방지
 - Spring Metrics를 활용한 모니터링 도구 구성 및 스레드 처리 방식에 대한 학습
@@ -54,7 +58,7 @@
 
 <br/>
 
-### 👉 자세한 회고는 블로그에서 확인하실 수 있습니다!  
+### 👉 자세한 회고는 블로그에서 확인하실 수 있습니다!
 
 ### <a href="https://doitwojae.tistory.com/entry/2025-05-%EC%BD%94%EB%93%9C%EC%9E%87-%EC%A4%91%EA%B8%89-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0" target="_blank">🔗 2025 코드잇 중급 프로젝트 회고</a>
 
@@ -63,7 +67,9 @@
 ## 🧠기억에 남는 PR 및 이슈
 
 ### 로그인 유저 주입 기능 리팩토링
-- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78: Resolver와 Interceptor를 활용하여 로그인 유저 관리를 중앙 집중화하였습니다.
+
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/78" target="_blank">PR #78: Resolver와 Interceptor를 활용하여 로그인 유저 관리를
+  중앙 집중화하였습니다.
 - PR에 사용 방법과 설명을 포함시켜 팀원들이 각자 필요한 곳에서 사용하였습니다.
 
 <div align="center">
@@ -77,7 +83,9 @@
 <br/>
 
 ### HTTP 상태 코드에 대한 이해 개선
-- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR #70: HTTP 상태 코드에 대한 잘못된 이해를 팀원들과 논의하며, 정확한 개념을 정리했습니다.
+
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/70" target="_blank">PR #70: HTTP 상태 코드에 대한 잘못된 이해를 팀원들과 논의하며, 정확한
+  개념을 정리했습니다.
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/b34dab6e-6211-4699-9634-13539ac8c6f9" alt="PR 리뷰" width="600"/>
@@ -86,15 +94,15 @@
 <br/>
 
 ### 예외 처리에 대한 논의
-- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR #91: 예상되는 예외 상황에 대해 코멘트를 남기고 팀원들과 소통함으로써, 보다 견고한 예외 처리를 구현하였습니다.
+
+- <a href="https://github.com/CodeitSB-Team9/sb01-deokhugam-team09/pull/91" target="_blank">PR #91: 예상되는 예외 상황에 대해 코멘트를 남기고 팀원들과 소통함으로써, 보다
+  견고한 예외 처리를 구현하였습니다.
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/96a18d59-284c-46b2-84c0-710757855d2c" alt="PR 리뷰" width="600"/>
 </div>
 
 <br/>
-
-
 
 ## <span id="2">👥팀원 소개</span>
 
@@ -167,6 +175,28 @@
 </p>
 
 </div>
+
+## Scheduler & Async
+
+### 특정 시간대에 실행되는 스케줄러 플로우 차트
+
+```mermaid
+flowchart TD
+  A[앱 구동] --> B[EnableScheduling 활성화]
+  B --> C[ScheduledTaskRegistrar 등록]
+  C --> D[스레드풀 초기화]
+  D --> E{트리거 시간 도달?}
+  E -- 아니오 --> D
+  E -- 예 --> F[Runnable 생성]
+  F --> G[ThreadPoolTaskScheduler submit]
+  G --> H[메서드 로직 수행]
+  H --> I{예외 발생?}
+  I -- 예 --> J[AsyncUncaughtExceptionHandler 호출]
+  I -- 아니오 --> K[정상 종료]
+  J --> L[예외 로깅 및 알림]
+  L --> D
+  K --> D
+```
 
 ## 🗂 아키텍처 & ERD
 
