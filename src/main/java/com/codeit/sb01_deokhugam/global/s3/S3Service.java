@@ -41,7 +41,7 @@ public class S3Service {
 		return url;
 	}
 
-	@Async("io-async-")
+	@Async
 	@Retryable(
 		retryFor = {S3UploadException.class},
 		maxAttempts = 3,
