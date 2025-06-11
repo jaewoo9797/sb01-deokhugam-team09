@@ -15,11 +15,13 @@ import com.codeit.sb01_deokhugam.global.exception.ErrorCode;
 import com.codeit.sb01_deokhugam.global.s3.exception.S3UploadException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -61,7 +63,12 @@ public class S3Service {
 
 	@Recover
 	public void recoverUpload(S3UploadException ex, MultipartFile file, String s3ObjectKey) {
-		// 모든 재시도 실패 시 처리 (로깅/알림/대체 저장 등)
+		log.error("[S3 업로드 실패] key={}, filename={}, error={}",
+			s3ObjectKey,
+			file.getOriginalFilename(),
+			ex.getMessage(),
+			ex
+		);
 	}
 
 	private String generateS3ObjectKey(MultipartFile file, String directory) {
