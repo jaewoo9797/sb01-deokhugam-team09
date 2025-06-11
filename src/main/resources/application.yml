@@ -8,6 +8,20 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB  # 임의로 정한 값 입니다. 크기 조정이 필요 하다면 변경하세요. (S3에 업로드 시 용량 제한하는게 좋습니다)
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true
+        format_sql: true
+    open-in-view: false
 cloud:
   aws:
     region:
