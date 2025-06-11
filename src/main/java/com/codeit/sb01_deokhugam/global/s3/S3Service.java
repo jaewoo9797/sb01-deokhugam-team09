@@ -3,6 +3,9 @@ package com.codeit.sb01_deokhugam.global.s3;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +40,12 @@ public class S3Service {
 	}
 
 	@Async("io-async-")
+	@Retryable(
+		retryFor = {S3UploadException.class},
+		maxAttempts = 3,
+		backoff = @Backoff(delay = 2000, multiplier = 2),
+		recover = "recoverUpload"
+	)
 	public void uploadAsync(MultipartFile file, String s3ObjectKey) {
 		try {
 			PutObjectRequest req = PutObjectRequest.builder()
@@ -46,9 +55,13 @@ public class S3Service {
 				.build();
 			s3Client.putObject(req, RequestBody.fromBytes(file.getBytes()));
 		} catch (IOException | SdkException ex) {
-			// 업로드 실패 시 로깅/재시도/알림 등 처리
 			throw new S3UploadException(ErrorCode.S3_UPLOAD_ERROR, ex);
 		}
+	}
+
+	@Recover
+	public void recoverUpload(S3UploadException ex, MultipartFile file, String s3ObjectKey) {
+		// 모든 재시도 실패 시 처리 (로깅/알림/대체 저장 등)
 	}
 
 	private String generateS3ObjectKey(MultipartFile file, String directory) {
