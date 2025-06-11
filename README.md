@@ -123,6 +123,7 @@
 
 ### 특정 시간대에 실행되는 스케줄러 플로우 차트
 
+<div style="zoom: 0.7; /* 70% 크기 */; margin-left: 10%;">
 ```mermaid
 flowchart TD
   A[앱 구동] --> B[EnableScheduling 활성화]
@@ -140,6 +141,7 @@ flowchart TD
   L --> D
   K --> D
 ```
+</div>
 
 <br/>
 
