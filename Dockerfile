@@ -25,4 +25,4 @@ COPY --from=builder /app/build/libs/deokhugam.jar deokhugam.jar
 COPY --from=builder /app/src/main/resources/ocr/tessdata ./tessdata
 ENV TESSDATA_PREFIX=/app/tessdata/
 
-ENTRYPOINT sh -c "java ${JVM_OPTS} -jar deokhugam.jar"
+ENTRYPOINT ["sh", "-c", "exec java ${JVM_OPTS} -jar deokhugam.jar"]
