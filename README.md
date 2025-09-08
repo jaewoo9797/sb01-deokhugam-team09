@@ -24,6 +24,7 @@
 | 인프라 & 배포  | AWS ECS, RDS, S3 환경 구성 및 CI/CD 설정, Secret Manager와 IAM 정책 커스텀, OIDC 인증 |
 | 모니터링 구축   | Prometheus + Grafana 활용 서버 모니터링                                        |
 | 테스트 코드 작성 | RestAssured, H2 DB 기반 통합, 단위 테스트 구현                                    |
+</div>
 
 ### 배포 관련 개념 공유
 - [AWS - ECS/ECR 개념 정리](https://doitwojae.tistory.com/entry/CICD-ECS-ECR-%EB%B0%B0%ED%8F%AC-%ED%9B%84-%EA%B0%84%EB%8B%A8-%EC%A0%95%EB%A6%AC)
@@ -31,8 +32,6 @@
 - [Docker 이미지 줄이기](https://doitwojae.tistory.com/entry/Docker-Image-%EC%A4%84%EC%9D%B4%EA%B8%B0#Alpine%20Linux-1-5)
 
 개념들에 대해서 정리한 문서를 공유하고, AWS 설정과 실제 어떻게 작업을 했는지 화면 공유를 통해 팀원 모두 이해할 수 있도록 했습니다.
-
-</div>
 
 <br/>
 
