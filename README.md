@@ -1,5 +1,8 @@
 # deokhugam Project 🚀
 
+### TEAM 01
+[팀 협업 문서 - Notion](https://www.notion.so/SB-1-Part3-9-1d78fd3ba955806d96a8ca69b2c14b56)
+
 ## 📖 프로젝트 소개
 
 <div>
